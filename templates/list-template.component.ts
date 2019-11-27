@@ -15,9 +15,9 @@ import { Title } from '@angular/platform-browser';
 	styleUrls: ['./list-DASH_TABLE_NAME.component.css']
 })
 
-export class {TABLE_NAME_CAMEL_CASE}}Component extends BaseComponent implements OnInit {
+export class TABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements OnInit {
 
-	TABLE_NAMEs:{{TABLE_NAME_MODEL}}[] = [];
+	TABLE_NAMEs:SNAKE_CASE_UPPERCASE[] = [];
 	{{table_constraints_arrays}}
 
 	TABLE_NAME_search:SearchObject<SNAKE_CASE_UPPERCASE> = {

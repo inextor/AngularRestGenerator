@@ -63,9 +63,10 @@ Promise.all
 		let list_template_content_ts = responses.list_template_component_ts
 			.replace(/TABLE_NAME_MODEL/g,tinfo.camel_case_uppercase)
 			.replace(/SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase )
-			.replace(/TABLE_SEARCH_PARAMS/g,tinfo.table_search_params )
+			.replace(/TABLE_SEARCH_PARAMS/g,tinfo.table_search_params.join('\n\t\t\t') )
 			.replace(/TABLE_DASH_NAME/g,tinfo.dash_table_name )
-			.replace(/TABLE_NAME/,tinfo.name );
+			.replace(/TABLE_NAME_CAMEL_CASE/g,tinfo.camel_case )
+			.replace(/TABLE_NAME/g,tinfo.name );
 
 		let save_template_content_ts = responses.save_template_component_ts
 			.replace(/SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase)
@@ -130,7 +131,7 @@ function createTableInfo( i, info )
 	table.name					= i;
 	table.snake_case			= i;
 	table.snake_case_uppercase	= getSnakeCaseUpperCase( i );
-	table.camel_case			= toCamel( i );
+	table.camel_case			= toCamelCaseUpperCase( i );
 	table.camel_case_uppercase	= toCamelCaseUpperCase( i );
 	table.dash_table_name		= i.replace(/_/g,'-');
 
