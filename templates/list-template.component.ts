@@ -1,9 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { RestService } from '../../services/rest.service';
 import { {{TABLE_NAME_MODEL}} } from '../../models/Modelos';
-import { SearchCitaResponse,SearchCitaRequest } from '../../models/Respuestas';
-import {Router,ActivatedRoute} from "@angular/router"
-import { Cita,Centro_Medico } from '../../models/Modelos';
+import { Router,ActivatedRoute } from "@angular/router"
 import { BaseComponent } from '../base/base.component';
 import { Location } from	'@angular/common';
 import { SearchObject } from '../../models/Respuestas';
@@ -22,7 +20,7 @@ export class {TABLE_NAME_CAMEL_CASE}}Component extends BaseComponent implements 
 	{{table_name}}s:{{TABLE_NAME_MODEL}}[] = [];
 	{{table_constraints_arrays}}
 
-	cita_search:SearchObject<Cita> = {
+	{{table_name}}_search:SearchObject<{{camel_case_uppercase}}> = {
 
 	};
 
@@ -36,7 +34,7 @@ export class {TABLE_NAME_CAMEL_CASE}}Component extends BaseComponent implements 
 		this.route.queryParams.subscribe( params =>
 		{
 
-			this.{{table_name}} = {
+			this.{{table_name}}_search = {
 				eq: {},
 				ge: {},
 				le: {}
@@ -56,20 +54,15 @@ export class {TABLE_NAME_CAMEL_CASE}}Component extends BaseComponent implements 
 			this.is_loading = true;
 			this.{{table_name}}_search.pagina = this.params.get('pagina') ? parseInt( this.params.get('pagina') ) ? 0;
 
-			//this.cita_search.eq.id_paciente ? this.rest.paciente.get( this.cita_search.eq.id_paciente ) : of(null)
 			forkJoin([
 					this.rest.{{table_name}}.search( {{table_name}}_search ),
 					{{table_fork_rests}}
 			]).subscribe((result)=>
 			{
 				this.setPages( this.{{table_name}}_search.pagina, result[0].total );
-
 				{{table_constraints_arrays_assigns}}
-				//this.centros_medicos = result[2].datos;
-				//this.info_citas = result[3].datos;
 			},error=>
 			{
-				console.log( error );
 				this.showError( error );
 			});
 		});
@@ -79,6 +72,6 @@ export class {TABLE_NAME_CAMEL_CASE}}Component extends BaseComponent implements 
 	{
 		this.is_loading = true;
 		this.{{table_name}}_search.pagina = 0;
-		this.router.navigate(['/{{table_name}}',{queryParams: this.{{table_name}}search );
+		this.router.navigate(['/{{table_name}}',{queryParams: this.{{table_name}}_search });
 	}
 }

@@ -7,8 +7,9 @@ let promises = [];
 promises.push( fs.readFile('./templates/rest.php',{ encoding:'utf8'}));
 promises.push( fs.readFile('./templates/rest.service.ts',{encoding:'utf8'}));
 promises.push( fs.readFile('./templates/save-template.component.html',{ encoding:'utf8'}));
-promises.push( fs.readFile('./templates/list-template.component.html',{ encoding:'utf8'}));
 promises.push( fs.readFile('./templates/save-template.component.ts',{ encoding:'utf8'}));
+promises.push( fs.readFile('./templates/list-template.component.html',{ encoding:'utf8'}));
+promises.push( fs.readFile('./templates/list-template.component.ts',{ encoding:'utf8'}));
 
 Promise.all( promises ).then((fileContents)=>
 {
@@ -20,17 +21,32 @@ Promise.all( promises ).then((fileContents)=>
 		restphp							: fileContents[0]
 		,rest_service					: fileContents[1]
 		,save_template_component_html	: fileContents[2]
-		,list_template_component_ts		: fileContents[3]
-		,
+		,save_template_component_ts		: fileContents[3]
+		,list_template_component_html	: fileContents[4]
+		,list_template_component_ts		: fileContents[5]
 	}
 })
 .then((responses)=>
 {
 	console.log( responses.restphp );
+	let phpFiles	= [];
 	for(let i in schema)
 	{
-//		let tinfo  = createTableInfo(i,schema[i] );
+		let tinfo  = createTableInfo(i,schema[i] );
+		let phpfile = responses.restphp.replace(/{{TABLE_NAME}}/g,tinfo.name);
+		phpFiles.push( fs.writeFile('./dist/'+tinfo.name+'.php',phpfile ) );
 	}
+
+
+	return Promise.all( phpFiles );
+})
+.then(()=>
+{
+	console.log("SUCESS");
+}
+,(error)=>
+{
+	console.log( error );
 });
 
 
