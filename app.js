@@ -49,12 +49,14 @@ function createTableInfo( i, info )
 	table.snake_case_uppercase	= getSnakeCaseUpperCase( i );
 	table.camel_case			= toCamel( i );
 	table.camel_case_uppercase	= toCamelCaseUpperCase( i );
+	table.dash_table_name		= i.replace(/_/g,'-');
 
 	table.table_search_params		= [];
 	table.table_headers				= [];
 	table.template_search_fields	= [];
 	table.template_save_inputs		= [];
 	table.table_values				= [];
+
 
 	let model_fields		= '\n';
 
