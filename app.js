@@ -29,16 +29,17 @@ Promise.all( promises ).then((fileContents)=>
 .then((responses)=>
 {
 	console.log( responses.restphp );
-	let phpFiles	= [];
+	let filesPromises= [];
 	for(let i in schema)
 	{
 		let tinfo  = createTableInfo(i,schema[i] );
 		let phpfile = responses.restphp.replace(/{{TABLE_NAME}}/g,tinfo.name);
-		phpFiles.push( fs.writeFile('./dist/'+tinfo.name+'.php',phpfile ) );
+		filesPromises.push( fs.writeFile('./dist/'+tinfo.name+'.php',phpfile ) );
+
 	}
 
 
-	return Promise.all( phpFiles );
+	return Promise.all( filesPromises );
 })
 .then(()=>
 {
