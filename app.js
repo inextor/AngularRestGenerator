@@ -144,6 +144,34 @@ function createTableInfo( i, info )
 
 	let model_fields		= '\n';
 
+    table.fork_joins		= [];
+	/*{
+		CONSTRAINT_CATALOG: 'def',
+		CONSTRAINT_SCHEMA: 'centrosmedicos',
+		CONSTRAINT_NAME: 'venta_ibfk_2',
+		TABLE_CATALOG: 'def',
+		TABLE_SCHEMA: 'centrosmedicos',
+		TABLE_NAME: 'venta',
+		COLUMN_NAME: 'id_usuario_recepcionista',
+		ORDINAL_POSITION: 1,
+		POSITION_IN_UNIQUE_CONSTRAINT: 1,
+		REFERENCED_TABLE_SCHEMA: 'centrosmedicos',
+		REFERENCED_TABLE_NAME: 'usuario',
+		REFERENCED_COLUMN_NAME: 'id'
+	}
+	*/
+
+	//table.fork_join_declaration = [];
+	//table.fork_join_assignation = [];
+
+	//info.contraints.forEach((k,index)=>
+	//{
+	//	table.fork_join_declaration.push(k.REFERENCED_TABLE_NAME+'_list:'+table.snake_case_uppercase+'[] = [];');
+	//	table.fork_joins.push('this.rest.'+k.REFERENCED_TABLE_NAME+'.getAll({})');
+	//	table.fork_joins.assignation.push(k.REFERENCED_TABLE_NAME+'_list=responses['+(index+1)+'].data;');
+	//});
+				
+
 	info.fields.forEach((f,index)=>
 	{
 		let field = {
@@ -267,7 +295,7 @@ function getInputField(field_info,table_snake_case,field_names)
 
 function createDirectory(path)
 {
-	console.log('Try',path);
+	//console.log('Try',path);
 	return fs.stat(path)
 	.then((x)=>
 	{
