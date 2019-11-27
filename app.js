@@ -2,16 +2,26 @@ let fs = require('fs').promises;
 
 const schema = require('./example.json');
 
-let promises = [];
 
-promises.push( fs.readFile('./templates/rest.php',{ encoding:'utf8'}));
-promises.push( fs.readFile('./templates/rest.service.ts',{encoding:'utf8'}));
-promises.push( fs.readFile('./templates/save-template.component.html',{ encoding:'utf8'}));
-promises.push( fs.readFile('./templates/save-template.component.ts',{ encoding:'utf8'}));
-promises.push( fs.readFile('./templates/list-template.component.html',{ encoding:'utf8'}));
-promises.push( fs.readFile('./templates/list-template.component.ts',{ encoding:'utf8'}));
-
-Promise.all( promises ).then((fileContents)=>
+Promise.all
+([ 
+	createDirectory('./dist/')
+	,createDirectory('./dist/angular')
+	,createDirectory('./dist/server')
+])
+.then(()=>
+{
+	let promises = [];
+	promises.push( fs.readFile('./templates/rest.php',{ encoding:'utf8'}));
+	promises.push( fs.readFile('./templates/rest.service.ts',{encoding:'utf8'}));
+	promises.push( fs.readFile('./templates/save-template.component.html',{ encoding:'utf8'}));
+	promises.push( fs.readFile('./templates/save-template.component.ts',{ encoding:'utf8'}));
+	promises.push( fs.readFile('./templates/list-template.component.html',{ encoding:'utf8'}));
+	promises.push( fs.readFile('./templates/list-template.component.ts',{ encoding:'utf8'}));
+	
+	return Promise.all( promises );
+})
+.then((fileContents)=>
 {
 	let restphp = fileContents[0];
 	let restService = fileContents[1];
@@ -29,8 +39,6 @@ Promise.all( promises ).then((fileContents)=>
 {
 	//console.log( responses.restphp );
 	let filesPromises= [];
-
-		
 		
 	let rest_imports		= '';
 	let rest_declarations	= '';	
@@ -40,7 +48,7 @@ Promise.all( promises ).then((fileContents)=>
 	{
 		let tinfo  = createTableInfo(i,schema[i] );
 		let phpfile = responses.restphp.replace(/{{TABLE_NAME}}/g,tinfo.name);
-		filesPromises.push( fs.writeFile('./dist/'+tinfo.name+'.php',phpfile ) );
+		filesPromises.push( fs.writeFile('./dist/server/'+tinfo.name+'.php',phpfile ) );
 
 		rest_imports		+= tinfo.obj_rest_import;
 		rest_declarations	+= tinfo.obj_rest_declaration;
@@ -59,6 +67,17 @@ Promise.all( promises ).then((fileContents)=>
 			.replace(/TABLE_DASH_NAME/g,tinfo.dash_table_name )
 			.replace(/TABLE_NAME/,tinfo.name );
 
+		let save_template_content_ts = responses.save_template_component_ts
+			.replace(/SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase)
+			.replace(/DASH_TABLE_NAME/g,tinfo.dash_table_name )
+			.replace(/TABLE_NAME/g,tinfo.name );
+
+		let save_template_content_html = responses.save_template_component_html
+			.replace(/SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase )
+			.replace(/TEMPLATE_SAVE_INPUTS/g,tinfo.template_save_inputs.join('\n'))
+			.replace(/TABLE_NAME/g,tinfo.name );
+
+
 		filesPromises.push
 		( 
 			Promise.all([
@@ -70,6 +89,8 @@ Promise.all( promises ).then((fileContents)=>
 				return Promise.all([
 					fs.writeFile('./dist/angular/list-'+tinfo.dash_table_name+'/list-'+tinfo.dash_table_name+'.component.ts',list_template_content_ts )
 					,fs.writeFile('./dist/angular/list-'+tinfo.dash_table_name+'/list-'+tinfo.dash_table_name+'.component.html',list_template_content_html)
+					,fs.writeFile('./dist/angular/save-'+tinfo.dash_table_name+'/save-'+tinfo.dash_table_name+'.component.ts',save_template_content_ts)
+					,fs.writeFile('./dist/angular/save-'+tinfo.dash_table_name+'/save-'+tinfo.dash_table_name+'.component.html',save_template_content_html)
 				]);
 			})
 		);
@@ -83,9 +104,6 @@ Promise.all( promises ).then((fileContents)=>
 				
 
 	filesPromises.push( fs.writeFile('./dist/angular/rest.service.ts', rest_file_content ) );
-		
-
-
 
 	return Promise.all( filesPromises );
 })
@@ -148,7 +166,7 @@ function createTableInfo( i, info )
 		let input_field	= getInputField(f,table.snake_case,field);
 		//console.log( input_field );
 		table.template_save_inputs.push(`\t\t\t<div class="mt-3 mb-3">
-				<label class="">Diagnostico</label>
+				<label class="">${field.name}</label>
 				${input_field}
 			</div>\n`);
 
@@ -201,45 +219,46 @@ function getInputType(type)
 	}
 }
 
-function getInputField(field_info,table_camel_case,field_names)
+function getInputField(field_info,table_snake_case,field_names)
 {
-	let ngmodel = table_camel_case+'.'+field_names.camel_case;
+	let ngmodel = table_snake_case+'.'+field_names.snake_case;
+	let name = field_names.snake_case;
 
 	if( /^int/.test( field_info.Type ) ||  /^double/.test(field_info.Type ) ||/^decimal/.test( field_info.Type ) || /^float/.test(field_info.Type) || /^tinyint/.test(field_info.Type) || /^bigint/.test(field_info.Type) )
 	{
-		return `\t\t\t<input type="number" name="field_names.snake_case" [(ngModel)]="${ngmodel}">\n`;
+		return `<input type="number" name="${name}" [(ngModel)]="${ngmodel}">`;
 	}
 	else if( /^varchar/.test( field_info.Type ) )
 	{
-		return `\t\t\t<input type="text"  name="field_names.snake_case" [(ngModel)]="${ngmodel}">\n`;
+		return `<input type="text" name="${name}" [(ngModel)]="${ngmodel}">\n`;
 	}
 	else if( /^timestamp/.test(field_info.Type ) || /^datetime/.test(field_info.Type) )
 	{
-		return `\t\t\t<input type="datetime-local"  name="field_names.snake_case" [(ngModel)]="${ngmodel}">\n`;
+		return `<input type="datetime-local" name="${name}" [(ngModel)]="${ngmodel}">`;
 	}
 	else if( /^date/.test( field_info.Type ) )
 	{
-		return `\t\t\t<input type="date"  name="field_names.snake_case" [(ngModel)]="${ngmodel}">\n`;
+		return `<input type="date" name="${name}" [(ngModel)]="${ngmodel}">`;
 	}
 	else if( /^time/.test( field_info.Type ) )
 	{
-		return `\t\t\t<input type="time"  name="field_names.snake_case" [(ngModel)]="${ngmodel}">\n`;
+		return `<input type="time" name="${name}" [(ngModel)]="${ngmodel}">`;
 	}
 	else if( /^text/.test( field_info.Type ) || /^mediumtext/.test( field_info.Type ) )
 	{
-		return `\t\t\t<textearea name="field_names.snake_case" [(ngModel)]="${ngmodel}"></textarea>\n`;
+		return `<textearea name="${name}" [(ngModel)]="${ngmodel}"></textarea>`;
 	}
 	else if( /^enum/.test( field_info.Type ) )
 	{
 		let options = field_info.Type.replace(/enum\((.*)\)/,'$1').split(',');
 
-		let s =`<select name="field_names.snake_case" [(ngModel)]="${ngmodel}">\n`;
+		let s =`<select name="${name}" [(ngModel)]="${ngmodel}">\n`;
 		options.forEach((i)=>
 		{
 			let t = i.replace(/'(.*)'/,'$1');
 			s+='\t\t\t\t<option value="'+t+'">'+t+'</option>\n';
 		});
-		s+='\t\t\t</select>\n';
+		s+='</select>';
 		return s;
 	}
 	//else console.log( field_info.Type );
@@ -251,10 +270,10 @@ function createDirectory(path)
 	return fs.stat(path)
 	.then((x)=>
 	{
-		console.log('stat', x );	
+		//console.log('stat', x );	
 		if( !x.isDirectory() )
 			return fs.mkdir(path)
-		console.log('Is a directory');
+
 		return Promise.resolve(true);
 	},(error)=>
 	{

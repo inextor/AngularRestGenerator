@@ -4,17 +4,14 @@ import {Router,ActivatedRoute} from "@angular/router";
 import { Tipo_Precio, Usuario } from '../../models/Modelos';
 
 @Component({
-	selector: 'app-{{dash_table_name}}',
-	templateUrl: './{{dash_table_name}}.component.html',
-	styleUrls: ['./{{dash_table_name}}.component.css']
+	selector: 'app-save-DASH_TABLE_NAME',
+	templateUrl: './save-DASH_TABLE_NAME.component.html',
+	styleUrls: ['./save-DASH_TABLE_NAME.component.css']
 })
-export class AgregarTipoPrecioComponent implements OnInit {
+export class SaveTABLE_NAME_CAMEL_CASEComponent implements OnInit {
 
-	{{table_name}}:{{camel_case_uppercase}} = {
-		nombre: '',
-		id_organizacion: null,
+	TABLE_NAME:SNAKE_CASE_UPPERCASE = {
 	};
-
 
 	ngOnInit()
 	{
@@ -25,10 +22,10 @@ export class AgregarTipoPrecioComponent implements OnInit {
 			if( id != null )
 			{
 				this.is_loading = true;
-				this.rest.{{table_name}}.get( id ).subscribe(({{table_name}})=>
+				this.rest.TABLE_NAME.get( id ).subscribe((TABLE_NAME)=>
 				{
 					this.is_loading = false;
-					this.{{table_name}} = {{table_name}};
+					this.TABLE_NAME = TABLE_NAME;
 				}, (error) =>
 				{
 					this.showError(error);
@@ -42,18 +39,18 @@ export class AgregarTipoPrecioComponent implements OnInit {
 	{
 		this.is_loading = true;
 
-		if( this.{{table_name}}.id	)
+		if( this.TABLE_NAME.id	)
 		{
-			this.rest.{{table_name}}.update( this.{{table_name}} ).subscribe(({{table_name}})=>{
+			this.rest.TABLE_NAME.update( this.TABLE_NAME ).subscribe((TABLE_NAME)=>{
 				this.is_loading = false;
-				this.router.navigate(['/{{dash_table_name}}']);
+				this.router.navigate(['/list-DASH_TABLE_NAME']);
 			});
 		}
 		else
 		{
-			this.rest.tipo_precio.create( this.tipoPrecio ).subscribe((tipoPrecio)=>{
+			this.rest.TABLE_NAME.create( this.TABLE_NAME ).subscribe((TABLE_NAME)=>{
 				this.is_loading = false;
-				this.router.navigate(['/{{dash_table_name}}']);
+				this.router.navigate(['/list-DASH_TABLE_NAME']);
 			});
 		}
 	}
