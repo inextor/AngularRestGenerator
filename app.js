@@ -1,9 +1,39 @@
-const schema = require('./db.json');
+let fs = require('fs').promises;
 
-for(let i in schema)
+const schema = require('./example.json');
+
+let promises = [];
+
+promises.push( fs.readFile('./templates/rest.php',{ encoding:'utf8'}));
+promises.push( fs.readFile('./templates/rest.service.ts',{encoding:'utf8'}));
+promises.push( fs.readFile('./templates/save-template.component.html',{ encoding:'utf8'}));
+promises.push( fs.readFile('./templates/list-template.component.html',{ encoding:'utf8'}));
+promises.push( fs.readFile('./templates/save-template.component.ts',{ encoding:'utf8'}));
+
+Promise.all( promises ).then((fileContents)=>
 {
-	createTableInfo(i,schema[i] );
-}
+	let restphp = fileContents[0];
+	let restService = fileContents[1];
+
+
+	return {
+		restphp							: fileContents[0]
+		,rest_service					: fileContents[1]
+		,save_template_component_html	: fileContents[2]
+		,list_template_component_ts		: fileContents[3]
+		,
+	}
+})
+.then((responses)=>
+{
+	console.log( responses.restphp );
+	for(let i in schema)
+	{
+//		let tinfo  = createTableInfo(i,schema[i] );
+	}
+});
+
+
 
 
 function createTableInfo( i, info )
@@ -19,8 +49,6 @@ function createTableInfo( i, info )
 	table.snake_case_uppercase	= getSnakeCaseUpperCase( i );
 	table.camel_case			= toCamel( i );
 	table.camel_case_uppercase	= toCamelCaseUpperCase( i );
-
-	//console.log( table );
 
 	table.table_search_params		= [];
 	table.table_headers				= [];
@@ -86,6 +114,8 @@ function createTableInfo( i, info )
 	//TEMPLATE_TABLE_NAME
 	//TEMPLATE_FIELDS_TABLE_HEADERS
 	//TEMPLATE_FIELDS_TABLE_VALUES
+
+	return table;
 }
 
 function getInputType(type)
