@@ -1,10 +1,10 @@
-let fs = require('fs').promises;
-
+const { createDirectory,toCamelCaseUpperCase,toCamel,getSnakeCaseUpperCase,getInputType  } = require('./functions.js');
 const schema = require('./example.json');
+let fs = require('fs').promises;
 
 
 Promise.all
-([ 
+([
 	createDirectory('./dist/')
 	,createDirectory('./dist/angular')
 	,createDirectory('./dist/server')
@@ -18,7 +18,7 @@ Promise.all
 	promises.push( fs.readFile('./templates/save-template.component.ts',{ encoding:'utf8'}));
 	promises.push( fs.readFile('./templates/list-template.component.html',{ encoding:'utf8'}));
 	promises.push( fs.readFile('./templates/list-template.component.ts',{ encoding:'utf8'}));
-	
+
 	return Promise.all( promises );
 })
 .then((fileContents)=>
@@ -39,10 +39,10 @@ Promise.all
 {
 	//console.log( responses.restphp );
 	let filesPromises= [];
-		
+
 	let rest_imports		= '';
-	let rest_declarations	= '';	
-	let rest_initialization	= '';	
+	let rest_declarations	= '';
+	let rest_initialization	= '';
 
 	for(let i in schema)
 	{
@@ -56,22 +56,27 @@ Promise.all
 
 		let list_template_content_html	= responses.list_template_component_html
 			.replace(/TEMPLATE_TABLE_NAME/g,tinfo.name)
-			.replace(/TEMPLATE_FIELDS_TABLE_HEADERS/g,tinfo.table_headers )
-			.replace(/TEMPLATE_FIELDS_TABLE_VALUES/g,tinfo.table_headers )
+			.replace(/TEMPLATE_FIELDS_TABLE_HEADERS/g,tinfo.table_headers.join('\n') )
+			.replace(/TEMPLATE_FIELDS_TABLE_VALUES/g,tinfo.table_values )
 			.replace(/TEMPLATE_SEARCH_FIELDS/g,tinfo.template_search_fields	 );
 
 		let list_template_content_ts = responses.list_template_component_ts
+			.replace(/TABLE_NAME_CAMEL_CASE/g,tinfo.camel_case )
 			.replace(/TABLE_NAME_MODEL/g,tinfo.camel_case_uppercase)
 			.replace(/SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase )
 			.replace(/TABLE_SEARCH_PARAMS/g,tinfo.table_search_params.join('\n\t\t\t') )
 			.replace(/TABLE_DASH_NAME/g,tinfo.dash_table_name )
-			.replace(/TABLE_NAME_CAMEL_CASE/g,tinfo.camel_case )
 			.replace(/TABLE_NAME/g,tinfo.name );
 
 		let save_template_content_ts = responses.save_template_component_ts
 			.replace(/SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase)
 			.replace(/DASH_TABLE_NAME/g,tinfo.dash_table_name )
-			.replace(/TABLE_NAME/g,tinfo.name );
+			.replace(/TABLE_NAME_CAMEL_CASE/g,tinfo.camel_case_uppercase )
+			.replace(/FORK_JOIN_IMPORTS/g,tinfo.fork_join_import.join('\n'))
+			.replace(/FORK_JOIN_DECLARATION/g,tinfo.fork_join_declaration.join('\n'))
+			.replace(/FORK_JOIN_ID/g,tinfo.fork_join_id )
+			.replace(/FORK_JOIN_CONSTRAINTS/g,tinfo.fork_join_constraints )
+			.replace(/TABLE_NAME/g,tinfo.name )
 
 		let save_template_content_html = responses.save_template_component_html
 			.replace(/SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase )
@@ -80,7 +85,7 @@ Promise.all
 
 
 		filesPromises.push
-		( 
+		(
 			Promise.all([
 				createDirectory('./dist/angular/list-'+tinfo.dash_table_name)
 				,createDirectory('./dist/angular/save-'+tinfo.dash_table_name)
@@ -102,7 +107,7 @@ Promise.all
 				.replace(/TEMPLATE_IMPORT_MODELS_TEMPLATE/g,rest_imports )
 				.replace(/TEMPLATE_OBJ_REST_DECLARATION/g,rest_declarations )
 				.replace(/TEMPLATE_OBJ_REST_INITIALIZATION/g,rest_initialization );
-				
+
 
 	filesPromises.push( fs.writeFile('./dist/angular/rest.service.ts', rest_file_content ) );
 
@@ -161,16 +166,72 @@ function createTableInfo( i, info )
 	}
 	*/
 
-	//table.fork_join_declaration = [];
-	//table.fork_join_assignation = [];
+	table.fork_join_import 		= [];
+	table.fork_join_observable	= [];
+	table.fork_join_assignation = [];
+	table.fork_join_declaration	= [];
+	table.fork_join_assignation1 = [];
+	table.fork_join_assignation0 = [];
+	table.fork_join_single		= '';
 
-	//info.contraints.forEach((k,index)=>
-	//{
-	//	table.fork_join_declaration.push(k.REFERENCED_TABLE_NAME+'_list:'+table.snake_case_uppercase+'[] = [];');
-	//	table.fork_joins.push('this.rest.'+k.REFERENCED_TABLE_NAME+'.getAll({})');
-	//	table.fork_joins.assignation.push(k.REFERENCED_TABLE_NAME+'_list=responses['+(index+1)+'].data;');
-	//});
-				
+	info.contraints.forEach((k,index)=>
+	{
+		table.fork_join_import.push('import {'+k.REFERENCED_TABLE_NAME+'} from \'../../models/Modelos');
+		table.fork_join_observable.push('this.rest.'+k.REFERENCED_TABLE_NAME+'.getAll({})');
+		table.fork_join_declaration.push(k.REFERENCED_TABLE_NAME+'_list:'+getSnakeCaseUpperCase( k.REFERENCED_TABLE_NAME )+'[] = [];');
+		table.fork_join_assignation1.push('this.'+k.REFERENCED_TABLE_NAME+'_list=responses['+(index+1)+'].data;');
+		table.fork_join_assignation0.push('this.'+k.REFERENCED_TABLE_NAME+'_list=responses['+index+'].data;');
+		table.fork_join_single = `this.rest.${k.REFERENCED_TABLE_NAME}.getAll({}).subscribe((response)=>
+				{
+					${k.REFERENCED_TABLE_NAME}_list=response.data;
+				}
+				,(error)=>this.showError(error));`;
+	});
+
+	if( table.fork_join_declaration.length == 0 )
+	{
+		table.fork_join_id = `this.rest.${table.name}.get( id ).subscribe(('+table.name+')=>
+			{
+				this.is_loading = false;
+				this.${table.name}= ${table.name};
+			},(error)=>
+			{
+				this.is_loading = false;
+				this.showError( error );
+			});\n`
+	}
+	else
+	{
+		table.fork_join_id	= `forkJoin([
+					this.rest.${table.name}.get( id ),
+					${table.fork_join_observable.join(',\n\t\t\t\t\t')}
+				])
+				.subscribe((responses)=>
+				{
+					this.${table.name} = responses[0];
+					${table.fork_join_assignation1.join('\n\t\t\t\t\t')}
+				});\n`
+
+		if( table.fork_join_observable.length == 1 )
+		{
+			table.fork_join_constraints = table.fork_join_single;
+		}
+		else
+		{
+			table.fork_join_constraints = `forkJoin([
+					${table.fork_join_observable.join(',\n\t\t\t\t\t')}
+				])
+				.subscribe((responses)=>
+				{
+					this.is_loading = false;
+					${table.fork_join_assignation0.join('\n\t\t\t\t\t')}
+				}
+				(error)=>this.showError(error));\n`
+		}
+	}
+
+	if( table.fork_join_import.length == 0 )
+		table.fork_join_str = '';
 
 	info.fields.forEach((f,index)=>
 	{
@@ -192,7 +253,7 @@ function createTableInfo( i, info )
 		table.table_headers.push('<th>'+(field.snake_case.replace(/_/g,' '))+'</th>');
 		let search_ng_model = table.snake_case+'_search.eq.'+field.snake_case;
 
-		let input_field	= getInputField(f,table.snake_case,field);
+		let input_field	= getInputField(f,table.snake_case,field, info.contraints );
 		//console.log( input_field );
 		table.template_save_inputs.push(`\t\t\t<div class="mt-3 mb-3">
 				<label class="">${field.name}</label>
@@ -232,26 +293,20 @@ function createTableInfo( i, info )
 	return table;
 }
 
-function getInputType(type)
-{
-	if( /^int/.test( type ) ||  /^double/.test(type ) ||/^decimal/.test( type ) || /^float/.test(type) || /^tinyint/.test(type) || /^bigint/.test(type) )
-	{
-		return 'number';
-	}
-	else if( /^timestamp/.test(type ) )
-	{
-		return 'Date';
-	}
-	else if( /^varchar/.test( type ) || /^date/.test( type ) || /^time/.test( type ) || /^enum/.test( type ) || /^text/.test( type ) || /^mediumtext/.test( type ) || /^datetime/.test(type) )
-	{
-		return 'string';
-	}
-}
 
-function getInputField(field_info,table_snake_case,field_names)
+function getInputField(field_info,table_snake_case,field_names,constraints)
 {
 	let ngmodel = table_snake_case+'.'+field_names.snake_case;
 	let name = field_names.snake_case;
+
+	if( constraints && constraints.some( f=> name == f.COLUMN_NAME ) )
+	{
+		let f = constraints.find( f=> name == f.COLUMN_NAME );
+
+		return `<select name="${name}" [(ngModel)]="${ngmodel}">\n
+					<option *ngFor="let c of ${f.REFERENCED_TABLE_NAME}_list" [value]="c.${f.REFERENCED_COLUMN_NAME}">{{c.${f.REFERENCED_COLUMN_NAME}}}</option>
+				</select>`;
+	}
 
 	if( /^int/.test( field_info.Type ) ||  /^double/.test(field_info.Type ) ||/^decimal/.test( field_info.Type ) || /^float/.test(field_info.Type) || /^tinyint/.test(field_info.Type) || /^bigint/.test(field_info.Type) )
 	{
@@ -293,51 +348,4 @@ function getInputField(field_info,table_snake_case,field_names)
 	//else console.log( field_info.Type );
 }
 
-function createDirectory(path)
-{
-	//console.log('Try',path);
-	return fs.stat(path)
-	.then((x)=>
-	{
-		//console.log('stat', x );	
-		if( !x.isDirectory() )
-			return fs.mkdir(path)
 
-		return Promise.resolve(true);
-	},(error)=>
-	{
-		return fs.mkdir(path)
-		//console.log("Error aqui",error);
-		//throw error;
-	});
-	
-}
-
-function toCamelCaseUpperCase(s)
-{
-	let x = s.replace(/^[a-z]/,i=>i.toUpperCase());
-
-	return x.replace(/([-_][a-z])/ig, ($1) => {
-		return $1.toUpperCase()
-			.replace('-', '')
-			.replace('_', '');
-	});
-}
-
-function toCamel(s)
-{
-	return s.replace(/([-_][a-z])/ig, ($1) => {
-		return $1.toUpperCase()
-			.replace('-', '')
-			.replace('_', '');
-	});
-};
-
-function getSnakeCaseUpperCase(s)
-{
-	let x = s.replace(/^[a-z]/,i=>i ? i.toUpperCase(): '');
-
-	return x.replace(/([-_][a-z])/ig,($1)=>{
-		return $1.toUpperCase();
-	});
-}

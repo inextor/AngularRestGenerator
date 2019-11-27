@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { RestService } from '../../services/rest.service';
 import {Router,ActivatedRoute} from "@angular/router";
 import { Tipo_Precio, Usuario } from '../../models/Modelos';
+FORK_JOIN_IMPORTS
 
 @Component({
 	selector: 'app-save-DASH_TABLE_NAME',
@@ -10,8 +11,9 @@ import { Tipo_Precio, Usuario } from '../../models/Modelos';
 })
 export class SaveTABLE_NAME_CAMEL_CASEComponent implements OnInit {
 
-	TABLE_NAME:SNAKE_CASE_UPPERCASE = {
-	};
+	TABLE_NAME:SNAKE_CASE_UPPERCASE	= {};
+
+	FORK_JOIN_DECLARATION
 
 	ngOnInit()
 	{
@@ -21,16 +23,11 @@ export class SaveTABLE_NAME_CAMEL_CASEComponent implements OnInit {
 
 			if( id != null )
 			{
-				this.is_loading = true;
-				this.rest.TABLE_NAME.get( id ).subscribe((TABLE_NAME)=>
-				{
-					this.is_loading = false;
-					this.TABLE_NAME = TABLE_NAME;
-				}, (error) =>
-				{
-					this.showError(error);
-					this.is_loading = false;
-				});
+				FORK_JOIN_ID
+			}
+			else
+			{
+				FORK_JOIN_CONSTRAINTS
 			}
 		});
 	}
@@ -44,14 +41,14 @@ export class SaveTABLE_NAME_CAMEL_CASEComponent implements OnInit {
 			this.rest.TABLE_NAME.update( this.TABLE_NAME ).subscribe((TABLE_NAME)=>{
 				this.is_loading = false;
 				this.router.navigate(['/list-DASH_TABLE_NAME']);
-			});
+			},(error)=>this.showError(error));
 		}
 		else
 		{
 			this.rest.TABLE_NAME.create( this.TABLE_NAME ).subscribe((TABLE_NAME)=>{
 				this.is_loading = false;
 				this.router.navigate(['/list-DASH_TABLE_NAME']);
-			});
+			},(error)=>this.showError(error));
 		}
 	}
 }
