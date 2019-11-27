@@ -16,7 +16,6 @@ Promise.all( promises ).then((fileContents)=>
 	let restphp = fileContents[0];
 	let restService = fileContents[1];
 
-
 	return {
 		restphp							: fileContents[0]
 		,rest_service					: fileContents[1]
@@ -28,15 +27,64 @@ Promise.all( promises ).then((fileContents)=>
 })
 .then((responses)=>
 {
-	console.log( responses.restphp );
+	//console.log( responses.restphp );
 	let filesPromises= [];
+
+		
+		
+	let rest_imports		= '';
+	let rest_declarations	= '';	
+	let rest_initialization	= '';	
+
 	for(let i in schema)
 	{
 		let tinfo  = createTableInfo(i,schema[i] );
 		let phpfile = responses.restphp.replace(/{{TABLE_NAME}}/g,tinfo.name);
 		filesPromises.push( fs.writeFile('./dist/'+tinfo.name+'.php',phpfile ) );
 
+		rest_imports		+= tinfo.obj_rest_import;
+		rest_declarations	+= tinfo.obj_rest_declaration;
+		rest_initialization	+= tinfo.obj_rest_initialization;
+
+		let list_template_content_html	= responses.list_template_component_html
+			.replace(/TEMPLATE_TABLE_NAME/g,tinfo.name)
+			.replace(/TEMPLATE_FIELDS_TABLE_HEADERS/g,tinfo.table_headers )
+			.replace(/TEMPLATE_FIELDS_TABLE_VALUES/g,tinfo.table_headers )
+			.replace(/TEMPLATE_SEARCH_FIELDS/g,tinfo.template_search_fields	 );
+
+		let list_template_content_ts = responses.list_template_component_ts
+			.replace(/TABLE_NAME_MODEL/g,tinfo.camel_case_uppercase)
+			.replace(/SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase )
+			.replace(/TABLE_SEARCH_PARAMS/g,tinfo.table_search_params )
+			.replace(/TABLE_DASH_NAME/g,tinfo.dash_table_name )
+			.replace(/TABLE_NAME/,tinfo.name );
+
+		filesPromises.push
+		( 
+			Promise.all([
+				createDirectory('./dist/angular/list-'+tinfo.dash_table_name)
+				,createDirectory('./dist/angular/save-'+tinfo.dash_table_name)
+			])
+			.then(()=>
+			{
+				return Promise.all([
+					fs.writeFile('./dist/angular/list-'+tinfo.dash_table_name+'/list-'+tinfo.dash_table_name+'.component.ts',list_template_content_ts )
+					,fs.writeFile('./dist/angular/list-'+tinfo.dash_table_name+'/list-'+tinfo.dash_table_name+'.component.html',list_template_content_html)
+				]);
+			})
+		);
+		//Rest
 	}
+
+	rest_file_content = responses.rest_service
+				.replace(/TEMPLATE_IMPORT_MODELS_TEMPLATE/g,rest_imports )
+				.replace(/TEMPLATE_OBJ_REST_DECLARATION/g,rest_declarations )
+				.replace(/TEMPLATE_OBJ_REST_INITIALIZATION/g,rest_initialization );
+				
+
+	filesPromises.push( fs.writeFile('./dist/angular/rest.service.ts', rest_file_content ) );
+		
+
 
 
 	return Promise.all( filesPromises );
@@ -114,16 +162,16 @@ function createTableInfo( i, info )
 
 
 	table.obj_rest_import			= `import {${table.snake_case_uppercase}} from '../models/Modelos';\n`;
-	table.obj_rest_declaration		= `public ${table.snake_case}:ObjRest<${table.snake_case_uppercase}>;\n`;
-	table.obj_rest_initialization	= '\nthis.'+table.snake_case+' = new ObjRest<'+table.snake_case_uppercase+'>(`${this.urlBase}/bitacora.php`,http);\n';
+	table.obj_rest_declaration		= `\tpublic ${table.snake_case}:ObjRest<${table.snake_case_uppercase}>;\n`;
+	table.obj_rest_initialization	= '\t\tthis.'+table.snake_case+'\t= new ObjRest<'+table.snake_case_uppercase+'>(`${this.urlBase}/bitacora.php`,http);\n';
 
-	console.log( table.obj_rest_initialization );
+	//console.log( table.obj_rest_initialization );
 
 	table.model = `	export interface ${table.snake_case_uppercase} {
 			${model_fields}
 		}`
 
-	console.log( table.obj_rest_import );
+	//console.log( table.obj_rest_import );
 	//TEMPLATE_OBJ_REST_DECLARATION //Rest
 	//TEMPLATE_OBJ_REST_INITIALIZATION
 	//TEMPLATE_IMPORT_MODELS_TEMPLATE //Rest
@@ -194,7 +242,27 @@ function getInputField(field_info,table_camel_case,field_names)
 		s+='\t\t\t</select>\n';
 		return s;
 	}
-	else console.log( field_info.Type );
+	//else console.log( field_info.Type );
+}
+
+function createDirectory(path)
+{
+	console.log('Try',path);
+	return fs.stat(path)
+	.then((x)=>
+	{
+		console.log('stat', x );	
+		if( !x.isDirectory() )
+			return fs.mkdir(path)
+		console.log('Is a directory');
+		return Promise.resolve(true);
+	},(error)=>
+	{
+		return fs.mkdir(path)
+		//console.log("Error aqui",error);
+		//throw error;
+	});
+	
 }
 
 function toCamelCaseUpperCase(s)

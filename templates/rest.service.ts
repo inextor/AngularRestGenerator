@@ -17,7 +17,7 @@ export class RestService {
 	urlBase:string = '';
 
 
-	TEMPLATE_OBJ_REST_DECLARATION
+TEMPLATE_OBJ_REST_DECLARATION
 
 
 	constructor(private http: HttpClient)
@@ -31,7 +31,7 @@ export class RestService {
 		if( window.location.hostname.indexOf('localhost') == 0 )
 			this.urlBase = 'http://127.0.0.1/CentroMedico';
 
-		TEMPLATE_OBJ_REST_INITIALIZATION
+TEMPLATE_OBJ_REST_INITIALIZATION
 	}
 
 	uploadImage(file:File,es_privada:boolean=false):Observable<Imagen>

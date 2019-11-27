@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RestService } from '../../services/rest.service';
-import { {{TABLE_NAME_MODEL}} } from '../../models/Modelos';
+import { SNAKE_CASE_UPPERCASE } from '../../models/Modelos';
 import { Router,ActivatedRoute } from "@angular/router"
 import { BaseComponent } from '../base/base.component';
 import { Location } from	'@angular/common';
@@ -10,17 +10,17 @@ import { of } from 'rxjs';
 import { Title } from '@angular/platform-browser';
 
 @Component({
-	selector: 'app-{{dash_table_name}}',
-	templateUrl: './{{dash_table_name}}-list.component.html',
-	styleUrls: ['./{{dash_table_name}}-list.component.css']
+	selector: 'app-DASH_TABLE_NAME',
+	templateUrl: './list-DASH_TABLE_NAME.component.html',
+	styleUrls: ['./list-DASH_TABLE_NAME.component.css']
 })
 
 export class {TABLE_NAME_CAMEL_CASE}}Component extends BaseComponent implements OnInit {
 
-	{{table_name}}s:{{TABLE_NAME_MODEL}}[] = [];
+	TABLE_NAMEs:{{TABLE_NAME_MODEL}}[] = [];
 	{{table_constraints_arrays}}
 
-	{{table_name}}_search:SearchObject<{{camel_case_uppercase}}> = {
+	TABLE_NAME_search:SearchObject<SNAKE_CASE_UPPERCASE> = {
 
 	};
 
@@ -34,32 +34,32 @@ export class {TABLE_NAME_CAMEL_CASE}}Component extends BaseComponent implements 
 		this.route.queryParams.subscribe( params =>
 		{
 
-			this.{{table_name}}_search = {
+			this.TABLE_NAME_search = {
 				eq: {},
 				ge: {},
 				le: {}
 			};
 
-			this.titleService.setTitle('{{table_name}}');
+			this.titleService.setTitle('TABLE_NAME');
 
 
-			{{table_search_params}}
+			TABLE_SEARCH_PARAMS
 
-			console.log('Search', this.{{table_name}}_search);
+			console.log('Search', this.TABLE_NAME_search);
 
 			let rjoinObj:any = {};
 			let fjarray = [];
 
 
 			this.is_loading = true;
-			this.{{table_name}}_search.pagina = this.params.get('pagina') ? parseInt( this.params.get('pagina') ) ? 0;
+			this.TABLE_NAME_search.pagina = this.params.get('pagina') ? parseInt( this.params.get('pagina') ) ? 0;
 
 			forkJoin([
-					this.rest.{{table_name}}.search( {{table_name}}_search ),
+					this.rest.TABLE_NAME.search( TABLE_NAME_search ),
 					{{table_fork_rests}}
 			]).subscribe((result)=>
 			{
-				this.setPages( this.{{table_name}}_search.pagina, result[0].total );
+				this.setPages( this.TABLE_NAME_search.pagina, result[0].total );
 				{{table_constraints_arrays_assigns}}
 			},error=>
 			{
@@ -71,7 +71,7 @@ export class {TABLE_NAME_CAMEL_CASE}}Component extends BaseComponent implements 
 	search()
 	{
 		this.is_loading = true;
-		this.{{table_name}}_search.pagina = 0;
-		this.router.navigate(['/{{table_name}}',{queryParams: this.{{table_name}}_search });
+		this.TABLE_NAME_search.pagina = 0;
+		this.router.navigate(['/list-TABLE_DASH_NAME',{queryParams: this.TABLE_NAME_search });
 	}
 }
