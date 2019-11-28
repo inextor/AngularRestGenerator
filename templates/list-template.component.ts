@@ -1,26 +1,27 @@
 import { Component, OnInit } from '@angular/core';
 import { RestService } from '../../services/rest.service';
-import { SNAKE_CASE_UPPERCASE } from '../../models/Modelos';
+import { SearchObject } from '../../services/ObjRest';
+import { TABLE_NAME_SNAKE_CASE_UPPERCASE } from '../../models/RestModels';
 import { Router,ActivatedRoute } from "@angular/router"
 import { BaseComponent } from '../base/base.component';
 import { Location } from	'@angular/common';
-import { SearchObject } from '../../models/Respuestas';
 import { forkJoin } from 'rxjs';
 import { of } from 'rxjs';
 import { Title } from '@angular/platform-browser';
+FORK_JOIN_IMPORTS
 
 @Component({
-	selector: 'app-DASH_TABLE_NAME',
-	templateUrl: './list-DASH_TABLE_NAME.component.html',
-	styleUrls: ['./list-DASH_TABLE_NAME.component.css']
+	selector: 'app-TABLE_NAME_DASH',
+	templateUrl: './list-TABLE_NAME_DASH.component.html',
+	styleUrls: ['./list-TABLE_NAME_DASH.component.css']
 })
 
-export class TABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements OnInit {
+export class ListTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements OnInit {
 
-	TABLE_NAMEs:SNAKE_CASE_UPPERCASE[] = [];
-	{{table_constraints_arrays}}
+	TABLE_NAMEs:TABLE_NAME_SNAKE_CASE_UPPERCASE[] = [];
+	FORK_JOIN_DECLARATION
 
-	TABLE_NAME_search:SearchObject<SNAKE_CASE_UPPERCASE> = {
+	TABLE_NAME_search:SearchObject<TABLE_NAME_SNAKE_CASE_UPPERCASE> = {
 
 	};
 
@@ -52,15 +53,16 @@ export class TABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements OnI
 
 
 			this.is_loading = true;
-			this.TABLE_NAME_search.pagina = this.params.get('pagina') ? parseInt( this.params.get('pagina') ) ? 0;
+			this.TABLE_NAME_search.page = params.get('page') ? parseInt( params.get('page') ) : 0;
 
-			forkJoin([
-					this.rest.TABLE_NAME.search( TABLE_NAME_search ),
-					{{table_fork_rests}}
-			]).subscribe((result)=>
+			//forkJoin([
+					this.rest.TABLE_NAME.search( this.TABLE_NAME_search )
+			//		{{table_fork_rests}}
+			//])
+			.subscribe((result)=>
 			{
-				this.setPages( this.TABLE_NAME_search.pagina, result[0].total );
-				{{table_constraints_arrays_assigns}}
+				this.setPages( this.TABLE_NAME_search.page, result[0].total );
+				//{{table_constraints_arrays_assigns}}
 			},error=>
 			{
 				this.showError( error );
@@ -71,7 +73,7 @@ export class TABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements OnI
 	search()
 	{
 		this.is_loading = true;
-		this.TABLE_NAME_search.pagina = 0;
-		this.router.navigate(['/list-TABLE_DASH_NAME',{queryParams: this.TABLE_NAME_search });
+		this.TABLE_NAME_search.page = 0;
+		this.router.navigate(['/list-TABLE_NAME_DASH',{queryParams: this.TABLE_NAME_search }]);
 	}
 }

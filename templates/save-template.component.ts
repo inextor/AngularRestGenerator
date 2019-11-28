@@ -1,7 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { RestService } from '../../services/rest.service';
-import {Router,ActivatedRoute} from "@angular/router";
-import { Tipo_Precio, Usuario } from '../../models/Modelos';
+import { SNAKE_CASE_UPPERCASE } from '../../models/RestModels';
+import { Router, ActivatedRoute } from "@angular/router";
+import { BaseComponent } from '../base/base.component';
+import { forkJoin } from 'rxjs';
 FORK_JOIN_IMPORTS
 
 @Component({
@@ -9,7 +11,7 @@ FORK_JOIN_IMPORTS
 	templateUrl: './save-DASH_TABLE_NAME.component.html',
 	styleUrls: ['./save-DASH_TABLE_NAME.component.css']
 })
-export class SaveTABLE_NAME_CAMEL_CASEComponent implements OnInit {
+export class SaveTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements OnInit {
 
 	TABLE_NAME:SNAKE_CASE_UPPERCASE	= {};
 

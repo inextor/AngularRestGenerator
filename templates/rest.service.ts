@@ -3,8 +3,7 @@ import { HttpClient, HttpHeaders,HttpParams,HttpErrorResponse } from '@angular/c
 import { Observable, BehaviorSubject } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { catchError } from 'rxjs/operators';
-import { } from '../models/Respuestas';
-import {ObjRest} from './ObjRest';
+import { ObjRest,RestResponse } from './ObjRest';
 
 TEMPLATE_IMPORT_MODELS_TEMPLATE
 
@@ -41,6 +40,19 @@ TEMPLATE_OBJ_REST_INITIALIZATION
 		fd.append('is_privada', es_privada?'1':'0' );
 		return this.http.post(`${this.urlBase}/imagen.php`,fd,{headers:this.getSessionHeaders(),withCredentials:true});
 	}
+
+	getSessionHeaders()
+	{
+		if( localStorage.getItem('session_token') == null )
+		{
+			console.log("THer is no session token");
+			return new HttpHeaders();
+		}
+
+		let headers = new HttpHeaders().set('Authorization', 'Bearer ' + localStorage.getItem('session_token'));
+		return headers;
+	}
+
 
 	getLocalDateFromMysqlString(str:string)
 	{

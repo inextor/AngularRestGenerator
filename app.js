@@ -1,6 +1,7 @@
-const { createDirectory,toCamelCaseUpperCase,toCamel,getSnakeCaseUpperCase,getInputType  } = require('./functions.js');
+const { createDirectory,toCamelCaseUpperCase,toCamel,getSnakeCaseUpperCase,getInputType,cpFile  } = require('./functions.js');
 const schema = require('./example.json');
 let fs = require('fs').promises;
+let fso	= require('fs');
 
 
 Promise.all
@@ -8,7 +9,18 @@ Promise.all
 	createDirectory('./dist/')
 	,createDirectory('./dist/angular')
 	,createDirectory('./dist/server')
+	,createDirectory('./dist/angular/pages')
+	,createDirectory('./dist/angular/models')
+	,createDirectory('./dist/angular/services')
+	,createDirectory('./dist/angular/components')
 ])
+.then(()=>
+{
+	return Promise.all([
+		createDirectory('./dist/angular/pages/base')
+		,createDirectory('./dist/angular/components/loading')
+	]);
+})
 .then(()=>
 {
 	let promises = [];
@@ -18,6 +30,10 @@ Promise.all
 	promises.push( fs.readFile('./templates/save-template.component.ts',{ encoding:'utf8'}));
 	promises.push( fs.readFile('./templates/list-template.component.html',{ encoding:'utf8'}));
 	promises.push( fs.readFile('./templates/list-template.component.ts',{ encoding:'utf8'}));
+	promises.push( fs.copyFile('./templates/ObjRest.ts','./dist/angular/services/ObjRest.ts') );
+	promises.push( fs.copyFile('./templates/base.component.ts','./dist/angular/pages/base/base.component.ts'));
+	promises.push( fs.copyFile('./templates/loading.component.ts','./dist/angular/components/loading/loading.component.ts'));
+	promises.push( fs.copyFile('./templates/loading.component.html','./dist/angular/components/loading/loading.component.html'));
 
 	return Promise.all( promises );
 })
@@ -43,10 +59,16 @@ Promise.all
 	let rest_imports		= '';
 	let rest_declarations	= '';
 	let rest_initialization	= '';
+	let models_file_string	= '';
 
+	console.log('ng g c pages/base');
+	console.log('ng g c components/loading');
 	for(let i in schema)
 	{
 		let tinfo  = createTableInfo(i,schema[i] );
+		console.log('ng g c pages/list-'+tinfo.dash_table_name );
+		console.log('ng g c pages/save-'+tinfo.dash_table_name );
+
 		let phpfile = responses.restphp.replace(/{{TABLE_NAME}}/g,tinfo.name);
 		filesPromises.push( fs.writeFile('./dist/server/'+tinfo.name+'.php',phpfile ) );
 
@@ -54,18 +76,22 @@ Promise.all
 		rest_declarations	+= tinfo.obj_rest_declaration;
 		rest_initialization	+= tinfo.obj_rest_initialization;
 
-		let list_template_content_html	= responses.list_template_component_html
-			.replace(/TEMPLATE_TABLE_NAME/g,tinfo.name)
+
+		let list_template_component_html	= responses.list_template_component_html
+			.replace(/TEMPLATE_DASH_TNAME/mg,tinfo.dash_table_name)
 			.replace(/TEMPLATE_FIELDS_TABLE_HEADERS/g,tinfo.table_headers.join('\n') )
 			.replace(/TEMPLATE_FIELDS_TABLE_VALUES/g,tinfo.table_values )
-			.replace(/TEMPLATE_SEARCH_FIELDS/g,tinfo.template_search_fields	 );
+			.replace(/TEMPLATE_SEARCH_FIELDS/g,tinfo.template_search_fields.join('\n')	 )
+			//.replace(/TEMPLATE_TABLE_NAME/g,tinfo.name)
 
 		let list_template_content_ts = responses.list_template_component_ts
 			.replace(/TABLE_NAME_CAMEL_CASE/g,tinfo.camel_case )
 			.replace(/TABLE_NAME_MODEL/g,tinfo.camel_case_uppercase)
-			.replace(/SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase )
+			.replace(/TABLE_NAME_SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase )
+			.replace(/FORK_JOIN_DECLARATION/g,tinfo.fork_join_declaration.join('\n'))
 			.replace(/TABLE_SEARCH_PARAMS/g,tinfo.table_search_params.join('\n\t\t\t') )
-			.replace(/TABLE_DASH_NAME/g,tinfo.dash_table_name )
+			.replace(/TABLE_NAME_DASH/g,tinfo.dash_table_name )
+			.replace(/FORK_JOIN_IMPORTS/g,tinfo.fork_join_import.join('\n'))
 			.replace(/TABLE_NAME/g,tinfo.name );
 
 		let save_template_content_ts = responses.save_template_component_ts
@@ -76,6 +102,7 @@ Promise.all
 			.replace(/FORK_JOIN_DECLARATION/g,tinfo.fork_join_declaration.join('\n'))
 			.replace(/FORK_JOIN_ID/g,tinfo.fork_join_id )
 			.replace(/FORK_JOIN_CONSTRAINTS/g,tinfo.fork_join_constraints )
+			.replace(/IMPORT_CONSTRAINTS/g,tinfo.import_constraints )
 			.replace(/TABLE_NAME/g,tinfo.name )
 
 		let save_template_content_html = responses.save_template_component_html
@@ -83,20 +110,26 @@ Promise.all
 			.replace(/TEMPLATE_SAVE_INPUTS/g,tinfo.template_save_inputs.join('\n'))
 			.replace(/TABLE_NAME/g,tinfo.name );
 
+		models_file_string+= tinfo.model+'\n\n';
 
 		filesPromises.push
 		(
 			Promise.all([
-				createDirectory('./dist/angular/list-'+tinfo.dash_table_name)
-				,createDirectory('./dist/angular/save-'+tinfo.dash_table_name)
+				createDirectory('./dist/angular/pages/list-'+tinfo.dash_table_name)
+				,createDirectory('./dist/angular/pages/save-'+tinfo.dash_table_name)
+				//fs.writeFile('./dist/angular/list-'+tinfo.dash_table_name+'.component.ts',list_template_content_ts )
+				//,fs.writeFile('./dist/angular/list-'+tinfo.dash_table_name+'.component.html',list_template_component_html)
+				//,fs.writeFile('./dist/angular/save-'+tinfo.dash_table_name+'.component.ts',save_template_content_ts)
+				//,fs.writeFile('./dist/angular/save-'+tinfo.dash_table_name+'.component.html',save_template_content_html)
+
 			])
 			.then(()=>
 			{
 				return Promise.all([
-					fs.writeFile('./dist/angular/list-'+tinfo.dash_table_name+'/list-'+tinfo.dash_table_name+'.component.ts',list_template_content_ts )
-					,fs.writeFile('./dist/angular/list-'+tinfo.dash_table_name+'/list-'+tinfo.dash_table_name+'.component.html',list_template_content_html)
-					,fs.writeFile('./dist/angular/save-'+tinfo.dash_table_name+'/save-'+tinfo.dash_table_name+'.component.ts',save_template_content_ts)
-					,fs.writeFile('./dist/angular/save-'+tinfo.dash_table_name+'/save-'+tinfo.dash_table_name+'.component.html',save_template_content_html)
+					fs.writeFile('./dist/angular/pages/list-'+tinfo.dash_table_name+'/list-'+tinfo.dash_table_name+'.component.ts',list_template_content_ts )
+					,fs.writeFile('./dist/angular/pages/list-'+tinfo.dash_table_name+'/list-'+tinfo.dash_table_name+'.component.html',list_template_component_html)
+					,fs.writeFile('./dist/angular/pages/save-'+tinfo.dash_table_name+'/save-'+tinfo.dash_table_name+'.component.ts',save_template_content_ts)
+					,fs.writeFile('./dist/angular/pages/save-'+tinfo.dash_table_name+'/save-'+tinfo.dash_table_name+'.component.html',save_template_content_html)
 				]);
 			})
 		);
@@ -109,7 +142,8 @@ Promise.all
 				.replace(/TEMPLATE_OBJ_REST_INITIALIZATION/g,rest_initialization );
 
 
-	filesPromises.push( fs.writeFile('./dist/angular/rest.service.ts', rest_file_content ) );
+	filesPromises.push( fs.writeFile('./dist/angular/services/rest.service.ts', rest_file_content ) );
+	filesPromises.push( fs.writeFile('./dist/angular/models/RestModels.ts', models_file_string ) );
 
 	return Promise.all( filesPromises );
 })
@@ -146,9 +180,6 @@ function createTableInfo( i, info )
 	table.template_save_inputs		= [];
 	table.table_values				= [];
 
-
-	let model_fields		= '\n';
-
     table.fork_joins		= [];
 	/*{
 		CONSTRAINT_CATALOG: 'def',
@@ -173,24 +204,33 @@ function createTableInfo( i, info )
 	table.fork_join_assignation1 = [];
 	table.fork_join_assignation0 = [];
 	table.fork_join_single		= '';
+	//table.import_constraints	= '';
 
 	info.contraints.forEach((k,index)=>
 	{
-		table.fork_join_import.push('import {'+k.REFERENCED_TABLE_NAME+'} from \'../../models/Modelos');
+		let importStr = 'import {'+getSnakeCaseUpperCase( k.REFERENCED_TABLE_NAME)+'} from \'../../models/RestModels\'';
+		if( !table.fork_join_import.some(i=> i==importStr ) )
+			table.fork_join_import.push( importStr );
+
 		table.fork_join_observable.push('this.rest.'+k.REFERENCED_TABLE_NAME+'.getAll({})');
-		table.fork_join_declaration.push(k.REFERENCED_TABLE_NAME+'_list:'+getSnakeCaseUpperCase( k.REFERENCED_TABLE_NAME )+'[] = [];');
+
+		let fjds = k.REFERENCED_TABLE_NAME+'_list:'+getSnakeCaseUpperCase( k.REFERENCED_TABLE_NAME )+'[] = [];';
+		if( !table.fork_join_declaration.some(i=> i==fjds ) )
+			table.fork_join_declaration.push( fjds );
+
 		table.fork_join_assignation1.push('this.'+k.REFERENCED_TABLE_NAME+'_list=responses['+(index+1)+'].data;');
 		table.fork_join_assignation0.push('this.'+k.REFERENCED_TABLE_NAME+'_list=responses['+index+'].data;');
 		table.fork_join_single = `this.rest.${k.REFERENCED_TABLE_NAME}.getAll({}).subscribe((response)=>
 				{
-					${k.REFERENCED_TABLE_NAME}_list=response.data;
+					this.${k.REFERENCED_TABLE_NAME}_list=response.data;
 				}
 				,(error)=>this.showError(error));`;
+		//table.import_constraints += `import { ${getSnakeCaseUpperCase(k.REFERENCED_TABLE_NAME)} } from '../../models/RestModels';\n`
 	});
 
 	if( table.fork_join_declaration.length == 0 )
 	{
-		table.fork_join_id = `this.rest.${table.name}.get( id ).subscribe(('+table.name+')=>
+		table.fork_join_id = `this.rest.${table.name}.get( id ).subscribe((${table.name})=>
 			{
 				this.is_loading = false;
 				this.${table.name}= ${table.name};
@@ -225,13 +265,13 @@ function createTableInfo( i, info )
 				{
 					this.is_loading = false;
 					${table.fork_join_assignation0.join('\n\t\t\t\t\t')}
-				}
-				(error)=>this.showError(error));\n`
+				},(error)=>this.showError(error));\n`
 		}
 	}
 
 	if( table.fork_join_import.length == 0 )
 		table.fork_join_str = '';
+	let model_fields = '';
 
 	info.fields.forEach((f,index)=>
 	{
@@ -242,12 +282,12 @@ function createTableInfo( i, info )
 		};
 
 
-		table.table_search_params.push( 'this.'+table.snake_case+'_search.eq.'+field.snake_case+'\t= params.get("eq."'+field.snake_case+'")?params.get("eq.'+field.snake_case+'"):null;');
-		table.table_search_params.push( 'this.'+table.snake_case+'_search.le.'+field.snake_case+'\t= params.get("le."'+field.snake_case+'")?params.get("le.'+field.snake_case+'"):null;');
-		table.table_search_params.push( 'this.'+table.snake_case+'_search.lt.'+field.snake_case+'\t= params.get("lt."'+field.snake_case+'")?params.get("lt.'+field.snake_case+'"):null;');
-		table.table_search_params.push( 'this.'+table.snake_case+'_search.ge.'+field.snake_case+'\t= params.get("ge."'+field.snake_case+'")?params.get("ge.'+field.snake_case+'"):null;');
-		table.table_search_params.push( 'this.'+table.snake_case+'_search.gt.'+field.snake_case+'\t= params.get("gt."'+field.snake_case+'")?params.get("gt.'+field.snake_case+'"):null;');
-		table.table_search_params.push( 'this.'+table.snake_case+'_search.lk.'+field.snake_case+'\t= params.get("lk."'+field.snake_case+'")?params.get("lk.'+field.snake_case+'"):null;');
+		table.table_search_params.push( 'this.'+table.snake_case+'_search.eq.'+field.snake_case+'\t= params.get("eq.'+field.snake_case+'")?params.get("eq.'+field.snake_case+'"):null;');
+		table.table_search_params.push( 'this.'+table.snake_case+'_search.le.'+field.snake_case+'\t= params.get("le.'+field.snake_case+'")?params.get("le.'+field.snake_case+'"):null;');
+		table.table_search_params.push( 'this.'+table.snake_case+'_search.lt.'+field.snake_case+'\t= params.get("lt.'+field.snake_case+'")?params.get("lt.'+field.snake_case+'"):null;');
+		table.table_search_params.push( 'this.'+table.snake_case+'_search.ge.'+field.snake_case+'\t= params.get("ge.'+field.snake_case+'")?params.get("ge.'+field.snake_case+'"):null;');
+		table.table_search_params.push( 'this.'+table.snake_case+'_search.gt.'+field.snake_case+'\t= params.get("gt.'+field.snake_case+'")?params.get("gt.'+field.snake_case+'"):null;');
+		table.table_search_params.push( 'this.'+table.snake_case+'_search.lk.'+field.snake_case+'\t= params.get("lk.'+field.snake_case+'")?params.get("lk.'+field.snake_case+'"):null;');
 
 		table.table_values.push('<td>{{'+field.snake_case+'}}</td>');
 		table.table_headers.push('<th>'+(field.snake_case.replace(/_/g,' '))+'</th>');
@@ -269,7 +309,7 @@ function createTableInfo( i, info )
 	});
 
 
-	table.obj_rest_import			= `import {${table.snake_case_uppercase}} from '../models/Modelos';\n`;
+	table.obj_rest_import			= `import {${table.snake_case_uppercase}} from '../models/RestModels';\n`;
 	table.obj_rest_declaration		= `\tpublic ${table.snake_case}:ObjRest<${table.snake_case_uppercase}>;\n`;
 	table.obj_rest_initialization	= '\t\tthis.'+table.snake_case+'\t= new ObjRest<'+table.snake_case_uppercase+'>(`${this.urlBase}/bitacora.php`,http);\n';
 
