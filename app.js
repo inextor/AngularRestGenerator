@@ -80,7 +80,7 @@ Promise.all
 		let list_template_component_html	= responses.list_template_component_html
 			.replace(/TEMPLATE_DASH_TNAME/mg,tinfo.dash_table_name)
 			.replace(/TEMPLATE_FIELDS_TABLE_HEADERS/g,tinfo.table_headers.join('\n') )
-			.replace(/TEMPLATE_FIELDS_TABLE_VALUES/g,tinfo.table_values )
+			.replace(/TEMPLATE_FIELDS_TABLE_VALUES/g,tinfo.table_values.join('\n') )
 			.replace(/TEMPLATE_SEARCH_FIELDS/g,tinfo.template_search_fields.join('\n')	 )
 			//.replace(/TEMPLATE_TABLE_NAME/g,tinfo.name)
 
@@ -282,14 +282,14 @@ function createTableInfo( i, info )
 		};
 
 
-		table.table_search_params.push( 'this.'+table.snake_case+'_search.eq.'+field.snake_case+'\t= params.get("eq.'+field.snake_case+'")?params.get("eq.'+field.snake_case+'"):null;');
-		table.table_search_params.push( 'this.'+table.snake_case+'_search.le.'+field.snake_case+'\t= params.get("le.'+field.snake_case+'")?params.get("le.'+field.snake_case+'"):null;');
-		table.table_search_params.push( 'this.'+table.snake_case+'_search.lt.'+field.snake_case+'\t= params.get("lt.'+field.snake_case+'")?params.get("lt.'+field.snake_case+'"):null;');
-		table.table_search_params.push( 'this.'+table.snake_case+'_search.ge.'+field.snake_case+'\t= params.get("ge.'+field.snake_case+'")?params.get("ge.'+field.snake_case+'"):null;');
-		table.table_search_params.push( 'this.'+table.snake_case+'_search.gt.'+field.snake_case+'\t= params.get("gt.'+field.snake_case+'")?params.get("gt.'+field.snake_case+'"):null;');
-		table.table_search_params.push( 'this.'+table.snake_case+'_search.lk.'+field.snake_case+'\t= params.get("lk.'+field.snake_case+'")?params.get("lk.'+field.snake_case+'"):null;');
+		table.table_search_params.push( 'this.'+table.snake_case+'_search.eq.'+field.snake_case+'\t= "eq.'+field.snake_case+'" in params ?params["eq.'+field.snake_case+'"]:null;');
+		table.table_search_params.push( 'this.'+table.snake_case+'_search.le.'+field.snake_case+'\t= "le.'+field.snake_case+'" in params ?params["le.'+field.snake_case+'"]:null;');
+		table.table_search_params.push( 'this.'+table.snake_case+'_search.lt.'+field.snake_case+'\t= "lt.'+field.snake_case+'" in params ?params["lt.'+field.snake_case+'"]:null;');
+		table.table_search_params.push( 'this.'+table.snake_case+'_search.ge.'+field.snake_case+'\t= "ge.'+field.snake_case+'" in params ?params["ge.'+field.snake_case+'"]:null;');
+		table.table_search_params.push( 'this.'+table.snake_case+'_search.gt.'+field.snake_case+'\t= "gt.'+field.snake_case+'" in params ?params["gt.'+field.snake_case+'"]:null;');
+		table.table_search_params.push( 'this.'+table.snake_case+'_search.lk.'+field.snake_case+'\t= "lk.'+field.snake_case+'" in params ?params["lk.'+field.snake_case+'"]:null;');
 
-		table.table_values.push('<td>{{'+field.snake_case+'}}</td>');
+		table.table_values.push('<td>{{'+table.snake_case+'.'+field.snake_case+'}}</td>');
 		table.table_headers.push('<th>'+(field.snake_case.replace(/_/g,' '))+'</th>');
 		let search_ng_model = table.snake_case+'_search.eq.'+field.snake_case;
 

@@ -37,8 +37,12 @@ export class ListTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements
 
 			this.TABLE_NAME_search = {
 				eq: {},
+				gt: {},
 				ge: {},
-				le: {}
+				le: {},
+				lt: {},
+				lk: {},
+				csv: {},
 			};
 
 			this.titleService.setTitle('TABLE_NAME');
@@ -74,6 +78,19 @@ export class ListTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements
 	{
 		this.is_loading = true;
 		this.TABLE_NAME_search.page = 0;
-		this.router.navigate(['/list-TABLE_NAME_DASH',{queryParams: this.TABLE_NAME_search }]);
+
+        let search = {};
+        let array = ['eq','le','lt','ge','gt','csv','lk'];
+        for(let i in this.venta_search )
+        {
+            console.log( 'i',i,array.indexOf( i ) );
+            if(array.indexOf( i ) > -1 )
+            {
+                for(let j in this.venta_search[i])
+                    search[i+'.'+j] = this.venta_search[i][j];
+            }
+        }
+
+		this.router.navigate(['/list-TABLE_NAME_DASH'],{queryParams: search});
 	}
 }
