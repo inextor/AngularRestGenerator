@@ -8,6 +8,7 @@ import { Location } from	'@angular/common';
 import { forkJoin } from 'rxjs';
 import { of } from 'rxjs';
 import { Title } from '@angular/platform-browser';
+
 FORK_JOIN_IMPORTS
 
 @Component({
@@ -71,13 +72,13 @@ export class ListTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements
 
         let search = {};
         let array = ['eq','le','lt','ge','gt','csv','lk'];
-        for(let i in this.venta_search )
+        for(let i in this.TABLE_NAME_search )
         {
             console.log( 'i',i,array.indexOf( i ) );
             if(array.indexOf( i ) > -1 )
             {
-                for(let j in this.venta_search[i])
-                    search[i+'.'+j] = this.venta_search[i][j];
+                for(let j in this.TABLE_NAME_search[i])
+                    search[i+'.'+j] = this.TABLE_NAME_search[i][j];
             }
         }
 

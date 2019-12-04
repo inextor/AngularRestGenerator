@@ -25,11 +25,11 @@ export class SaveTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements
 
 			if( id != null )
 			{
-				fork_join_id
+				FORK_JOIN_ID
 			}
 			else
 			{
-				fork_join_constraints
+				FORK_JOIN_CONSTRAINTS
 			}
 		});
 	}
