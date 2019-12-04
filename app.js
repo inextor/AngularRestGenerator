@@ -88,7 +88,8 @@ Promise.all
 			.replace(/TABLE_NAME_CAMEL_CASE/g,tinfo.camel_case )
 			.replace(/TABLE_NAME_MODEL/g,tinfo.camel_case_uppercase)
 			.replace(/TABLE_NAME_SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase )
-			.replace(/FORK_JOIN_DECLARATION/g,tinfo.fork_join_declaration.join('\n'))
+			.replace(/FORK_JOIN_DECLARATION/g,tinfo.fork_join_declaration_list.join('\n'))
+			.replace(/FORK_JOIN_CONSTRAINTS/g,tinfo.fork_join_constraints )
 			.replace(/TABLE_SEARCH_PARAMS/g,tinfo.table_search_params.join('\n\t\t\t') )
 			.replace(/TABLE_NAME_DASH/g,tinfo.dash_table_name )
 			.replace(/FORK_JOIN_IMPORTS/g,tinfo.fork_join_import.join('\n'))
@@ -99,7 +100,7 @@ Promise.all
 			.replace(/DASH_TABLE_NAME/g,tinfo.dash_table_name )
 			.replace(/TABLE_NAME_CAMEL_CASE/g,tinfo.camel_case_uppercase )
 			.replace(/FORK_JOIN_IMPORTS/g,tinfo.fork_join_import.join('\n'))
-			.replace(/FORK_JOIN_DECLARATION/g,tinfo.fork_join_declaration.join('\n'))
+			.replace(/FORK_JOIN_DECLARATION/g,tinfo.fork_join_declaration_save.join('\n'))
 			.replace(/FORK_JOIN_ID/g,tinfo.fork_join_id )
 			.replace(/FORK_JOIN_CONSTRAINTS/g,tinfo.fork_join_constraints )
 			.replace(/IMPORT_CONSTRAINTS/g,tinfo.import_constraints )
@@ -200,9 +201,10 @@ function createTableInfo( i, info )
 	table.fork_join_import 		= [];
 	table.fork_join_observable	= [];
 	table.fork_join_assignation = [];
-	table.fork_join_declaration	= [];
-	table.fork_join_assignation1 = [];
-	table.fork_join_assignation0 = [];
+	table.fork_join_declaration_save = [];
+	table.fork_join_declaration_list = [];
+
+	table.fork_join_assignation = [];
 	table.fork_join_single		= '';
 	//table.import_constraints	= '';
 
@@ -212,14 +214,19 @@ function createTableInfo( i, info )
 		if( !table.fork_join_import.some(i=> i==importStr ) )
 			table.fork_join_import.push( importStr );
 
-		table.fork_join_observable.push('this.rest.'+k.REFERENCED_TABLE_NAME+'.getAll({})');
+		let obser_str = 'this.rest.'+k.REFERENCED_TABLE_NAME+'.getAll({})';
+		if( !table.fork_join_observable.some( i=> i == obser_str ) )
+			table.fork_join_observable.push( obser_str );
 
 		let fjds = k.REFERENCED_TABLE_NAME+'_list:'+getSnakeCaseUpperCase( k.REFERENCED_TABLE_NAME )+'[] = [];';
-		if( !table.fork_join_declaration.some(i=> i==fjds ) )
-			table.fork_join_declaration.push( fjds );
+		if( !table.fork_join_declaration_list.some(i=> i==fjds ) )
+		{
+			table.fork_join_declaration_list.push( fjds );
+		}
 
-		table.fork_join_assignation1.push('this.'+k.REFERENCED_TABLE_NAME+'_list=responses['+(index+1)+'].data;');
-		table.fork_join_assignation0.push('this.'+k.REFERENCED_TABLE_NAME+'_list=responses['+index+'].data;');
+
+		table.fork_join_assignation.push('this.'+k.REFERENCED_TABLE_NAME+'_list=responses[fj_index++].data;');
+		//table.fork_join_assignation.push('this.'+k.REFERENCED_TABLE_NAME+'_list=responses[fj_index++].data;');
 		table.fork_join_single = `this.rest.${k.REFERENCED_TABLE_NAME}.getAll({}).subscribe((response)=>
 				{
 					this.${k.REFERENCED_TABLE_NAME}_list=response.data;
@@ -228,7 +235,7 @@ function createTableInfo( i, info )
 		//table.import_constraints += `import { ${getSnakeCaseUpperCase(k.REFERENCED_TABLE_NAME)} } from '../../models/RestModels';\n`
 	});
 
-	if( table.fork_join_declaration.length == 0 )
+	if( table.fork_join_declaration_save.length == 0 )
 	{
 		table.fork_join_id = `this.rest.${table.name}.get( id ).subscribe((${table.name})=>
 			{
@@ -248,10 +255,14 @@ function createTableInfo( i, info )
 				])
 				.subscribe((responses)=>
 				{
-					this.${table.name} = responses[0];
-					${table.fork_join_assignation1.join('\n\t\t\t\t\t')}
+					let fj_index = 0;
+					this.${table.name} = responses[fj_index++];
+					${table.fork_join_assignation.join('\n\t\t\t\t\t')}
 				});\n`
+	}
 
+	if( table.fork_join_declaration_list.length == 1 )
+	{
 		if( table.fork_join_observable.length == 1 )
 		{
 			table.fork_join_constraints = table.fork_join_single;
@@ -264,7 +275,8 @@ function createTableInfo( i, info )
 				.subscribe((responses)=>
 				{
 					this.is_loading = false;
-					${table.fork_join_assignation0.join('\n\t\t\t\t\t')}
+					let fj_index = 0;
+					${table.fork_join_assignation.join('\n\t\t\t\t\t')}
 				},(error)=>this.showError(error));\n`
 		}
 	}
@@ -300,10 +312,7 @@ function createTableInfo( i, info )
 				${input_field}
 			</div>\n`);
 
-		table.template_search_fields.push(`\t\t\t<div class="pr-2">
-				<label>${field.snake_case.replace(/_/g,' ')}</label>
-				<input type="text" [(ngModel)]="${search_ng_model}">
-			</div>\n`);
+		table.template_search_fields.push( input_field );
 
 		model_fields+='\t\t'+field.snake_case+'?\t:'+getInputType( f.Type )+';\n';
 	});

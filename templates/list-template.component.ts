@@ -35,6 +35,7 @@ export class ListTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements
 		this.route.queryParams.subscribe( params =>
 		{
 
+
 			this.TABLE_NAME_search = {
 				eq: {},
 				gt: {},
@@ -47,7 +48,6 @@ export class ListTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements
 
 			this.titleService.setTitle('TABLE_NAME');
 
-
 			TABLE_SEARCH_PARAMS
 
 			console.log('Search', this.TABLE_NAME_search);
@@ -59,18 +59,8 @@ export class ListTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements
 			this.is_loading = true;
 			this.TABLE_NAME_search.page = params.get('page') ? parseInt( params.get('page') ) : 0;
 
-			//forkJoin([
-					this.rest.TABLE_NAME.search( this.TABLE_NAME_search )
-			//		{{table_fork_rests}}
-			//])
-			.subscribe((result)=>
-			{
-				this.setPages( this.TABLE_NAME_search.page, result[0].total );
-				//{{table_constraints_arrays_assigns}}
-			},error=>
-			{
-				this.showError( error );
-			});
+			FORK_JOIN_CONSTRAINTS
+
 		});
 	}
 
