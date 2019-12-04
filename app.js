@@ -30,6 +30,7 @@ Promise.all
 	promises.push( fs.readFile('./templates/save-template.component.ts',{ encoding:'utf8'}));
 	promises.push( fs.readFile('./templates/list-template.component.html',{ encoding:'utf8'}));
 	promises.push( fs.readFile('./templates/list-template.component.ts',{ encoding:'utf8'}));
+	promises.push( fs.readFile('./templates/app-routing.module.ts',{ encoding:'utf8'}));
 	promises.push( fs.copyFile('./templates/ObjRest.ts','./dist/angular/services/ObjRest.ts') );
 	promises.push( fs.copyFile('./templates/base.component.ts','./dist/angular/pages/base/base.component.ts'));
 	promises.push( fs.copyFile('./templates/loading.component.ts','./dist/angular/components/loading/loading.component.ts'));
@@ -49,6 +50,7 @@ Promise.all
 		,save_template_component_ts		: fileContents[3]
 		,list_template_component_html	: fileContents[4]
 		,list_template_component_ts		: fileContents[5]
+		,app_routing_module_ts			: fileContents[6]
 	}
 })
 .then((responses)=>
@@ -60,14 +62,21 @@ Promise.all
 	let rest_declarations	= '';
 	let rest_initialization	= '';
 	let models_file_string	= '';
+    let routes				= [];
+    let routeImports		= [];
 
 	console.log('ng g c pages/base');
 	console.log('ng g c components/loading');
 	for(let i in schema)
 	{
+		if( i == 'configuracion' || i=='factura' )
+			continue;
+
 		let tinfo  = createTableInfo(i,schema[i] );
 		console.log('ng g c pages/list-'+tinfo.dash_table_name );
 		console.log('ng g c pages/save-'+tinfo.dash_table_name );
+		routes.push( tinfo.routes );
+		routeImports.push( tinfo.route_import );
 
 		let phpfile = responses.restphp.replace(/{{TABLE_NAME}}/g,tinfo.name);
 		filesPromises.push( fs.writeFile('./dist/server/'+tinfo.name+'.php',phpfile ) );
@@ -82,7 +91,7 @@ Promise.all
 			.replace(/TEMPLATE_FIELDS_TABLE_HEADERS/g,tinfo.table_headers.join('\n') )
 			.replace(/TEMPLATE_FIELDS_TABLE_VALUES/g,tinfo.table_values.join('\n') )
 			.replace(/TEMPLATE_SEARCH_FIELDS/g,tinfo.template_search_fields.join('\n')	 )
-			//.replace(/TEMPLATE_TABLE_NAME/g,tinfo.name)
+			.replace(/TEMPLATE_TABLE_NAME/g,tinfo.name)
 
 		let list_template_content_ts = responses.list_template_component_ts
 			.replace(/TABLE_NAME_CAMEL_CASE/g,tinfo.camel_case )
@@ -104,25 +113,20 @@ Promise.all
 			.replace(/FORK_JOIN_ID/g,tinfo.fork_join_id )
 			.replace(/FORK_JOIN_CONSTRAINTS/g,tinfo.fork_join_constraints )
 			.replace(/IMPORT_CONSTRAINTS/g,tinfo.import_constraints )
-			.replace(/TABLE_NAME/g,tinfo.name )
+			.replace(/TABLE_NAME/g,tinfo.name );
 
 		let save_template_content_html = responses.save_template_component_html
 			.replace(/SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase )
 			.replace(/TEMPLATE_SAVE_INPUTS/g,tinfo.template_save_inputs.join('\n'))
 			.replace(/TABLE_NAME/g,tinfo.name );
 
-		models_file_string+= tinfo.model+'\n\n';
+		models_file_string += tinfo.model+'\n\n';
 
 		filesPromises.push
 		(
 			Promise.all([
 				createDirectory('./dist/angular/pages/list-'+tinfo.dash_table_name)
 				,createDirectory('./dist/angular/pages/save-'+tinfo.dash_table_name)
-				//fs.writeFile('./dist/angular/list-'+tinfo.dash_table_name+'.component.ts',list_template_content_ts )
-				//,fs.writeFile('./dist/angular/list-'+tinfo.dash_table_name+'.component.html',list_template_component_html)
-				//,fs.writeFile('./dist/angular/save-'+tinfo.dash_table_name+'.component.ts',save_template_content_ts)
-				//,fs.writeFile('./dist/angular/save-'+tinfo.dash_table_name+'.component.html',save_template_content_html)
-
 			])
 			.then(()=>
 			{
@@ -142,9 +146,14 @@ Promise.all
 				.replace(/TEMPLATE_OBJ_REST_DECLARATION/g,rest_declarations )
 				.replace(/TEMPLATE_OBJ_REST_INITIALIZATION/g,rest_initialization );
 
+//		console.log( routeImports.join('\n') );
+    let app_routing_module_ts_content = responses.app_routing_module_ts.replace(/ROUTE_IMPORT_CLASES/g,routeImports.join('\n'))
+		.replace(/ROUTES_DECLARATION/g,routes.join(','))
+
 
 	filesPromises.push( fs.writeFile('./dist/angular/services/rest.service.ts', rest_file_content ) );
 	filesPromises.push( fs.writeFile('./dist/angular/models/RestModels.ts', models_file_string ) );
+	filesPromises.push( fs.writeFile('./dist/angular/app-routing.module.ts',app_routing_module_ts_content ) );
 
 	return Promise.all( filesPromises );
 })
@@ -180,29 +189,26 @@ function createTableInfo( i, info )
 	table.template_search_fields	= [];
 	table.template_save_inputs		= [];
 	table.table_values				= [];
+    //import { DoctorComponent } from './pages/doctor/doctor.component';
+
+    table.route_import	= 'import {Save'+toCamelCaseUpperCase( table.name )+
+				'Component} from \'./pages/save-'+table.dash_table_name+'/save-'+
+				table.dash_table_name+'.component\';\n'+
+				'import {List'+toCamelCaseUpperCase( table.name )+
+				'Component} from \'./pages/list-'+
+				table.dash_table_name+'/list-'+table.dash_table_name+'.component\';\n';
+
+	table.routes    = '{ path:\'list-'+table.dash_table_name+'\' , component: List'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n'+
+				',{ path:\'save-'+table.dash_table_name+'\' , component: Save'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n';
 
     table.fork_joins		= [];
-	/*{
-		CONSTRAINT_CATALOG: 'def',
-		CONSTRAINT_SCHEMA: 'centrosmedicos',
-		CONSTRAINT_NAME: 'venta_ibfk_2',
-		TABLE_CATALOG: 'def',
-		TABLE_SCHEMA: 'centrosmedicos',
-		TABLE_NAME: 'venta',
-		COLUMN_NAME: 'id_usuario_recepcionista',
-		ORDINAL_POSITION: 1,
-		POSITION_IN_UNIQUE_CONSTRAINT: 1,
-		REFERENCED_TABLE_SCHEMA: 'centrosmedicos',
-		REFERENCED_TABLE_NAME: 'usuario',
-		REFERENCED_COLUMN_NAME: 'id'
-	}
-	*/
+	
 
 	table.fork_join_import 		= [];
 	table.fork_join_observable	= [];
 	table.fork_join_assignation = [];
 	table.fork_join_declaration_save = [];
-	table.fork_join_declaration_list = [];
+	table.fork_join_declaration_list = [table.name+'_list:'+getSnakeCaseUpperCase(table.name)+'[] = [];'];
 
 	table.fork_join_assignation = [];
 	table.fork_join_single		= '';
@@ -226,13 +232,11 @@ function createTableInfo( i, info )
 
 
 		table.fork_join_assignation.push('this.'+k.REFERENCED_TABLE_NAME+'_list=responses[fj_index++].data;');
-		//table.fork_join_assignation.push('this.'+k.REFERENCED_TABLE_NAME+'_list=responses[fj_index++].data;');
 		table.fork_join_single = `this.rest.${k.REFERENCED_TABLE_NAME}.getAll({}).subscribe((response)=>
 				{
 					this.${k.REFERENCED_TABLE_NAME}_list=response.data;
 				}
 				,(error)=>this.showError(error));`;
-		//table.import_constraints += `import { ${getSnakeCaseUpperCase(k.REFERENCED_TABLE_NAME)} } from '../../models/RestModels';\n`
 	});
 
 	if( table.fork_join_declaration_save.length == 0 )
@@ -306,7 +310,6 @@ function createTableInfo( i, info )
 		let search_ng_model = table.snake_case+'_search.eq.'+field.snake_case;
 
 		let input_field	= getInputField(f,table.snake_case,field, info.contraints );
-		//console.log( input_field );
 		table.template_save_inputs.push(`\t\t\t<div class="mt-3 mb-3">
 				<label class="">${field.name}</label>
 				${input_field}
@@ -326,19 +329,8 @@ function createTableInfo( i, info )
 
 	table.model = `	export interface ${table.snake_case_uppercase} {
 			${model_fields}
-		}`
-
-	//console.log( table.obj_rest_import );
-	//TEMPLATE_OBJ_REST_DECLARATION //Rest
-	//TEMPLATE_OBJ_REST_INITIALIZATION
-	//TEMPLATE_IMPORT_MODELS_TEMPLATE //Rest
-	//console.log( table );
-	//TEMPLATE_SEARCH_FIELDS
-	//TEMPLATE_LIST_TABLE_NAME   //nombre de la ruta para las listas
-	//TEMPLATE_TABLE_NAME
-	//TEMPLATE_FIELDS_TABLE_HEADERS
-	//TEMPLATE_FIELDS_TABLE_VALUES
-
+		}`;
+	
 	return table;
 }
 
@@ -379,7 +371,7 @@ function getInputField(field_info,table_snake_case,field_names,constraints)
 	}
 	else if( /^text/.test( field_info.Type ) || /^mediumtext/.test( field_info.Type ) )
 	{
-		return `<textearea name="${name}" [(ngModel)]="${ngmodel}"></textarea>`;
+		return `<textarea name="${name}" [(ngModel)]="${ngmodel}"></textarea>`;
 	}
 	else if( /^enum/.test( field_info.Type ) )
 	{
