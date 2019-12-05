@@ -120,7 +120,7 @@ export interface SearchObject<T>
 				params = params.set(i+'<~',''+searchObj.le[i] );
 
 		for(let i in searchObj.csv )
-			if( searchObj.csv[i].length )
+			if( Array.isArray( searchObj.csv[i] ) && searchObj.csv[i].length > 0 )
 				params = params.set(i+',',''+searchObj.csv[i].join(','));
 
 		for(let i in searchObj.lk )

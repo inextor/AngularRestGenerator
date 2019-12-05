@@ -115,7 +115,8 @@ createDirectory('./dist/').then(()=>
 		duplas.push([ /TEMPLATE_MODEL_IMPORTS/g, tinfo.import_models ]);
 		duplas.push([ /TABLE_NAME/g,  tinfo.name ]);
 
-		let list_template_component_html	= replace_template( responses.list_template_content_ts, duplas );
+		console.log( responses.list_template_content_html );
+		let list_template_component_html	= replace_template( responses.list_template_component_html, duplas );
 		let list_template_content_ts		= replace_template( responses.list_template_component_ts, duplas );
 		let save_template_content_ts		= replace_template( responses.save_template_component_ts, duplas );
 		let save_template_content_html 		= replace_template( responses.save_template_component_html, duplas );
@@ -148,7 +149,6 @@ createDirectory('./dist/').then(()=>
 				.replace(/TEMPLATE_OBJ_REST_DECLARATION/g,rest_declarations )
 				.replace(/TEMPLATE_OBJ_REST_INITIALIZATION/g,rest_initialization );
 
-//		console.log( routeImports.join('\n') );
     let app_routing_module_ts_content = responses.app_routing_module_ts.replace(/ROUTE_IMPORT_CLASES/g,routeImports.join('\n'))
 		.replace(/ROUTES_DECLARATION/g,routes.join(','))
 
@@ -172,8 +172,6 @@ createDirectory('./dist/').then(()=>
 function replace_template(template,duplas)
 {
 	let result = '';//template.replace(duplas.search,duplas.replacement);
-	//console.log( template );
-	//console.log( duplas );
 
 	duplas.forEach((i,index)=>
 	{
@@ -183,10 +181,8 @@ function replace_template(template,duplas)
 		let str = index == 0 ? template : result;
 		if( str == undefined || str == null)
 		{
-			console.log('STR IS NULL OR UNDEFINDED', i);
 			return;
 		}
-		//console.log('str is', str );
 		result = str.replace( search, replacement );
 	});
 	return result;

@@ -18,6 +18,8 @@ TEMPLATE_MODEL_IMPORTS
 
 export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent implements OnInit {
 
+	TABLE_NAME_list:TABLE_NAME_SNAKE_CASE_UPPERCASE[] = [];
+
 	FORK_JOINS_DECLARATION_LIST
 
 	TABLE_NAME_search:SearchObject<TABLE_NAME_SNAKE_CASE_UPPERCASE> = {
@@ -80,6 +82,7 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
             }
         }
 
+		console.log( search );
 		this.router.navigate(['/list-TABLE_NAME_DASH'],{queryParams: search});
 	}
 }

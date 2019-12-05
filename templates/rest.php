@@ -16,12 +16,7 @@ class Service extends SuperRest
 		App::connect();
 		$this->setAllowHeader();
 
-		$like_constraints = $this->getLikeConstraints( $key_constraints );
-		$equal_constrints = $this->getEqualConstraints( $key_constraints );
-		$bigger_than_constraints = $this->getBiggerThanConstraints( $key_constraints );
-		$smallest_than_constraints = $this->getSmallestThanConstraints( $key_constraints );
-
-		$constraints = array_merge( $like_constraints, $equal_constrints, $bigger_than_constraints, $smallest_than_constraints );
+		$constraints = $this->getAllConstraints( {{TABLE_NAME}}::getAllProperties() );
 
 		$constraints_str = count( $constraints ) > 0 ? join(' AND ',$constraints ) : '1';
 		$paginacion = $this->getPaginationInfo($_GET['page'],$_GET['limit'],50);
