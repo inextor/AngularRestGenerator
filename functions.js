@@ -30,7 +30,7 @@ function toCamelCaseUpperCase(s)
 	});
 }
 
-function toCamel(s)
+function toCamelCase(s)
 {
 	return s.replace(/([-_][a-z])/ig, ($1) => {
 		return $1.toUpperCase()
@@ -69,9 +69,66 @@ function createAngularProject(app_name)
 
 }
 
+
+function getInputField(field_info,table_name,constraints)
+{
+	let ngmodel = table_name+'.'+field_info.Field;
+	let name = field_info.Field;
+
+	if( constraints && constraints.some( f=> name == f.COLUMN_NAME ) )
+	{
+		let f = constraints.find( f=> name == f.COLUMN_NAME );
+
+		return `<select name="${name}" [(ngModel)]="${ngmodel}">\n
+					<option *ngFor="let c of ${f.REFERENCED_TABLE_NAME}_list" [value]="c.${f.REFERENCED_COLUMN_NAME}">{{c.${f.REFERENCED_COLUMN_NAME}}}</option>
+				</select>`;
+	}
+
+	if( /^int/.test( field_info.Type ) ||  /^double/.test(field_info.Type ) ||/^decimal/.test( field_info.Type ) || /^float/.test(field_info.Type) || /^tinyint/.test(field_info.Type) || /^bigint/.test(field_info.Type) )
+	{
+		return `<input type="number" name="${name}" [(ngModel)]="${ngmodel}">`;
+	}
+	else if( /^varchar/.test( field_info.Type ) )
+	{
+		return `<input type="text" name="${name}" [(ngModel)]="${ngmodel}">\n`;
+	}
+	else if( /^timestamp/.test(field_info.Type ) || /^datetime/.test(field_info.Type) )
+	{
+		return `<input type="datetime-local" name="${name}" [(ngModel)]="${ngmodel}">`;
+	}
+	else if( /^date/.test( field_info.Type ) )
+	{
+		return `<input type="date" name="${name}" [(ngModel)]="${ngmodel}">`;
+	}
+	else if( /^time/.test( field_info.Type ) )
+	{
+		return `<input type="time" name="${name}" [(ngModel)]="${ngmodel}">`;
+	}
+	else if( /^text/.test( field_info.Type ) || /^mediumtext/.test( field_info.Type ) )
+	{
+		return `<textarea name="${name}" [(ngModel)]="${ngmodel}"></textarea>`;
+	}
+	else if( /^enum/.test( field_info.Type ) )
+	{
+		let options = field_info.Type.replace(/enum\((.*)\)/,'$1').split(',');
+
+		let s =`<select name="${name}" [(ngModel)]="${ngmodel}">\n`;
+		options.forEach((i)=>
+		{
+			let t = i.replace(/'(.*)'/,'$1');
+			s+='\t\t\t\t<option value="'+t+'">'+t+'</option>\n';
+		});
+		s+='</select>';
+		return s;
+	}
+	//else console.log( field_info.Type );
+}
+
 exports.createDirectory = createDirectory;
 exports.toCamelCaseUpperCase = toCamelCaseUpperCase;
-exports.toCamel = toCamel;
+exports.toCamelCase = toCamelCase;
 exports.getSnakeCaseUpperCase = getSnakeCaseUpperCase;
 exports.getInputType = getInputType;
+exports.getInputField = getInputField;
+
 

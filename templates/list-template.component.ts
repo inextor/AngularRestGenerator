@@ -1,7 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RestService } from '../../services/rest.service';
 import { SearchObject } from '../../services/ObjRest';
-import { TABLE_NAME_SNAKE_CASE_UPPERCASE } from '../../models/RestModels';
 import { Router,ActivatedRoute } from "@angular/router"
 import { BaseComponent } from '../base/base.component';
 import { Location } from	'@angular/common';
@@ -9,7 +8,7 @@ import { forkJoin } from 'rxjs';
 import { of } from 'rxjs';
 import { Title } from '@angular/platform-browser';
 
-FORK_JOIN_IMPORTS
+TEMPLATE_MODEL_IMPORTS
 
 @Component({
 	selector: 'app-TABLE_NAME_DASH',
@@ -17,10 +16,9 @@ FORK_JOIN_IMPORTS
 	styleUrls: ['./list-TABLE_NAME_DASH.component.css']
 })
 
-export class ListTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements OnInit {
+export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent implements OnInit {
 
-	TABLE_NAMEs:TABLE_NAME_SNAKE_CASE_UPPERCASE[] = [];
-	FORK_JOIN_DECLARATION
+	FORK_JOIN_DECLARATION_LIST
 
 	TABLE_NAME_search:SearchObject<TABLE_NAME_SNAKE_CASE_UPPERCASE> = {
 
@@ -49,7 +47,7 @@ export class ListTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements
 
 			this.titleService.setTitle('TABLE_NAME');
 
-			TABLE_SEARCH_PARAMS
+			TEMPLATE_SEARCH_PARAMS
 
 			console.log('Search', this.TABLE_NAME_search);
 
@@ -58,9 +56,9 @@ export class ListTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements
 
 
 			this.is_loading = true;
-			this.TABLE_NAME_search.page = params.get('page') ? parseInt( params.get('page') ) : 0;
+			this.TABLE_NAME_search.page =  'page' in params ? params.page : 0;
 
-			FORK_JOIN_CONSTRAINTS
+			FORK_JOINS_LIST
 
 		});
 	}

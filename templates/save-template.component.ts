@@ -7,15 +7,15 @@ import { forkJoin } from 'rxjs';
 FORK_JOIN_IMPORTS
 
 @Component({
-	selector: 'app-save-DASH_TABLE_NAME',
-	templateUrl: './save-DASH_TABLE_NAME.component.html',
-	styleUrls: ['./save-DASH_TABLE_NAME.component.css']
+	selector: 'app-save-TABLE_NAME_DASH',
+	templateUrl: './save-TABLE_NAME_DASH.component.html',
+	styleUrls: ['./save-TABLE_NAME_DASH.component.css']
 })
-export class SaveTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements OnInit {
+export class SaveTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent implements OnInit {
 
-	TABLE_NAME:SNAKE_CASE_UPPERCASE	= {};
+	TABLE_NAME:TABLE_NAME_SNAKE_CASE_UPPERCASE	= {};
 
-	FORK_JOIN_DECLARATION
+	FORK_JOIN_DECLARATION_SAVE
 
 	ngOnInit()
 	{
@@ -23,14 +23,7 @@ export class SaveTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements
 		{
 			let id = params.get('id') ==null ? null : parseInt(params.get('id') );
 
-			if( id != null )
-			{
-				FORK_JOIN_ID
-			}
-			else
-			{
-				FORK_JOIN_CONSTRAINTS
-			}
+			FORK_JOINS_SAVE
 		});
 	}
 
@@ -42,14 +35,14 @@ export class SaveTABLE_NAME_CAMEL_CASEComponent extends BaseComponent implements
 		{
 			this.rest.TABLE_NAME.update( this.TABLE_NAME ).subscribe((TABLE_NAME)=>{
 				this.is_loading = false;
-				this.router.navigate(['/list-DASH_TABLE_NAME']);
+				this.router.navigate(['/list-TABLE_NAME_DASH']);
 			},(error)=>this.showError(error));
 		}
 		else
 		{
 			this.rest.TABLE_NAME.create( this.TABLE_NAME ).subscribe((TABLE_NAME)=>{
 				this.is_loading = false;
-				this.router.navigate(['/list-DASH_TABLE_NAME']);
+				this.router.navigate(['/list-TABLE_NAME_DASH']);
 			},(error)=>this.showError(error));
 		}
 	}

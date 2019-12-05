@@ -25,10 +25,10 @@ TEMPLATE_OBJ_REST_DECLARATION
 		this.urlBase = 'http://';
 
 		if( window.location.hostname.indexOf('127.0.0.1' ) == 0 )
-			this.urlBase = 'http://hospital.nextor.mx';
+			this.urlBase = 'http://127.0.0.1/rest_test';
 
 		if( window.location.hostname.indexOf('localhost') == 0 )
-			this.urlBase = 'http://127.0.0.1/CentroMedico';
+			this.urlBase = 'http://127.0.0.1/rest_test';
 
 TEMPLATE_OBJ_REST_INITIALIZATION
 	}
