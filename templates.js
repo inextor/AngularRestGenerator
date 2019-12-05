@@ -161,18 +161,18 @@ module.exports = class Template
 		let observables	 = [];
 		let assignations	= [];
 
-		fork_joins_list.forEach((b)=> observables.push( `\t\t\t\tthis.rest.${b}.getAll({})\n` ) );
-		fork_joins_list.forEach((b)=> assignations.push( `\t\t\tthis.${b}_list = responses[ fj_index++ ];\n`) );
+		fork_joins_list.forEach((b)=> observables.push( `\n\t\t\t\tthis.rest.${b}.getAll({})` ) );
+		fork_joins_list.forEach((b)=> assignations.push( `this.${b}_list = responses[ fj_index++ ];`) );
 
 		return `
-				forkJoin([
-					${observables.join(',')}
-				])
-				.subscribe((responses)=>
-				{
-					let fj_index = 0;
-					${assignations.join('\n')}
-				});`;
+			forkJoin([
+				${observables.join(',')}
+			])
+			.subscribe((responses)=>
+			{
+				let fj_index = 0;
+				${assignations.join('\n\t\t\t\t')}
+			});`;
 	}
 
 	getForkJoinDeclaration(table, fork_join_table_names )

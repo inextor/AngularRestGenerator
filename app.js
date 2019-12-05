@@ -108,8 +108,8 @@ createDirectory('./dist/').then(()=>
 		duplas.push([ /TEMPLATE_SEARCH_FIELDS/g, tinfo.search_fields ]);
 		duplas.push([ /TEMPLATE_SEARCH_PARAMS/g, tinfo.search_params ]);
 		duplas.push([ /TEMPLATE_SAVE_INPUTS/g, tinfo.table_save_inputs ]);
-		duplas.push([ /FORK_JOINS_LIST/g,  tinfo.fork_joins_list ]);
-		duplas.push([ /FORK_JOINS_SAVE/g,  tinfo.fork_joins_save ]);
+		duplas.push([ /FORK_JOINS_LIST/g,  tinfo.fork_joins_list_string ]);
+		duplas.push([ /FORK_JOINS_SAVE/g,  tinfo.fork_joins_save_string ]);
 		duplas.push([ /FORK_JOINS_DECLARATION_SAVE/g, tinfo.fork_join_declaration_save]);
 		duplas.push([ /FORK_JOINS_DECLARATION_LIST/g, tinfo.fork_join_declaration_list ]);
 		duplas.push([ /TEMPLATE_MODEL_IMPORTS/g, tinfo.import_models ]);
