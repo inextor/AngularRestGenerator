@@ -97,8 +97,7 @@ createDirectory('./dist/').then(()=>
 
 		let duplas = [];
 
-		duplas.push([ /TABLE_NAME_SPACES/g, tinfo.name_spaces ]);
-		duplas.push([ /TABLE_NAME_SPACES/g, tinfo.name_spaces ]);
+		duplas.push([ /TABLE_NAME_SPACES/g, tinfo.name.replace(/_/g,' ')]);
 		duplas.push([ /TEMPLATE_SEARCH_FIELDS/g, tinfo.search_fields ]);
 		duplas.push([ /TABLE_NAME_DASH/g,tinfo.dash_table_name ]);
 		duplas.push([ /TABLE_NAME_SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase ]);
@@ -173,8 +172,8 @@ createDirectory('./dist/').then(()=>
 function replace_template(template,duplas)
 {
 	let result = '';//template.replace(duplas.search,duplas.replacement);
-	console.log( template );
-	console.log( duplas );
+	//console.log( template );
+	//console.log( duplas );
 
 	duplas.forEach((i,index)=>
 	{
@@ -184,10 +183,10 @@ function replace_template(template,duplas)
 		let str = index == 0 ? template : result;
 		if( str == undefined || str == null)
 		{
-			console.log('STR IS NULL OR UNDEFINDED');
+			console.log('STR IS NULL OR UNDEFINDED', i);
 			return;
 		}
-		console.log('str is', str );
+		//console.log('str is', str );
 		result = str.replace( search, replacement );
 	});
 	return result;

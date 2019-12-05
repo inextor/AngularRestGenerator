@@ -53,11 +53,11 @@ module.exports = class Template
 		return '\t\tthis.'+table.name+'\t= new ObjRest<'+table.snake_case_uppercase+'>(`${this.urlBase}/'+table.name+'.php`,http);\n';
 	}
 
-	getListSearchInputs(fields,table_name, constraints )
+	getListSearchInputs(fields,table_name, contraints )
 	{
 		return fields.reduce((a,field)=>
 		{
-			let input_field = getInputField(field,table_name+'search.eq',constraints);
+			let input_field = getInputField(field,table_name+'search.eq',contraints);
 
 			return a+`\t\t\t<div class="mt-3 mb-3">
 				<label class="">${field.Field}</label>
@@ -90,8 +90,8 @@ module.exports = class Template
 				if( this.${table.name}.id )
 				{
 					forkJoin([
-						${table.fork_join_observable.join(',\n\t\t\t\t\t')}
 						this.rest.${table.name}.get( id ),
+						this.rest.${fork_joins_save[0]}.getAll({})
 					])
 					.subscribe((responses)=>
 					{
@@ -112,22 +112,22 @@ module.exports = class Template
 
 
 		let observables	 = [];
-		let asignations	= [];
+		let assignations	= [];
 
 		fork_joins_save.forEach((b)=> observables.push( `\t\t\t\tthis.rest.${b}.getAll({})\n`) );
 		fork_joins_save.forEach((b)=> assignations.push( `\t\t\tthis.${b}_list = responses[ fj_index++ ];\n` ));
 
 		return `
-				if( this.${table_name}.id )
+				if( this.${table.name}.id )
 				{
 					forkJoin([
-						this.rest.${table_name}.get( this.${table_name}.id )
+						this.rest.${table.name}.get( this.${table.name}.id )
 						,${observables.join(',')}
 					])
 					.subscribe((responses)=>
 					{
 						let fj_index = 0;
-						this.${table_name}= responses[fj_index++];
+						this.${table.name}= responses[fj_index++];
 						${assignations.join('\n')}
 					});
 				}
@@ -159,7 +159,7 @@ module.exports = class Template
 
 
 		let observables	 = [];
-		let asignations	= [];
+		let assignations	= [];
 
 		fork_joins_list.forEach((b)=> observables.push( `\t\t\t\tthis.rest.${b}.getAll({})\n` ) );
 		fork_joins_list.forEach((b)=> assignations.push( `\t\t\tthis.${b}_list = responses[ fj_index++ ];\n`) );
@@ -177,18 +177,18 @@ module.exports = class Template
 
 	getForkJoinDeclaration(table, fork_join_table_names )
 	{
-		console.log('typeof',typeof( fork_join_table_names ) );
+		//console.log('typeof',typeof( fork_join_table_names ) );
 		return fork_join_table_names.reduce((a,b)=>
 		{
 			return a+`\t\t\t\tthis.${b}_list:${getSnakeCaseUpperCase(b)}[] = [];\n`;
 		},'');
 	}
 
-	getSaveInputs(fields,table_name,constraints)
+	getSaveInputs(fields,table_name,contraints)
 	{
 		return fields.reduce((a,field)=>
 		{
-			let input_field = getInputField(field,table_name,constraints);
+			let input_field = getInputField(field,table_name,contraints);
 
 			return a+`\t\t\t<div class="mt-3 mb-3">
 				<label class="">${field.Field}</label>
@@ -204,8 +204,8 @@ module.exports = class Template
 		fields.forEach((i)=>
 		{
 			let field_name = i.Field;
-			if( !(field_name) )
-				console.log('Field Name OBJ is',JSON.stringify( i, null,'\t'));
+			//if( !(field_name) )
+			//	console.log('Field Name OBJ is',JSON.stringify( i, null,'\t'));
 
 			k.forEach(k => array.push( 'this.'+field_name+'_search.'+field_name+'\t= "eq.'+field_name+'" in params ?params["eq.'+field_name+'"]:null;') );
 		});
@@ -237,7 +237,7 @@ module.exports = class Template
 	createTableInfo( i, info )
 	{
 		let table = {};
-		let constraints = info.constraints;
+		let contraints = info.contraints;
 		let fields = [];
 
 		table.name					= i;
@@ -253,18 +253,18 @@ module.exports = class Template
 
 		table.import_both.push( table.name );
 
-		console.log('constraints',info.constraints );
+		//console.log('contraints',Object.keys(info ) );
 		info.contraints.forEach((k,index)=>
 		{
-			console.log( k );
-			if( table.fork_joins_save.indexOf( K.REFERENCED_TABLE_NAME  ) == -1 )
-				table.fork_joins_save.push( K.REFERENCED_TABLE_NAME );
+			//console.log( k );
+			if( table.fork_joins_save.indexOf( k.REFERENCED_TABLE_NAME  ) == -1 )
+				table.fork_joins_save.push( k.REFERENCED_TABLE_NAME );
 
-			if( table.fork_joins_list.indexOf( K.REFERENCED_TABLE_NAME  ) == -1 )
-				table.fork_joins_list.push( K.REFERENCED_TABLE_NAME );
+			if( table.fork_joins_list.indexOf( k.REFERENCED_TABLE_NAME  ) == -1 )
+				table.fork_joins_list.push( k.REFERENCED_TABLE_NAME );
 
-			if( table.import_both.indexOf( K.REFERENCED_TABLE_NAME  ) == -1 )
-				table.import_both( K.REFERENCED_TABLE_NAME );
+			if( table.import_both.indexOf( k.REFERENCED_TABLE_NAME  ) == -1 )
+				table.import_both.push( k.REFERENCED_TABLE_NAME );
 		});
 
 
@@ -274,7 +274,7 @@ module.exports = class Template
 		table.table_list_values		= this.getTableListValues( info.fields, table.name );
 		table.table_list_headers	= this.getTableListHeaders( info.fields );
 		table.table_save_inputs		= this.getSaveInputs( info.fields, table.name );
-		table.search_fields			= this.getListSearchInputs( info.fields, table.name,table.constraints );
+		table.search_fields			= this.getListSearchInputs( info.fields, table.name, contraints );
 
 		table.import_models			= this.getImportModels( table.import_both );
 
