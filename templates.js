@@ -180,8 +180,8 @@ module.exports = class Template
 		//console.log('typeof',typeof( fork_join_table_names ) );
 		return fork_join_table_names.reduce((a,b)=>
 		{
-			return a+`\t\t\t\tthis.${b}_list:${getSnakeCaseUpperCase(b)}[] = [];\n`;
-		},'');
+			return a+`\tthis.${b}_list:${getSnakeCaseUpperCase(b)}[] = [];\n`;
+		},'\n');
 	}
 
 	getSaveInputs(fields,table_name,contraints)
@@ -210,7 +210,7 @@ module.exports = class Template
 			k.forEach(k => array.push( 'this.'+field_name+'_search.'+field_name+'\t= "'+k+'.'+field_name+'" in params ?params["'+k+'.'+field_name+'"]:null;') );
 		});
 
-		return array.join('\n');
+		return array.join('\n\t\t\t');
 	}
 	getTableListValues(fields,table_name)
 	{
