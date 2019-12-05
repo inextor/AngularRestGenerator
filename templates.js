@@ -17,11 +17,12 @@ module.exports = class Template
 	//			${input_field}
 	//		</div>\n`);
 	//}
-	getModel( table )
+
+	getModel( table, field_str )
 	{
 		let modelFields ={};
 		return `	export interface ${table.snake_case_uppercase} {
-			${model_fields}
+			${field_str}
 		}`;
 	}
 	getImportRoutes( table )
@@ -184,6 +185,16 @@ module.exports = class Template
 		},'\n');
 	}
 
+	getFields(fields)
+	{
+		let fff = [];
+
+		fields.forEach(f=>{
+			fff.push(f.Field+'?\t:'+getInputType( f.Type )+';');
+		});
+
+		return fff.join('\n\t\t\t,');
+	}
 	getSaveInputs(fields,table_name,contraints)
 	{
 		return fields.reduce((a,field)=>
@@ -268,9 +279,11 @@ module.exports = class Template
 		});
 
 		table.route_import 			= this.getImportRoutes( table );
-		table.route					= this.getRoutes(table);
+		let field_str					= this.getFields( info.fields );
+		table.model					= this.getModel( table, field_str );
 
-		let model_fields 			= '';
+		table.route					= this.getRoutes(table);
+		console.log( table.model ,field_str );
 
 		table.search_params			= this.getSearchParams( info.fields );
 		table.table_list_values		= this.getTableListValues( info.fields, table.name );
@@ -278,13 +291,19 @@ module.exports = class Template
 		table.table_save_inputs		= this.getSaveInputs( info.fields, table.name );
 		table.search_fields			= this.getListSearchInputs( info.fields, table.name, contraints );
 
-		table.import_models			= this.getImportModels( table.import_both );
+		table.import_model			= this.getImportModels( table.import_both );
 
 		table.fork_joins_save_string  	= this.getForkJoinsSave(table, table.fork_joins_save );
 		table.fork_joins_list_string	= this.getForkJoinLists(table, table.fork_joins_list );
 
 		table.fork_join_declaration_list 	= this.getForkJoinDeclaration( table,table.fork_joins_list );
 		table.fork_join_declaration_save	= this.getForkJoinDeclaration( table,table.fork_joins_save );
+
+		table.obj_rest_import			= `import {${table.snake_case_uppercase}} from '../models/RestModels';\n`;
+		table.obj_rest_declaration		= `\tpublic ${table.snake_case}:ObjRest<${table.snake_case_uppercase}>;\n`;
+		table.obj_rest_initialization	= '\t\tthis.'+table.snake_case+'\t= new ObjRest<'+table.snake_case_uppercase+'>(`${this.urlBase}/bitacora.php`,http);\n';
+
+
 		return table;
 	}
 }
