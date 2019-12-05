@@ -1,10 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { RestService } from '../../services/rest.service';
-import { SNAKE_CASE_UPPERCASE } from '../../models/RestModels';
 import { Router, ActivatedRoute } from "@angular/router";
 import { BaseComponent } from '../base/base.component';
 import { forkJoin } from 'rxjs';
-FORK_JOIN_IMPORTS
+TEMPLATE_MODEL_IMPORTS
 
 @Component({
 	selector: 'app-save-TABLE_NAME_DASH',
@@ -15,7 +14,7 @@ export class SaveTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 
 	TABLE_NAME:TABLE_NAME_SNAKE_CASE_UPPERCASE	= {};
 
-	FORK_JOIN_DECLARATION_SAVE
+	FORK_JOINS_DECLARATION_SAVE
 
 	ngOnInit()
 	{
