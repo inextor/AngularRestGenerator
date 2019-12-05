@@ -114,32 +114,32 @@ module.exports = class Template
 		let observables	 = [];
 		let assignations	= [];
 
-		fork_joins_save.forEach((b)=> observables.push( `\t\t\t\tthis.rest.${b}.getAll({})\n`) );
-		fork_joins_save.forEach((b)=> assignations.push( `\t\t\tthis.${b}_list = responses[ fj_index++ ];\n` ));
+		fork_joins_save.forEach((b)=> observables.push( `this.rest.${b}.getAll({})`) );
+		fork_joins_save.forEach((b)=> assignations.push( `this.${b}_list = responses[ fj_index++ ];` ));
 
 		return `
 				if( this.${table.name}.id )
 				{
 					forkJoin([
 						this.rest.${table.name}.get( this.${table.name}.id )
-						,${observables.join(',')}
+						,${observables.join('\n\t\t\t\t\t\t,')}
 					])
 					.subscribe((responses)=>
 					{
 						let fj_index = 0;
 						this.${table.name}= responses[fj_index++];
-						${assignations.join('\n')}
+						${assignations.join('\n\t\t\t\t\t\t')}
 					});
 				}
 				else
 				{
 					forkJoin([
-						${observables.join(',')}
+						${observables.join('\n\t\t\t\t\t\t,')}
 					])
 					.subscribe((response)=>
 					{
 						let fj_index = 0;
-						${assignations.join('\n')}
+						${assignations.join('\n\t\t\t\t\t\t')}
 					});
 				}`;
 	}
@@ -267,8 +267,10 @@ module.exports = class Template
 				table.import_both.push( k.REFERENCED_TABLE_NAME );
 		});
 
+		table.route_import 			= this.getImportRoutes( table );
+		table.route					= this.getRoutes(table);
 
-		let model_fields = '';
+		let model_fields 			= '';
 
 		table.search_params			= this.getSearchParams( info.fields );
 		table.table_list_values		= this.getTableListValues( info.fields, table.name );
