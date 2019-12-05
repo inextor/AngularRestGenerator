@@ -27,7 +27,7 @@ module.exports = class Template
 	getImportRoutes( table )
 	{
 		return 'import {Save'+toCamelCaseUpperCase( table.name )+ 'Component} from \'./pages/save-'+table.dash_table_name+'/save-'+ table.dash_table_name+'.component\';\n'+
-				'import {List'+toCamelCaseUpperCase( table.name )+ 'Component} from \'./pages/list-'+ table.dash_table_name+'/list-'+table.dash_table_name+'.component\';'
+				'import {List'+toCamelCaseUpperCase( table.name )+ 'Component} from \'./pages/list-'+ table.dash_table_name+'/list-'+table.dash_table_name+'.component\';\n'
 	}
 	getRoutes( table )
 	{
@@ -37,7 +37,7 @@ module.exports = class Template
 
 	getImportModels(models)
 	{
-		return models.reduce((a,b)=>{return a+'import {'+getSnakeCaseUpperCase( b )+'} from \'../../models/RestModels\''},'\n');
+		return models.reduce((a,b)=>{return a+'import {'+getSnakeCaseUpperCase( b )+'} from \'../../models/RestModels\';\n'},'\n');
 	}
 
 	getObjRestImport(table)
@@ -207,7 +207,7 @@ module.exports = class Template
 			//if( !(field_name) )
 			//	console.log('Field Name OBJ is',JSON.stringify( i, null,'\t'));
 
-			k.forEach(k => array.push( 'this.'+field_name+'_search.'+field_name+'\t= "eq.'+field_name+'" in params ?params["eq.'+field_name+'"]:null;') );
+			k.forEach(k => array.push( 'this.'+field_name+'_search.'+field_name+'\t= "'+k+'.'+field_name+'" in params ?params["'+k+'.'+field_name+'"]:null;') );
 		});
 
 		return array.join('\n');
