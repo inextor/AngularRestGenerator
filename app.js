@@ -84,7 +84,7 @@ createDirectory('./dist/').then(()=>
 		console.log('ng g c pages/list-'+tinfo.dash_table_name );
 		console.log('ng g c pages/save-'+tinfo.dash_table_name );
 
-		routes.push( tinfo.routes );
+		routes.push( tinfo.route );
 		routeImports.push( tinfo.route_import );
 
 		let phpfile = responses.restphp.replace(/{{TABLE_NAME}}/g,tinfo.name);
