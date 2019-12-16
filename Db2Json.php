@@ -1,5 +1,5 @@
 <?php
-namespace CENTRO_MEDICO;
+namespace AngularRestGenerator;
 
 include_once( __DIR__.'/app.php' );
 include_once( __DIR__.'/SuperRest.php');
@@ -17,7 +17,7 @@ $database_info	= array();
 
 foreach($tables as $table)
 {
-	$name = $table['Tables_in_centrosmedicos'];
+	$name = $table['Tables_in_'.$database_name ];
 	$constraints		= getJsonDBStructure($database_name,$name);
 	$fields_info		= DBTable::getArrayFromQuery('DESCRIBE `'.$name.'`;');
 	$database_info[$name]	= array( 'contraints'=>$constraints, 'fields'=>$fields_info);
