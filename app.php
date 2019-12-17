@@ -8,7 +8,6 @@ include_once( __DIR__.'/akou/src/DBTable.php' );
 include_once( __DIR__.'/akou/src/RestController.php' );
 include_once( __DIR__.'/akou/src/ArrayUtils.php' );
 include_once( __DIR__.'/akou/src/Image.php' );
-include_once( __DIR__.'/SuperRest.php');
 
 use \akou\DBTable;
 use \akou\Utils;
@@ -42,29 +41,13 @@ class App
 	{
 		DBTable::$_parse_data_types = TRUE;
 
-		 if( !isset( $_SERVER['SERVER_ADDR'])  || $_SERVER['SERVER_ADDR'] =='127.0.0.1' )
-		{
-				$__user		 = 'root';
-				$__password	 = 'asdf';
-				$__db		   = 'centrosmedicos';
-				$__host		 = '127.0.0.1';
-				$__port		 = '3306';
-				app::$is_debug	= true;
-		}
-		else
-		{
-				Utils::$DEBUG_VIA_ERROR_LOG	= FALSE;
-				Utils::$LOG_LEVEL			= Utils::LOG_LEVEL_ERROR;
-				Utils::$DEBUG				= FALSE;
-				Utils::$DB_MAX_LOG_LEVEL	= Utils::LOG_LEVEL_ERROR;
-				app::$is_debug	= false;
+		$__user		 = 'root';
+		$__password	 = 'asdf';
+		$__db		   ='punto_venta';
+		$__host		 = '127.0.0.1';
+		$__port		 = '3306';
+		app::$is_debug	= true;
 
-				$__user		 = 'test';
-				$__password	 = 'asdf';
-				$__db		 = 'test';
-				$__host		 = '127.0.0.1';
-				$__port		 = '3306';
-		}
 
 		$mysqli = new \mysqli($__host, $__user, $__password, $__db, $__port );
 		if( $mysqli->connect_errno )
@@ -78,6 +61,27 @@ class App
 		$mysqli->set_charset('utf8');
 
 		DBTable::$connection				= $mysqli;
-		DBTable::importDbSchema('CENTRO_MEDICO');
+		static::createSchemaJson( $__db );
+	}
+
+	public static function createSchemaJson($database_name)
+	{
+		$tables			= DBTable::getArrayFromQuery('SHOW TABLES');
+		$database_info	= array();
+
+		foreach($tables as $table)
+		{
+			$table_name			= $table['Tables_in_'.$database_name ];
+			//$constraints		= getJsonDBStructure($database_name,$name);
+			$sql_constraints 	= 'SELECT * FROM INFORMATION_SCHEMA.KEY_COLUMN_USAGE WHERE CONSTRAINT_SCHEMA="'.$database_name.'" AND TABLE_NAME="'.$table_name.'" AND REFERENCED_COLUMN_NAME IS NOT NULL';
+			$constraints 		= DBTable::getArrayFromQuery( $sql_constraints );
+
+			$fields_info		= DBTable::getArrayFromQuery('DESCRIBE `'.$table_name.'`;');
+			$database_info[$table_name]	= array( 'contraints'=>$constraints, 'fields'=>$fields_info);
+
+		}
+
+		echo json_encode( $database_info );
 	}
 }
+app::connect();
