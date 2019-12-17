@@ -1,9 +1,9 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders,HttpParams,HttpErrorResponse } from '@angular/common/http';
-import { Observable, BehaviorSubject } from 'rxjs';
+import { Observable, BehaviorSubject,forkJoin, fromEvent,of} from 'rxjs';
 import { map } from 'rxjs/operators';
-import { catchError } from 'rxjs/operators';
 import { ObjRest,RestResponse } from './ObjRest';
+import { catchError,flatMap } from 'rxjs/operators';
 
 TEMPLATE_IMPORT_MODELS_TEMPLATE
 
@@ -14,6 +14,7 @@ TEMPLATE_IMPORT_MODELS_TEMPLATE
 export class RestService {
 
 	urlBase:string = '';
+	public keyUpObserver:Observable<KeyboardEvent>;
 
 
 TEMPLATE_OBJ_REST_DECLARATION
@@ -23,6 +24,7 @@ TEMPLATE_OBJ_REST_DECLARATION
 	{
 		//Produccion por cambiarx`x
 		this.urlBase = 'http://';
+		this.keyUpObserver = fromEvent<KeyboardEvent>( window.document.body, 'keyup' );
 
 		if( window.location.hostname.indexOf('127.0.0.1' ) == 0 )
 			this.urlBase = 'http://127.0.0.1/rest_test';
@@ -30,10 +32,11 @@ TEMPLATE_OBJ_REST_DECLARATION
 		if( window.location.hostname.indexOf('localhost') == 0 )
 			this.urlBase = 'http://127.0.0.1/rest_test';
 
+
 TEMPLATE_OBJ_REST_INITIALIZATION
 	}
 
-	uploadImage(file:File,es_privada:boolean=false):Observable<Imagen>
+	uploadImage(file:File,es_privada:boolean=false):Observable<Image>
 	{
 		let fd = new FormData();
 		fd.append('image',file, file.name);

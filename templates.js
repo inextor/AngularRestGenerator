@@ -60,7 +60,7 @@ module.exports = class Template
 		{
 			let input_field = getInputField(field,table_name+'_search.eq',contraints);
 
-			return a+`\t\t\t<div class="mt-3 mb-3">
+			return a+`\t\t\t<div class="mt-3 mb-3 form-group">
 				<label class="">${field.Field}</label>
 				${input_field}
 			</div>\n`
@@ -300,7 +300,10 @@ module.exports = class Template
 
 		table.obj_rest_import			= `import {${table.snake_case_uppercase}} from '../models/RestModels';\n`;
 		table.obj_rest_declaration		= `\tpublic ${table.snake_case}:ObjRest<${table.snake_case_uppercase}>;\n`;
+
 		table.obj_rest_initialization	= '\t\tthis.'+table.snake_case+'\t= new ObjRest<'+table.snake_case_uppercase+'>(`${this.urlBase}/'+table.name+'.php`,http);\n';
+		table.link_list	= '<li class="nav-item"> <a class="nav-link"  routerLink="/list-'+table.name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
+		table.link_save = '<li class="nav-item"> <a class="nav-link"  routerLink="/save-'+table.name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
 
 
 		return table;

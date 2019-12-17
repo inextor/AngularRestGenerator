@@ -25,6 +25,7 @@ createDirectory('./dist/').then(()=>
 	return Promise.all([
 		createDirectory('./dist/angular/pages/base')
 		,createDirectory('./dist/angular/components/loading')
+		,createDirectory('./dist/angular/components/navigation-menu')
 	]);
 })
 .then(()=>
@@ -37,6 +38,8 @@ createDirectory('./dist/').then(()=>
 	promises.push( fs.readFile('./templates/list-template.component.html',{ encoding:'utf8'}));
 	promises.push( fs.readFile('./templates/list-template.component.ts',{ encoding:'utf8'}));
 	promises.push( fs.readFile('./templates/app-routing.module.ts',{ encoding:'utf8'}));
+	promises.push( fs.readFile('./templates/navigation-menu.component.html',{encoding:'utf8'}));
+
 	promises.push( fs.copyFile('./templates/ObjRest.ts','./dist/angular/services/ObjRest.ts') );
 	promises.push( fs.copyFile('./templates/base.component.ts','./dist/angular/pages/base/base.component.ts'));
 	promises.push( fs.copyFile('./templates/loading.component.ts','./dist/angular/components/loading/loading.component.ts'));
@@ -58,6 +61,7 @@ createDirectory('./dist/').then(()=>
 		,list_template_component_html	: fileContents[4]
 		,list_template_component_ts		: fileContents[5]
 		,app_routing_module_ts			: fileContents[6]
+		,navigation_menu_template		: fileContents[7]
 	}
 })
 .then((responses)=>
@@ -69,11 +73,17 @@ createDirectory('./dist/').then(()=>
 	let rest_declarations	= '';
 	let rest_initialization	= '';
 	let models_file_string	= '';
+
+	let save_html_links		= '';
+	let list_html_links		= '';
+
     let routes				= [];
     let routeImports		= [];
 
 	console.log('ng g c pages/base');
 	console.log('ng g c components/loading');
+	console.log('ng g c components/navigation-menu');
+
 	for(let i in schema)
 	{
 		if( i == 'configuracion' || i=='factura' )
@@ -141,7 +151,10 @@ createDirectory('./dist/').then(()=>
 				]);
 			})
 		);
-		//Rest
+
+
+		list_html_links += tinfo.link_list+'\n';
+		save_html_links	+= tinfo.link_save+'\n';
 	}
 
 	rest_file_content = responses.rest_service
@@ -152,10 +165,14 @@ createDirectory('./dist/').then(()=>
     let app_routing_module_ts_content = responses.app_routing_module_ts.replace(/ROUTE_IMPORT_CLASES/g,routeImports.join('\n'))
 		.replace(/ROUTES_DECLARATION/g,routes.join(','))
 
+	let navigationComponentFile = responses.navigation_menu_template
+		.replace(/TEMPLATE_LIST_LINKS/,list_html_links )
+		.replace(/TEMPLATE_SAVE_LINKS/,save_html_links );
 
 	filesPromises.push( fs.writeFile('./dist/angular/services/rest.service.ts', rest_file_content ) );
 	filesPromises.push( fs.writeFile('./dist/angular/models/RestModels.ts', models_file_string ) );
 	filesPromises.push( fs.writeFile('./dist/angular/app-routing.module.ts',app_routing_module_ts_content ) );
+	filesPromises.push( fs.writeFile('./dist/angular/components/navigation-menu/navigation-menu.component.html',navigationComponentFile ) );
 
 	return Promise.all( filesPromises );
 })
