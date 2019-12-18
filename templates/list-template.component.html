@@ -24,7 +24,15 @@
 					<div>
 					</div>
 
-					<table class="basica">
+					<div>
+						<div class="row">
+								TEMPLATE_LIST_TABLE_HEADERS
+						</div>
+						<div  *ngFor="let TABLE_NAME of TABLE_NAME_list" class="row">
+						TEMPLATE_LIST_TABLE_VALUES
+						</div>
+					</div>
+					<!--table class="basica">
 						<thead>
 							<tr>
 								TEMPLATE_LIST_TABLE_HEADERS
@@ -35,7 +43,8 @@
 								TEMPLATE_LIST_TABLE_VALUES
 							</tr>
 						</tbody>
-					</table>
+					</table -->
+					<app-pagination [path]="'/list-TABLE_NAME'" [pages]="pages" [totalPages]="totalPages" [currentPage]="currentPage"></app-pagination>
 				</div>
 			</div>
 		</main>

@@ -47,6 +47,9 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 				csv: {},
 			};
 
+
+			this.TABLE_NAME_search.limit = this.pageSize;
+
 			this.titleService.setTitle('TABLE_NAME');
 
 			TEMPLATE_SEARCH_PARAMS
@@ -58,7 +61,8 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 
 
 			this.is_loading = true;
-			this.TABLE_NAME_search.page =  'page' in params ? params.page : 0;
+			this.TABLE_NAME_search.page =  'page' in params ? parseInt( params.page ) : 0;
+			this.currentPage = this.TABLE_NAME_search.page;
 
 			FORK_JOINS_LIST
 

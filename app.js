@@ -89,7 +89,7 @@ createDirectory('./dist/').then(()=>
 		if( i == 'configuracion' || i=='factura' )
 			continue;
 
-		let tinfo  = template.createTableInfo( i,schema[i] );
+		let tinfo  = template.createTableInfo( i,schema[i], schema );
 
 		console.log('ng g c pages/list-'+tinfo.dash_table_name );
 		console.log('ng g c pages/save-'+tinfo.dash_table_name );
@@ -125,7 +125,6 @@ createDirectory('./dist/').then(()=>
 		duplas.push([ /TEMPLATE_MODEL_IMPORTS/g, tinfo.import_models ]);
 		duplas.push([ /TABLE_NAME/g,  tinfo.name ]);
 
-		console.log( responses.list_template_content_html );
 		let list_template_component_html	= replace_template( responses.list_template_component_html, duplas );
 		let list_template_content_ts		= replace_template( responses.list_template_component_ts, duplas );
 		let save_template_content_ts		= replace_template( responses.save_template_component_ts, duplas );

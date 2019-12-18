@@ -8,12 +8,12 @@ function createDirectory(path)
 	{
 		//console.log('stat', x );
 		if( !x.isDirectory() )
-			return fs.mkdir(path)
+			return fs.mkdir(path,{ recursive: true })
 
 		return Promise.resolve(true);
 	},(error)=>
 	{
-		return fs.mkdir(path)
+		return fs.mkdir(path,{recursive:true})
 		//console.log("Error aqui",error);
 		//throw error;
 	});
@@ -70,18 +70,37 @@ function createAngularProject(app_name)
 }
 
 
-function getInputField(field_info,table_name,constraints)
+function getInputField(field_info,table_name,constraints,tables_info)
 {
 	let ngmodel = table_name+'.'+field_info.Field;
 	let name = field_info.Field;
 
-	if( constraints && constraints.some( f=> name == f.COLUMN_NAME ) )
-	{
-		let f = constraints.find( f=> name == f.COLUMN_NAME );
 
-		return `<select name="${name}" [(ngModel)]="${ngmodel}" class="form-control">\n
-					<option *ngFor="let c of ${f.REFERENCED_TABLE_NAME}_list" [value]="c.${f.REFERENCED_COLUMN_NAME}">{{c.${f.REFERENCED_COLUMN_NAME}}}</option>
-				</select>`;
+	if( constraints)
+	{
+		//console.log('YES BUT',constraints.length );
+		//console.log('Constraints is ',constraints );
+
+		//console.log('COlumntto search',name);
+		if( constraints.some( f=> name == f.COLUMN_NAME ) )
+		{
+			let f = constraints.find( f=> name == f.COLUMN_NAME );
+
+			let field_name = f.REFERENCED_COLUMN_NAME;
+
+			if( tables_info )
+			{
+				let x = tables_info[ f.REFERENCED_TABLE_NAME ].fields.find((x)=> getInputType(x.Type ) == 'string' );
+				if( x )
+					field_name = x.Field;
+
+				//console.log('FOUND ',table_name,field_name );
+			}
+
+			return `<select name="${name}" [(ngModel)]="${ngmodel}" class="form-control">\n
+						<option *ngFor="let c of ${f.REFERENCED_TABLE_NAME}_list" [value]="c.${f.REFERENCED_COLUMN_NAME}">{{c.${field_name}}}</option>
+					</select>`;
+		}
 	}
 
 	if( /^int/.test( field_info.Type ) ||  /^double/.test(field_info.Type ) ||/^decimal/.test( field_info.Type ) || /^float/.test(field_info.Type) || /^tinyint/.test(field_info.Type) || /^bigint/.test(field_info.Type) )

@@ -33,7 +33,8 @@ module.exports = class Template
 	getRoutes( table )
 	{
 		return '{ path:\'list-'+table.dash_table_name+'\' , component: List'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n'+
-				',{ path:\'save-'+table.dash_table_name+'\' , component: Save'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n'
+				',{ path:\'save-'+table.dash_table_name+'\' , component: Save'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n'+
+				',{ path:\'save-'+table.dash_table_name+'/:id\' , component: Save'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n'
 	}
 
 	getImportModels(models)
@@ -54,19 +55,6 @@ module.exports = class Template
 		return '\t\tthis.'+table.name+'\t= new ObjRest<'+table.snake_case_uppercase+'>(`${this.urlBase}/'+table.name+'.php`,http);\n';
 	}
 
-	getListSearchInputs(fields,table_name, contraints )
-	{
-		return fields.reduce((a,field)=>
-		{
-			let input_field = getInputField(field,table_name+'_search.eq',contraints);
-
-			return a+`\t\t\t<div class="mt-3 mb-3 form-group">
-				<label class="">${field.Field}</label>
-				${input_field}
-			</div>\n`
-		},'\n');
-
-	}
 
 	getForkJoinsSave(table, fork_joins_save )
 	{
@@ -156,6 +144,7 @@ module.exports = class Template
 				this.rest.${table.name}.search(this.${table.name}_search)
 				.subscribe((response)=>
 				{
+					this.setPages( this.${table.name}_search.page, response.total );
 					this.${table.name}_list = response.data;
 				});
 			`;
@@ -176,6 +165,7 @@ module.exports = class Template
 			.subscribe((responses)=>
 			{
 				this.${table.name}_list = responses[0].data;
+				this.setPages( this.${table.name}_search.page, responses[0].total );
 				${assignations.join('\n\t\t\t\t')}
 			});`;
 	}
@@ -198,11 +188,31 @@ module.exports = class Template
 
 		return fff.join('\n\t\t\t');
 	}
-	getSaveInputs(fields,table_name,contraints)
+
+	getListSearchInputs(fields,table_name, contraints , schema )
 	{
 		return fields.reduce((a,field)=>
 		{
-			let input_field = getInputField(field,table_name,contraints);
+			let type = getInputType( field.Type );
+			let postfix = '_search.eq';
+
+			if( type == 'string' )
+				postfix = '_search.lk';
+
+			let input_field = getInputField(field,table_name+postfix,contraints, schema );
+
+			return a+`\t\t\t<div class="mt-3 mb-3 form-group">
+				<label class="">${field.Field}</label>
+				${input_field}
+			</div>\n`
+		},'\n');
+
+	}
+	getSaveInputs(fields,table_name,contraints,schema)
+	{
+		return fields.reduce((a,field)=>
+		{
+			let input_field = getInputField(field,table_name,contraints,schema);
 
 			return a+`\t\t\t<div class="mt-3 mb-3">
 				<label class="">${field.Field}</label>
@@ -227,7 +237,15 @@ module.exports = class Template
 	}
 	getTableListValues(fields,table_name)
 	{
-		return fields.reduce((a,b)=> a+'\t\t\t<td>{{'+table_name+'.'+b.Field+'}}</td>\r','');
+		//return fields.reduce((a,b)=> a+'\t\t\t<td>{{'+table_name+'.'+b.Field+'}}</td>\r','');
+		return fields.reduce((a,b)=>
+		{
+			let column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+'}}</div>\r';
+			if( b.Field == 'id' )
+				column = '\t\t\t<div class="col"><a router-link="[\'/save-'+table_name+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></div>\r';
+
+			return a+column;
+		},'');
 	}
 
 	getTableListHeaders(fields)
@@ -236,7 +254,8 @@ module.exports = class Template
 		(
 			(a,b)=>
 			{
-				return a+'\t\t\t<th>'+(b.Field.replace(/_/g,' '))+'</th>\r'
+				//return a+'\t\t\t<th>'+(b.Field.replace(/_/g,' '))+'</th>\r'
+				return a+'\t\t\t<div class="col">'+(b.Field.replace(/_/g,' '))+'</div>\r'
 			},''
 		);
 	}
@@ -247,7 +266,7 @@ module.exports = class Template
 	}
 	//table.fork_join_declaration_list = [table.name+'_list:'+getSnakeCaseUpperCase(table.name)+'[] = [];'];
 
-	createTableInfo( i, info )
+	createTableInfo( i, info, schema )
 	{
 		let table = {};
 		let contraints = info.contraints;
@@ -287,8 +306,9 @@ module.exports = class Template
 		table.search_params			= this.getSearchParams(table.name, info.fields );
 		table.table_list_values		= this.getTableListValues( info.fields, table.name );
 		table.table_list_headers	= this.getTableListHeaders( info.fields );
-		table.table_save_inputs		= this.getSaveInputs( info.fields, table.name );
-		table.search_fields			= this.getListSearchInputs( info.fields, table.name, contraints );
+		table.table_save_inputs		= this.getSaveInputs( info.fields, table.name, contraints , schema );
+
+		table.search_fields			= this.getListSearchInputs( info.fields, table.name, contraints, schema );
 
 		table.import_models			= this.getImportModels( table.import_both );
 
