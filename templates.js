@@ -62,7 +62,7 @@ module.exports = class Template
 		{
 			return `if( this.${table.name}.id )
 				{
-				        this.rest.${table.name}.get( id ).subscribe((${table.name})=>
+				        this.rest.${table.name}.get( this.${table.name}.id ).subscribe((${table.name})=>
 						{
 							this.is_loading = false;
 							this.${table.name}= ${table.name};
@@ -242,7 +242,7 @@ module.exports = class Template
 		{
 			let column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+'}}</div>\r';
 			if( b.Field == 'id' )
-				column = '\t\t\t<div class="col"><a router-link="[\'/save-'+table_name+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></div>\r';
+				column = '\t\t\t<div class="col"><a [routerLink]="[\'/save-'+table_name+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></div>\r';
 
 			return a+column;
 		},'');

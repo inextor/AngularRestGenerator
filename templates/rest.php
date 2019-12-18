@@ -16,6 +16,18 @@ class Service extends SuperRest
 		App::connect();
 		$this->setAllowHeader();
 
+		if( isset( $_GET['id'] ) && !empty( $_GET['id'] ) )
+		{
+			${{TABLE_NAME}} = {{TABLE_NAME}}::get( $_GET['id']  );
+
+			if( ${{TABLE_NAME}} )
+			{
+				return $this->sendStatus( 200 )->json( ${{TABLE_NAME}}->toArray() );
+			}
+			return $this->sendStatus( 404 )->json(array('error'=>'The element wasn\'t found'));
+		}
+
+
 		$constraints = $this->getAllConstraints( {{TABLE_NAME}}::getAllProperties() );
 
 		$constraints_str = count( $constraints ) > 0 ? join(' AND ',$constraints ) : '1';
