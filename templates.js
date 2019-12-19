@@ -242,7 +242,7 @@ module.exports = class Template
 		{
 			let column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+'}}</div>\r';
 			if( b.Field == 'id' )
-				column = '\t\t\t<div class="col"><a [routerLink]="[\'/save-'+table_name+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></div>\r';
+				column = '\t\t\t<div class="col"><a [routerLink]="[\'/save-'+(table_name.replace(/_/g,'-'))+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></div>\r';
 
 			return a+column;
 		},'');
