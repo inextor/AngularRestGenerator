@@ -79,7 +79,7 @@ module.exports = class Template
 				if( this.${table.name}.id )
 				{
 					forkJoin([
-						this.rest.${table.name}.get( id ),
+						this.rest.${table.name}.get(  this.${table.name}.id  ),
 						this.rest.${fork_joins_save[0]}.getAll({})
 					])
 					.subscribe((responses)=>
@@ -259,13 +259,29 @@ module.exports = class Template
 			},''
 		);
 	}
+	getTemplateIdAssignation(table_name,fields)
+	{
+		let x = fields.find(f => f.Key == 'PRI' );
+		if( x )
+		{
+			let dataType = getInputType( x.Type );
+			if( dataType == 'string' )
+				return 'this.'+table_name+'.'+x.Field+' = params.get(\''+x.Field+'\')';
 
+			return 'this.'+table_name+'.'+x.Field+' = params.get(\''+x.Field+'\') ==null ? null : parseInt(params.get(\''+x.Field+'\') );';
+		}
+		return '';
+	}
 	getImportComponent(table)
 	{
 
 	}
 	//table.fork_join_declaration_list = [table.name+'_list:'+getSnakeCaseUpperCase(table.name)+'[] = [];'];
-
+	getTemplateFieldNames(fields)
+	{
+		let x = fields.map(f=> '"'+f.Field+'"' );
+		return x.join(',');
+	}
 	createTableInfo( i, info, schema )
 	{
 		let table = {};
@@ -311,6 +327,8 @@ module.exports = class Template
 		table.search_fields			= this.getListSearchInputs( info.fields, table.name, contraints, schema );
 
 		table.import_models			= this.getImportModels( table.import_both );
+		table.template_id_assignation	= this.getTemplateIdAssignation(table.name,info.fields );
+		table.template_field_names		= this.getTemplateFieldNames( info.fields );
 
 		table.fork_joins_save_string  	= this.getForkJoinsSave(table, table.fork_joins_save );
 		table.fork_joins_list_string	= this.getForkJoinLists(table, table.fork_joins_list );
@@ -322,8 +340,8 @@ module.exports = class Template
 		table.obj_rest_declaration		= `\tpublic ${table.snake_case}:ObjRest<${table.snake_case_uppercase}>;\n`;
 
 		table.obj_rest_initialization	= '\t\tthis.'+table.snake_case+'\t= new ObjRest<'+table.snake_case_uppercase+'>(`${this.urlBase}/'+table.name+'.php`,http);\n';
-		table.link_list	= '<li class="nav-item"> <a class="nav-link"  routerLink="/list-'+table.name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
-		table.link_save = '<li class="nav-item"> <a class="nav-link"  routerLink="/save-'+table.name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
+		table.link_list	= '<li class="nav-item"> <a class="nav-link"  routerLink="/list-'+table.dash_table_name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
+		table.link_save = '<li class="nav-item"> <a class="nav-link"  routerLink="/save-'+table.dash_table_name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
 
 
 		return table;

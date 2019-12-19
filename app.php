@@ -43,7 +43,7 @@ class App
 
 		$__user		 = 'root';
 		$__password	 = 'asdf';
-		$__db		   ='punto_venta';
+		$__db		   ='centrosmedicos';
 		$__host		 = '127.0.0.1';
 		$__port		 = '3306';
 		app::$is_debug	= true;

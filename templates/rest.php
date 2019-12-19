@@ -31,13 +31,13 @@ class Service extends SuperRest
 		$constraints = $this->getAllConstraints( {{TABLE_NAME}}::getAllProperties() );
 
 		$constraints_str = count( $constraints ) > 0 ? join(' AND ',$constraints ) : '1';
-		$paginacion = $this->getPaginationInfo($_GET['page'],$_GET['limit'],50);
+		$pagination	= $this->getPagination();
 
 		$sql_{{TABLE_NAME}}s	= 'SELECT SQL_CALC_FOUND_ROWS {{TABLE_NAME}}.*
 			FROM `{{TABLE_NAME}}`
 			WHERE '.$constraints_str.'
-			LIMIT '.$paginacion->limit.'
-			OFFSET '.$paginacion->offset;
+			LIMIT '.$pagination->limit.'
+			OFFSET '.$pagination->offset;
 		$info	= DBTable::getArrayFromQuery( $sql_{{TABLE_NAME}}s );
 		$total	= DBTable::getTotalRows();
 		return $this->sendStatus( 200 )->json(array("total"=>$total,"data"=>$info));

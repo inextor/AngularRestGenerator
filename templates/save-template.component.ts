@@ -20,8 +20,7 @@ export class SaveTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 	{
 		this.route.paramMap.subscribe( params =>
 		{
-			let id = params.get('id') ==null ? null : parseInt(params.get('id') );
-			this.TABLE_NAME.id = id;
+			TEMPLATE_ID_ASSIGNATION;
 
 			FORK_JOINS_SAVE
 		});

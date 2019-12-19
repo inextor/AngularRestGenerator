@@ -124,6 +124,9 @@ createDirectory('./dist/').then(()=>
 		duplas.push([ /FORK_JOINS_DECLARATION_LIST/g, tinfo.fork_join_declaration_list ]);
 		duplas.push([ /TEMPLATE_MODEL_IMPORTS/g, tinfo.import_models ]);
 		duplas.push([ /TABLE_NAME/g,  tinfo.name ]);
+		duplas.push([ /TEMPLATE_ID_ASSIGNATION/, tinfo.template_id_assignation ]);
+		duplas.push([ /TEMPLATE_FIELDS_NAMES/,tinfo.template_field_names ]);
+
 
 		let list_template_component_html	= replace_template( responses.list_template_component_html, duplas );
 		let list_template_content_ts		= replace_template( responses.list_template_component_ts, duplas );

@@ -28,6 +28,22 @@ class SuperRest extends \akou\RestController
 		return $constraints;
 	}
 
+	function getPagination()
+	{
+		$page = 0;
+
+		if( !empty( $_GET['page'] ) )
+			$page = intval( $_GET['page'] );
+
+		$page_size = 20;
+
+		if( !empty( $_GET['limit'] ) )
+			$page_size =  intval( $_GET['limit'] );
+
+
+		return	$this->getPaginationInfo($page,$page_size,20);
+	}
+
 	function getLikeConstraints($array,$table_name='')
 	{
 		$constraints = [];

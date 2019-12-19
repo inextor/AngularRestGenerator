@@ -58,7 +58,7 @@ export class ObjRest<T>{
 		return headers;
 	}
 
-	get(id:number):Observable<T>
+	get(id:any):Observable<T>
 	{
 		let params = new HttpParams();
 		params = params.set('id',''+id);

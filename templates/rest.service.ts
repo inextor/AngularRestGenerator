@@ -36,13 +36,13 @@ TEMPLATE_OBJ_REST_DECLARATION
 TEMPLATE_OBJ_REST_INITIALIZATION
 	}
 
-	uploadImage(file:File,es_privada:boolean=false):Observable<Image>
-	{
-		let fd = new FormData();
-		fd.append('image',file, file.name);
-		fd.append('is_privada', es_privada?'1':'0' );
-		return this.http.post(`${this.urlBase}/imagen.php`,fd,{headers:this.getSessionHeaders(),withCredentials:true});
-	}
+	//uploadImage(file:File,es_privada:boolean=false):Observable<Image>
+	//{
+	//	let fd = new FormData();
+	//	fd.append('image',file, file.name);
+	//	fd.append('is_privada', es_privada?'1':'0' );
+	//	return this.http.post(`${this.urlBase}/imagen.php`,fd,{headers:this.getSessionHeaders(),withCredentials:true});
+	//}
 
 	getSessionHeaders()
 	{
