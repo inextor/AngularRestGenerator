@@ -47,29 +47,112 @@ class Service extends SuperRest
 		$this->setAllowHeader();
 		$params = $this->getMethodParams();
 		app::connect();
+		DBTable::autocommit(false );
 
-		${{TABLE_NAME}} = new {{TABLE_NAME}}();
-		${{TABLE_NAME}}->assignFromArray( $params );
-
-		if( !${{TABLE_NAME}}->insertDb() )
+		try
 		{
-			return $this->sendStatus( 400 )->json(array('error'=>'Please Check your parameters','dev'=>${{TABLE_NAME}}->_conn->error,'sql'=>${{TABLE_NAME}}->getLastQuery()));
+			$is_assoc	= $this->isAssociativeArray( $params );
+			$result		= $this->batchInsert( $is_assoc  ? array($params) : $params );
+			DBTable::commit();
+        	return $result;
 		}
-		return $this->sendStatus( 200 )->json(${{TABLE_NAME}}->toArray());
+        catch(LoggableException $e)
+        {
+            DBTable::rollback();
+            error_log("LOGABBLE");
+            return $this->sendStatus( $e->code )->json(array("error"=>$e->getMessage()));
+        }
+        catch(Exception $e)
+        {
+            DBTable::rollback();
+            error_log("CATCH HERE");
+            return $this->sendStatus( 500 )->json(array("error"=>$e->getMessage()));
+        }
 	}
+
 	function put()
-	{
-		session_start();
-		App::connect();
+    {
+		$this->setAllowHeader();
 		$params = $this->getMethodParams();
-		${{TABLE_NAME}} = new {{TABLE_NAME}}();
-		${{TABLE_NAME}}->id = $params['id'];
-		if( ${{TABLE_NAME}}->load(true) )
+		app::connect();
+		DBTable::autocommit( false );
+
+		try
 		{
-			${{TABLE_NAME}}->updateDb();
+			$is_assoc	= $this->isAssociativeArray( $params );
+			$result		= $this->batchUpdate( $is_assoc  ? array($params) : $params );
+			DBTable::commit();
+        	return $result;
 		}
-		return $this->sendStatus(200)->json( ${{TABLE_NAME}}->toArray() );
+        catch(LoggableException $e)
+        {
+            DBTable::rollback();
+            error_log("LOGABBLE");
+            return $this->sendStatus( $e->code )->json(array("error"=>$e->getMessage()));
+        }
+        catch(Exception $e)
+        {
+            DBTable::rollback();
+            error_log("CATCH HERE");
+            return $this->sendStatus( 500 )->json(array("error"=>$e->getMessage()));
+        }
+
+    }
+
+
+	function batchInsert($array)
+	{
+		$results = array();
+
+		foreach($array as $params )
+		{
+			${{TABLE_NAME}} = {{TABLE_NAME}}::createFromArray( $params );
+
+			if( !${{TABLE_NAME}}->insert() )
+			{
+					throw new ValidationError('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
+			}
+
+			$results [] = ${{TABLE_NAME}}->toArray();
+		}
+
+		return $results;
 	}
+
+	function batchUpdate($array)
+	{
+		$results = array();
+
+		foreach($array as $params )
+		{
+			${{TABLE_NAME}} = {{TABLE_NAME}}::createFromArray( $params );
+
+			if( !empty( ${{TABLE_NAME}}->id ) )
+			{
+				${{TABLE_NAME}}->setWhereString( true );
+
+				if( !${{TABLE_NAME}}->updateDb() )
+				{
+					throw new ValidationError('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
+				}
+
+				${{TABLE_NAME}}->load(true);
+
+				$results [] = ${{TABLE_NAME}}->toArray();
+			}
+			else
+			{
+				if( !${{TABLE_NAME}}->insert() )
+				{
+					throw new ValidationError('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
+				}
+
+				$results [] = ${{TABLE_NAME}}->toArray();
+			}
+		}
+
+		return $results;
+    }
 }
 $l = new Service();
 $l->execute();
