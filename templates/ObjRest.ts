@@ -127,6 +127,11 @@ export interface SearchObject<T>
 			if( searchObj.lk[i] )
 				params = params.set(i+'~~',''+searchObj.lk[i] );
 
+		for(let i in searchObj.start )
+		{
+			if( searchObj.start[i] )
+				params = params.set(i+'^',''+searchObj.start[i] );
+		}
 
 		if( searchObj.page )
 		{
@@ -149,6 +154,10 @@ export interface SearchObject<T>
 	update(obj:T):Observable<T>
 	{
 		return this.http.put<T>(`${this.urlBase}`,obj,{headers:this.getSessionHeaders(),withCredentials:true});
+	}
+
+	batchCreate(obj:T[]):Observable<T[]> {
+		return this.http.post<T[]>(`${this.urlBase}`,obj,{headers:this.getSessionHeaders(),withCredentials:true});
 	}
 
 	batchUpdate(obj:T[]):Observable<T[]>
