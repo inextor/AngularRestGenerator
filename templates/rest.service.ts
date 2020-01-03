@@ -15,6 +15,8 @@ export class RestService {
 
 	urlBase:string = '';
 	public keyUpObserver:Observable<KeyboardEvent>;
+	public errorBehaviorSubject: BehaviorSubject<ErrorMessage>;
+	public errorObservable:Observable<ErrorMessage>;
 
 
 TEMPLATE_OBJ_REST_DECLARATION
@@ -26,11 +28,16 @@ TEMPLATE_OBJ_REST_DECLARATION
 		this.urlBase = 'http://';
 		this.keyUpObserver = fromEvent<KeyboardEvent>( window.document.body, 'keyup' );
 
+		this.errorBehaviorSubject = new BehaviorSubject<ErrorMessage>(null);
+		this.errorObservable = this.errorBehaviorSubject.asObservable();
+
 		if( window.location.hostname.indexOf('127.0.0.1' ) == 0 )
 			this.urlBase = 'http://127.0.0.1/rest_test';
 
 		if( window.location.hostname.indexOf('localhost') == 0 )
 			this.urlBase = 'http://127.0.0.1/rest_test';
+
+
 
 
 TEMPLATE_OBJ_REST_INITIALIZATION
