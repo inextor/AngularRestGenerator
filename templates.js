@@ -240,9 +240,9 @@ module.exports = class Template
 		//return fields.reduce((a,b)=> a+'\t\t\t<td>{{'+table_name+'.'+b.Field+'}}</td>\r','');
 		return fields.reduce((a,b)=>
 		{
-			let column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+'}}</div>\r';
+			let column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+'}}</div>\n';
 			if( b.Field == 'id' )
-				column = '\t\t\t<div class="col"><a [routerLink]="[\'/save-'+(table_name.replace(/_/g,'-'))+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></div>\r';
+				column = '\t\t\t<div class="col"><a [routerLink]="[\'/save-'+(table_name.replace(/_/g,'-'))+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></div>\n';
 
 			return a+column;
 		},'');
@@ -255,7 +255,7 @@ module.exports = class Template
 			(a,b)=>
 			{
 				//return a+'\t\t\t<th>'+(b.Field.replace(/_/g,' '))+'</th>\r'
-				return a+'\t\t\t<div class="col">'+(b.Field.replace(/_/g,' '))+'</div>\r'
+				return a+'\t\t\t<div class="col">'+(b.Field.replace(/_/g,' '))+'</div>\n'
 			},''
 		);
 	}
