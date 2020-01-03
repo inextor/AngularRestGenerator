@@ -34,7 +34,7 @@ module.exports = class Template
 	{
 		return '{ path:\'list-'+table.dash_table_name+'\' , component: List'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n'+
 				',{ path:\'save-'+table.dash_table_name+'\' , component: Save'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n'+
-				',{ path:\'save-'+table.dash_table_name+'/:id\' , component: Save'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n'
+				',{ path:\'edit-'+table.dash_table_name+'/:id\' , component: Save'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n'
 	}
 
 	getImportModels(models)
