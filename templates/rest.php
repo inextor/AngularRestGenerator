@@ -4,10 +4,15 @@ namespace CENTRO_MEDICO;
 include_once( __DIR__.'/app.php' );
 include_once( __DIR__.'/akou/src/ArrayUtils.php');
 include_once( __DIR__.'/SuperRest.php');
+
 use \akou\Utils;
 use \akou\DBTable;
 use \akou\RestController;
 use \akou\ArrayUtils;
+use \akou\ValidationException;
+
+
+
 class Service extends SuperRest
 {
 	function get()
@@ -110,7 +115,7 @@ class Service extends SuperRest
 
 			if( !${{TABLE_NAME}}->insert() )
 			{
-					throw new ValidationError('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
+					throw new ValidationException('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
 			}
 
 			$results [] = ${{TABLE_NAME}}->toArray();
@@ -133,7 +138,7 @@ class Service extends SuperRest
 
 				if( !${{TABLE_NAME}}->updateDb() )
 				{
-					throw new ValidationError('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
+					throw new ValidationException('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
 				}
 
 				${{TABLE_NAME}}->load(true);
@@ -144,7 +149,7 @@ class Service extends SuperRest
 			{
 				if( !${{TABLE_NAME}}->insert() )
 				{
-					throw new ValidationError('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
+					throw new ValidationException('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
 				}
 
 				$results [] = ${{TABLE_NAME}}->toArray();
