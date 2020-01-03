@@ -1,52 +1,36 @@
-<div class="fixed-top">
-	<app-header></app-header>
-</div>
-
-<div class="container-fluid">
-	<div class="row">
-		<div>
-			<app-navigation-menu></app-navigation-menu>
-		</div>
-
-		<main role="main" class="col-md-9 ml-sm-auto col-lg-10 px-4">
-			<div class="card p-3">
-				<div class="container">
-					<h1 class="mb-3">TABLE_NAME_SPACES</h1>
-					<div>
-						<div class="d-flex flex-row">
-							TEMPLATE_SEARCH_FIELDS
-							<div class="d-flex align-self-end justify-content-center p-2">
-								<button type="button" class="btn btn-primary" (click)="search()">Buscar</button>
-							</div>
-						</div>
-					</div>
-
-					<div>
-					</div>
-
-					<div>
-						<div class="row">
-								TEMPLATE_LIST_TABLE_HEADERS
-						</div>
-						<div  *ngFor="let TABLE_NAME of TABLE_NAME_list" class="row">
-						TEMPLATE_LIST_TABLE_VALUES
-						</div>
-					</div>
-					<!--table class="basica">
-						<thead>
-							<tr>
-								TEMPLATE_LIST_TABLE_HEADERS
-							</tr>
-						</thead>
-						<tbody>
-							<tr *ngFor="let TABLE_NAME of TABLE_NAME_list">
-								TEMPLATE_LIST_TABLE_VALUES
-							</tr>
-						</tbody>
-					</table -->
-					<app-pagination [path]="'/list-TABLE_NAME'" [pages]="pages" [totalPages]="totalPages" [currentPage]="currentPage"></app-pagination>
-				</div>
+<div class="container">
+	<h1 class="mb-3">TABLE_NAME_SPACES</h1>
+	<div>
+		<div class="d-flex flex-row">
+			TEMPLATE_SEARCH_FIELDS
+			<div class="d-flex align-self-end justify-content-center p-2">
+				<button type="button" class="btn btn-primary" (click)="search()">Buscar</button>
 			</div>
-		</main>
+		</div>
 	</div>
+
+	<div>
+	</div>
+
+	<div>
+		<div class="row">
+				TEMPLATE_LIST_TABLE_HEADERS
+		</div>
+		<div  *ngFor="let TABLE_NAME of TABLE_NAME_list" class="row">
+		TEMPLATE_LIST_TABLE_VALUES
+		</div>
+	</div>
+	<!--table class="basica">
+		<thead>
+			<tr>
+				TEMPLATE_LIST_TABLE_HEADERS
+			</tr>
+		</thead>
+		<tbody>
+			<tr *ngFor="let TABLE_NAME of TABLE_NAME_list">
+				TEMPLATE_LIST_TABLE_VALUES
+			</tr>
+		</tbody>
+	</table -->
+	<app-pagination [path]="'/list-TABLE_NAME'" [pages]="pages" [totalPages]="totalPages" [currentPage]="currentPage"></app-pagination>
 </div>
