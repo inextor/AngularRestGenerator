@@ -37,13 +37,13 @@ class App
 	public static $image_directory 		= '../../users_images';
 	public static $is_debug				= false;
 
-	public static function connect()
+	public static function connect($database_name)
 	{
 		DBTable::$_parse_data_types = TRUE;
 
 		$__user		 = 'root';
 		$__password	 = 'asdf';
-		$__db		   ='centrosmedicos';
+		$__db		 = $database_name;
 		$__host		 = '127.0.0.1';
 		$__port		 = '3306';
 		app::$is_debug	= true;
@@ -84,4 +84,5 @@ class App
 		echo json_encode( $database_info );
 	}
 }
-app::connect();
+app::connect($argv[1]);
+
