@@ -33,6 +33,7 @@ export interface SearchObject<T>
 	le?:T; //less or equal than
 	lk?:T; //like
 	csv?:CsvArray;
+	start?:T;
 }
 
 
