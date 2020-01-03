@@ -45,16 +45,13 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 				lt: {},
 				lk: {},
 				csv: {},
+				start: {}
 			};
 
 
 			this.TABLE_NAME_search.limit = this.pageSize;
 
 			this.titleService.setTitle('TABLE_NAME');
-
-			/*
-			TEMPLATE_SEARCH_PARAMS
-			*/
 
 			let keys = ['eq','le','lt','ge','gt','csv','lk'];
             let fields = [ TEMPLATE_FIELDS_NAMES ]
