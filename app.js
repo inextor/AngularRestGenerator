@@ -5,6 +5,10 @@ const Template = require('./templates.js');
 let fs = require('fs').promises;
 let fso	= require('fs');
 
+let database_name_uppercase = process.argv[2].toUpperCase();
+
+console.log( database_name_uppercase.toUpperCase() );
+
 template = new Template();
 
 createDirectory('./dist/').then(()=>
@@ -97,7 +101,7 @@ createDirectory('./dist/').then(()=>
 		routes.push( tinfo.route );
 		routeImports.push( tinfo.route_import );
 
-		let phpfile = responses.restphp.replace(/{{TABLE_NAME}}/g,tinfo.name);
+		let phpfile = responses.restphp.replace(/{{TABLE_NAME}}/g,tinfo.name).replace(/DATABASE_NAME_UPPERCASE/g,database_name_uppercase);
 		filesPromises.push( fs.writeFile('./dist/server/'+tinfo.name+'.php',phpfile ) );
 
 
@@ -126,6 +130,7 @@ createDirectory('./dist/').then(()=>
 		duplas.push([ /TABLE_NAME/g,  tinfo.name ]);
 		duplas.push([ /TEMPLATE_ID_ASSIGNATION/, tinfo.template_id_assignation ]);
 		duplas.push([ /TEMPLATE_FIELDS_NAMES/,tinfo.template_field_names ]);
+		duplas.push([ /DATABASE_NAME_UPPERCASE/,database_name_uppercase ]);
 
 
 		let list_template_component_html	= replace_template( responses.list_template_component_html, duplas );
@@ -172,8 +177,8 @@ createDirectory('./dist/').then(()=>
 		.replace(/TEMPLATE_SAVE_LINKS/,save_html_links );
 
 	filesPromises.push( fs.writeFile('./dist/angular/services/rest.service.ts', rest_file_content ) );
-	filesPromises.push( fs.writeFile('./dist/angular/models/RestModels.ts', models_file_string ) );
 	filesPromises.push( fs.writeFile('./dist/angular/app-routing.module.ts',app_routing_module_ts_content ) );
+	filesPromises.push( fs.writeFile('./dist/angular/models/RestModels.ts', models_file_string ) );
 	filesPromises.push( fs.writeFile('./dist/angular/components/navigation-menu/navigation-menu.component.html',navigationComponentFile ) );
 
 	return Promise.all( filesPromises );

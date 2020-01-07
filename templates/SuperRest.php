@@ -1,5 +1,5 @@
 <?php
-namespace CENTRO_MEDICO;
+namespace ARCHBEL;
 
 include_once( __DIR__.'/app.php' );
 include_once( __DIR__.'/akou/src/ArrayUtils.php');

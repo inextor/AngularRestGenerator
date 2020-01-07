@@ -1,7 +1,5 @@
 const { toCamelCaseUpperCase,getInputField,toCamelCase,getSnakeCaseUpperCase,getInputType,cpFile  } = require('./functions.js');
 
-
-
 module.exports = class Template
 {
 	constructor()
@@ -21,9 +19,9 @@ module.exports = class Template
 	getModel( table, field_str )
 	{
 		let modelFields ={};
-		return `	export interface ${table.snake_case_uppercase} {
-			${field_str}
-		}`;
+		return `export interface ${table.snake_case_uppercase} {
+	${field_str}
+};`;
 	}
 	getImportRoutes( table )
 	{
@@ -186,7 +184,7 @@ module.exports = class Template
 			fff.push(f.Field+'?\t:'+getInputType( f.Type )+';');
 		});
 
-		return fff.join('\n\t\t\t');
+		return fff.join('\n\t');
 	}
 
 	getListSearchInputs(fields,table_name, contraints , schema )
