@@ -21,7 +21,7 @@ module.exports = class Template
 		let modelFields ={};
 		return `export interface ${table.snake_case_uppercase} {
 	${field_str}
-};`;
+}`;
 	}
 	getImportRoutes( table )
 	{

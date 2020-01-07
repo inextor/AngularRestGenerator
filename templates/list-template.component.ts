@@ -54,20 +54,20 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 			this.titleService.setTitle('TABLE_NAME');
 
 			let keys = ['eq','le','lt','ge','gt','csv','lk'];
-            let fields = [ TEMPLATE_FIELDS_NAMES ]
+						let fields = [ TEMPLATE_FIELDS_NAMES ]
 
-            keys.forEach((k)=>
-            {
-                fields.forEach((f)=>
-                {
-                    let field = k+"."+f;
+						keys.forEach((k)=>
+						{
+								fields.forEach((f)=>
+								{
+										let field = k+"."+f;
 
-                    if( params[field ] )
-                    {
-                        this.TABLE_NAME_search[ k ][ f ] = params[ field ];
-                    }
-                });
-            });
+										if( params[field ] )
+										{
+												this.TABLE_NAME_search[ k ][ f ] = params[ field ];
+										}
+								});
+						});
 
 
 			console.log('Search', this.TABLE_NAME_search);
@@ -77,7 +77,7 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 
 
 			this.is_loading = true;
-			this.TABLE_NAME_search.page =  'page' in params ? parseInt( params.page ) : 0;
+			this.TABLE_NAME_search.page =	'page' in params ? parseInt( params.page ) : 0;
 			this.currentPage = this.TABLE_NAME_search.page;
 
 			FORK_JOINS_LIST
@@ -90,17 +90,17 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 		this.is_loading = true;
 		this.TABLE_NAME_search.page = 0;
 
-        let search = {};
-        let array = ['eq','le','lt','ge','gt','csv','lk'];
-        for(let i in this.TABLE_NAME_search )
-        {
-            console.log( 'i',i,array.indexOf( i ) );
-            if(array.indexOf( i ) > -1 )
-            {
-                for(let j in this.TABLE_NAME_search[i])
-                    search[i+'.'+j] = this.TABLE_NAME_search[i][j];
-            }
-        }
+		let search = {};
+		let array = ['eq','le','lt','ge','gt','csv','lk'];
+		for(let i in this.TABLE_NAME_search )
+		{
+			console.log( 'i',i,array.indexOf( i ) );
+			if(array.indexOf( i ) > -1 )
+			{
+				for(let j in this.TABLE_NAME_search[i])
+					search[i+'.'+j] = this.TABLE_NAME_search[i][j];
+			}
+		}
 
 		console.log( search );
 		this.router.navigate(['/list-TABLE_NAME_DASH'],{queryParams: search});
