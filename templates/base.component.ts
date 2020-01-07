@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { RestService } from '../../services/rest.service';
+import { RestService,ErrorMessage } from '../../services/rest.service';
 import { Router,ActivatedRoute,Params} from "@angular/router"
 import { Location } from	'@angular/common';
 import { LoadingComponent } from '../../components/loading/loading.component';
@@ -72,8 +72,7 @@ export class BaseComponent implements OnInit {
 	showError(error:any) {
 		this.is_loading	= false;
 		let str_error	= this.getErrorMessage( error );
-		//Do something
-		//this.rest.showError({ mensaje: str_error, tipo:'alert-danger' });
+		this.rest.showError({ message: str_error, type:'alert-danger' });
 	}
 
 	getErrorMessage( error:any )
