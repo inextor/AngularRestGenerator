@@ -31,7 +31,7 @@ module.exports = class Template
 	getRoutes( table )
 	{
 		return '{ path:\'list-'+table.dash_table_name+'\' , component: List'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n'+
-				',{ path:\'save-'+table.dash_table_name+'\' , component: Save'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n'+
+				',{ path:\'add-'+table.dash_table_name+'\' , component: Save'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n'+
 				',{ path:\'edit-'+table.dash_table_name+'/:id\' , component: Save'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\' }\n'
 	}
 
@@ -240,7 +240,7 @@ module.exports = class Template
 		{
 			let column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+'}}</div>\n';
 			if( b.Field == 'id' )
-				column = '\t\t\t<div class="col"><a [routerLink]="[\'/save-'+(table_name.replace(/_/g,'-'))+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></div>\n';
+				column = '\t\t\t<div class="col"><a [routerLink]="[\'/edit-'+(table_name.replace(/_/g,'-'))+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></div>\n';
 
 			return a+column;
 		},'');
@@ -339,7 +339,7 @@ module.exports = class Template
 
 		table.obj_rest_initialization	= '\t\tthis.'+table.snake_case+'\t= new ObjRest<'+table.snake_case_uppercase+'>(`${this.urlBase}/'+table.name+'.php`,http);\n';
 		table.link_list	= '<li class="nav-item"> <a class="nav-link"  routerLink="/list-'+table.dash_table_name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
-		table.link_save = '<li class="nav-item"> <a class="nav-link"  routerLink="/save-'+table.dash_table_name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
+		table.link_save = '<li class="nav-item"> <a class="nav-link"  routerLink="/add-'+table.dash_table_name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
 
 
 		return table;
