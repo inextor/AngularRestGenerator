@@ -59,7 +59,7 @@ class Service extends SuperRest
 			$is_assoc	= $this->isAssociativeArray( $params );
 			$result		= $this->batchInsert( $is_assoc  ? array($params) : $params );
 			DBTable::commit();
-        	return $result;
+            return $this->sendStatus( $e->code )->json( $is_assoc ? $result[0] : $result );
 		}
         catch(LoggableException $e)
         {
@@ -87,7 +87,7 @@ class Service extends SuperRest
 			$is_assoc	= $this->isAssociativeArray( $params );
 			$result		= $this->batchUpdate( $is_assoc  ? array($params) : $params );
 			DBTable::commit();
-        	return $result;
+            return $this->sendStatus( $e->code )->json( $is_assoc ? $result[0] : $result );
 		}
         catch(LoggableException $e)
         {
@@ -136,7 +136,10 @@ class Service extends SuperRest
 			{
 				${{TABLE_NAME}}->setWhereString( true );
 
-				if( !${{TABLE_NAME}}->updateDb() )
+				$properties = {{TABLE_NAME}}::getAllPropertiesExcept('created','updated');
+				${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_ALL );
+
+				if( !${{TABLE_NAME}}->updateDb( $properties ) )
 				{
 					throw new ValidationException('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
 				}
