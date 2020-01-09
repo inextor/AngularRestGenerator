@@ -69,12 +69,7 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 				});
 			});
 
-
 			console.log('Search', this.TABLE_NAME_search);
-
-			let rjoinObj:any = {};
-			let fjarray = [];
-
 
 			this.is_loading = true;
 			this.TABLE_NAME_search.page =	'page' in params ? parseInt( params.page ) : 0;
