@@ -54,20 +54,20 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 			this.titleService.setTitle('TABLE_NAME');
 
 			let keys = ['eq','le','lt','ge','gt','csv','lk'];
-						let fields = [ TEMPLATE_FIELDS_NAMES ]
+			let fields = [ TEMPLATE_FIELDS_NAMES ]
 
-						keys.forEach((k)=>
-						{
-								fields.forEach((f)=>
-								{
-										let field = k+"."+f;
+			keys.forEach((k)=>
+			{
+				fields.forEach((f)=>
+				{
+					let field = k+"."+f;
 
-										if( params[field ] )
-										{
-												this.TABLE_NAME_search[ k ][ f ] = params[ field ];
-										}
-								});
-						});
+					if( params[field ] )
+					{
+						this.TABLE_NAME_search[ k ][ f ] = params[ field ];
+					}
+				});
+			});
 
 
 			console.log('Search', this.TABLE_NAME_search);
