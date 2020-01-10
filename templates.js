@@ -200,7 +200,7 @@ module.exports = class Template
 			let input_field = getInputField(field,table_name+postfix,contraints, schema );
 
 			return a+`\t\t\t<div class="mt-3 mb-3 form-group">
-				<label class="">${field.Field}</label>
+				<label class="">${field.Field.charAt(0).toUpperCase()+field.Field.substring(1)}</label>
 				${input_field}
 			</div>\n`
 		},'\n');
@@ -213,7 +213,7 @@ module.exports = class Template
 			let input_field = getInputField(field,table_name,contraints,schema);
 
 			return a+`\t\t\t<div class="mt-3 mb-3">
-				<label class="">${field.Field}</label>
+				<label class="">${field.Field.charAt(0).toUpperCase()+field.Field.substring(1)}</label>
 				${input_field}
 			</div>\n`
 		},'\n');
