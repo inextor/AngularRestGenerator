@@ -103,7 +103,11 @@ function getInputField(field_info,table_name,constraints,tables_info)
 		}
 	}
 
-	if( /^int/.test( field_info.Type ) ||  /^double/.test(field_info.Type ) ||/^decimal/.test( field_info.Type ) || /^float/.test(field_info.Type) || /^tinyint/.test(field_info.Type) || /^bigint/.test(field_info.Type) )
+	if( /^double/.test(field_info.Type ) ||/^decimal/.test( field_info.Type ) || /^float/.test(field_info.Type) )
+	{
+		return `<input type="number" name="${name}" [(ngModel)]="${ngmodel}" step="any" class="form-control">`;
+	}
+	else if( /^int/.test( field_info.Type ) ||   /^tinyint/.test(field_info.Type) || /^bigint/.test(field_info.Type))
 	{
 		return `<input type="number" name="${name}" [(ngModel)]="${ngmodel}" class="form-control">`;
 	}
