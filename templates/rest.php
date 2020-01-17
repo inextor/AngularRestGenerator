@@ -59,24 +59,24 @@ class Service extends SuperRest
 			$is_assoc	= $this->isAssociativeArray( $params );
 			$result		= $this->batchInsert( $is_assoc  ? array($params) : $params );
 			DBTable::commit();
-            return $this->sendStatus( $e->code )->json( $is_assoc ? $result[0] : $result );
+			return $this->sendStatus( $e->code )->json( $is_assoc ? $result[0] : $result );
 		}
-        catch(LoggableException $e)
-        {
-            DBTable::rollback();
-            error_log("LOGABBLE");
-            return $this->sendStatus( $e->code )->json(array("error"=>$e->getMessage()));
-        }
-        catch(Exception $e)
-        {
-            DBTable::rollback();
-            error_log("CATCH HERE");
-            return $this->sendStatus( 500 )->json(array("error"=>$e->getMessage()));
-        }
+		catch(LoggableException $e)
+		{
+			DBTable::rollback();
+			error_log("LOGABBLE");
+			return $this->sendStatus( $e->code )->json(array("error"=>$e->getMessage()));
+		}
+		catch(Exception $e)
+		{
+			DBTable::rollback();
+			error_log("CATCH HERE");
+			return $this->sendStatus( 500 )->json(array("error"=>$e->getMessage()));
+		}
 	}
 
 	function put()
-    {
+	{
 		$this->setAllowHeader();
 		$params = $this->getMethodParams();
 		app::connect();
@@ -87,22 +87,22 @@ class Service extends SuperRest
 			$is_assoc	= $this->isAssociativeArray( $params );
 			$result		= $this->batchUpdate( $is_assoc  ? array($params) : $params );
 			DBTable::commit();
-            return $this->sendStatus( $e->code )->json( $is_assoc ? $result[0] : $result );
+			return $this->sendStatus( $e->code )->json( $is_assoc ? $result[0] : $result );
 		}
-        catch(LoggableException $e)
-        {
-            DBTable::rollback();
-            error_log("LOGABBLE");
-            return $this->sendStatus( $e->code )->json(array("error"=>$e->getMessage()));
-        }
-        catch(Exception $e)
-        {
-            DBTable::rollback();
-            error_log("CATCH HERE");
-            return $this->sendStatus( 500 )->json(array("error"=>$e->getMessage()));
-        }
+		catch(LoggableException $e)
+		{
+			DBTable::rollback();
+			error_log("LOGABBLE");
+			return $this->sendStatus( $e->code )->json(array("error"=>$e->getMessage()));
+		}
+		catch(Exception $e)
+		{
+			DBTable::rollback();
+			error_log("CATCH HERE");
+			return $this->sendStatus( 500 )->json(array("error"=>$e->getMessage()));
+		}
 
-    }
+	}
 
 
 	function batchInsert($array)
@@ -160,7 +160,7 @@ class Service extends SuperRest
 		}
 
 		return $results;
-    }
+	}
 }
 $l = new Service();
 $l->execute();
