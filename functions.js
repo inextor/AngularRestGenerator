@@ -75,6 +75,10 @@ function getInputField(field_info,table_name,constraints,tables_info)
 	let ngmodel = table_name+'.'+field_info.Field;
 	let name = field_info.Field;
 
+	if( name.endsWith('image_id') )
+	{
+		return `<app-image-uploader [(image)]="${table_name}.${name}"></app-image-uploader>`;
+	}
 
 	if( constraints)
 	{
@@ -97,9 +101,9 @@ function getInputField(field_info,table_name,constraints,tables_info)
 				//console.log('FOUND ',table_name,field_name );
 			}
 
-			return `<select name="${name}" [(ngModel)]="${ngmodel}" class="form-control">\n
-						<option *ngFor="let c of ${f.REFERENCED_TABLE_NAME}_list" [value]="c.${f.REFERENCED_COLUMN_NAME}">{{c.${field_name}}}</option>
-					</select>`;
+			return `<select name="${name}" [(ngModel)]="${ngmodel}" class="form-control">
+					<option *ngFor="let c of ${f.REFERENCED_TABLE_NAME}_list" [value]="c.${f.REFERENCED_COLUMN_NAME}">{{c.${field_name}}}</option>
+				</select>`;
 		}
 	}
 
@@ -113,7 +117,7 @@ function getInputField(field_info,table_name,constraints,tables_info)
 	}
 	else if( /^varchar/.test( field_info.Type ) )
 	{
-		return `<input type="text" name="${name}" [(ngModel)]="${ngmodel}" class="form-control">\n`;
+		return `<input type="text" name="${name}" [(ngModel)]="${ngmodel}" class="form-control">`;
 	}
 	else if( /^timestamp/.test(field_info.Type ) || /^datetime/.test(field_info.Type) )
 	{

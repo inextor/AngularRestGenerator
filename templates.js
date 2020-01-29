@@ -210,9 +210,12 @@ module.exports = class Template
 	{
 		return fields.reduce((a,field)=>
 		{
+			if( field.Field == 'id' || field.Field == 'created' || field.Field == 'updated' )
+				return a;
+
 			let input_field = getInputField(field,table_name,contraints,schema);
 
-			return a+`\t\t\t<div class="mt-3 mb-3">
+			return a+`\t\t\t<div class="col-6">
 				<label class="">${field.Field.charAt(0).toUpperCase()+field.Field.substring(1)}</label>
 				${input_field}
 			</div>\n`

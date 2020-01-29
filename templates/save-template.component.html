@@ -1,9 +1,21 @@
-<div class="card p-3">
-	<h5>TABLE_NAME_SPACES</h5>
-	<div class="container">
-		TEMPLATE_SAVE_INPUTS
-		<div>
-			<button type="button" [disabled]="is_loading" (click)="save()" class="btn btn-primary">Save</button>
+<div class="container">
+	<div class="header-body mb-3">
+		<div class="row align-items-end">
+			<div class="col">
+				<h6 class="header-pretitle">{{TABLE_NAME.id ? 'Update':'Add New'}}</h6>
+				<h1 class="header-title"> {{ 'TABLE_NAME_SPACES' | titlecase }}</h1>
+			</div>
+		</div>
+	</div>
+
+	<div class="card p-3">
+		<div class="row p-3">
+			TEMPLATE_SAVE_INPUTS
+		</div>
+		<div class="row p-3">
+			<div class="col-12 text-right">
+				<button type="button" [disabled]="is_loading" (click)="save()" class="btn btn-primary">Save</button>
+			</div>
 		</div>
 	</div>
 </div>
