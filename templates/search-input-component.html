@@ -1,0 +1,20 @@
+<div>
+	<div>
+		<input type="text" [placeholder]="placeholder" name="search">
+	</div>
+<div class="list-group-item">
+	<div class="row align-items-center" *ngFor="let i of list">
+		<div class="col-auto">
+			<!-- Avatar -->
+			<div class="avatar">
+				<img [src]="getImage(i)" alt="..." class="avatar-img rounded">
+			</div>
+		</div>
+		<div class="col ml-n2">
+			<!-- Title -->
+			<h4 class="mb-1">{{getPrimaryText(i)| titlecase}}</h4>
+			<!-- Time -->
+			<p class="card-text small text-muted">{{getSecondaryText(i)|titlecase}}</p>
+		</div>
+	</div> <!-- / .row -->
+</div>
