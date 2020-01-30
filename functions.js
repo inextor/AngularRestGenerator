@@ -143,9 +143,9 @@ function getInputField(field_info,table_name,constraints,tables_info)
 		options.forEach((i)=>
 		{
 			let t = i.replace(/'(.*)'/,'$1');
-			s+='\t\t\t\t<option value="'+t+'">'+t+'</option>\n';
+			s+='\t\t\t\t\t<option value="'+t+'">'+t+'</option>\n';
 		});
-		s+='</select>';
+		s+='\t\t\t\t</select>';
 		return s;
 	}
 	//else console.log( field_info.Type );
