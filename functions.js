@@ -102,6 +102,7 @@ function getInputField(field_info,table_name,constraints,tables_info)
 			}
 
 			return `<select name="${name}" [(ngModel)]="${ngmodel}" class="form-control">
+					<option [value]="null">Select</option>
 					<option *ngFor="let c of ${f.REFERENCED_TABLE_NAME}_list" [value]="c.${f.REFERENCED_COLUMN_NAME}">{{c.${field_name}}}</option>
 				</select>`;
 		}
@@ -150,6 +151,11 @@ function getInputField(field_info,table_name,constraints,tables_info)
 	}
 	//else console.log( field_info.Type );
 }
+function getLabelString(str)
+{
+	let r = str.charAt(0).toUpperCase()+str.substring(1)
+	return r.replace(/_id$/,'').replace(/_/g,' ');
+}
 
 exports.createDirectory = createDirectory;
 exports.toCamelCaseUpperCase = toCamelCaseUpperCase;
@@ -157,5 +163,6 @@ exports.toCamelCase = toCamelCase;
 exports.getSnakeCaseUpperCase = getSnakeCaseUpperCase;
 exports.getInputType = getInputType;
 exports.getInputField = getInputField;
+exports.getLabelString = getLabelString;
 
 

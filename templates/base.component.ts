@@ -66,7 +66,6 @@ export class BaseComponent implements OnInit {
 	}
 
 	ngOnInit() {
-		//this.rest.getNetworkMonitor().subscribe((is_loading)=>
 	}
 
 	showError(error:any) {

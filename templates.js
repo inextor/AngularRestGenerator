@@ -1,4 +1,4 @@
-const { toCamelCaseUpperCase,getInputField,toCamelCase,getSnakeCaseUpperCase,getInputType,cpFile  } = require('./functions.js');
+const { toCamelCaseUpperCase,getInputField,toCamelCase,getSnakeCaseUpperCase,getInputType,cpFile,getLabelString  } = require('./functions.js');
 
 module.exports = class Template
 {
@@ -200,7 +200,7 @@ module.exports = class Template
 			let input_field = getInputField(field,table_name+postfix,contraints, schema );
 
 			return a+`\t\t\t<div class="mt-3 mb-3 form-group">
-				<label class="">${field.Field.charAt(0).toUpperCase()+field.Field.substring(1)}</label>
+				<label class="">${getLabelString( field.Field)}</label>
 				${input_field}
 			</div>\n`
 		},'\n');
@@ -216,7 +216,7 @@ module.exports = class Template
 			let input_field = getInputField(field,table_name,contraints,schema);
 
 			return a+`\t\t\t<div class="col-6">
-				<label class="">${field.Field.charAt(0).toUpperCase()+field.Field.substring(1)}</label>
+				<label class="">${getLabelString( field.Field)}</label>
 				${input_field}
 			</div>\n`
 		},'\n');
