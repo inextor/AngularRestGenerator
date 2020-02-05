@@ -10,7 +10,7 @@ use \akou\DBTable;
 use \akou\RestController;
 use \akou\ArrayUtils;
 use \akou\ValidationException;
-
+use \akou\LoggableException;
 
 
 class Service extends SuperRest
