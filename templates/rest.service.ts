@@ -118,7 +118,7 @@ TEMPLATE_OBJ_REST_INITIALIZATION
 		return event_string;
 	}
 
-	getErrorMessage( error )
+	getErrorMessage( error ):string
 	{
 		if( error == null || error === undefined)
 			return 'Error desconocido';
