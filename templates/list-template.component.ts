@@ -64,7 +64,7 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 
 					if( params[field ] )
 					{
-						this.TABLE_NAME_search[ k ][ f ] = params[ field ];
+						this.TABLE_NAME_search[ k ][ f ] = params[field] === 'null' ? null : params[ field ];
 					}
 				});
 			});
@@ -93,7 +93,8 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 			if(array.indexOf( i ) > -1 )
 			{
 				for(let j in this.TABLE_NAME_search[i])
-					search[i+'.'+j] = this.TABLE_NAME_search[i][j];
+					if( this.TABLE_NAME_search[i][j] !== null && this.TABLE_NAME_search[i][j] !== 'null')
+						search[i+'.'+j] = this.TABLE_NAME_search[i][j];
 			}
 		}
 
