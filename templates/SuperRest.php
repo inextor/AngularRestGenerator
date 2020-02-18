@@ -45,12 +45,10 @@ class SuperRest extends \akou\RestController
 
 	function getStartLikeConstraints( $array, $table_name)
 	{
-		error_log( json_encode(array_keys( $_GET )) );
 		$constraints = array();
 
 		foreach( $array as $index )
 		{
-			error_log( $index.'^' );
 			if( isset( $_GET[$index.'^'] ) && $_GET[$index.'^'] !== '' )
 			{
 				$constraints[] = ($table_name?$table_name.'.':'').$index.' LIKE "'.DBTable::escape($_GET[ $index.'^' ]).'%"';
@@ -85,7 +83,6 @@ class SuperRest extends \akou\RestController
 			//error_log('Index'.$index.'>~ = '.$_GET[$index.'>~'] );
 			if( isset( $_GET[$index.'>~'] ) && $_GET[$index.'>~'] !== '' )
 			{
-				error_log("YEP");
 				$constraints[] = ($table_name?$table_name.'.':'').$index.' >= "'.DBTable::escape( $_GET[ $index.'>~' ]).'"';
 			}
 		}
