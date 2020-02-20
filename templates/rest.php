@@ -59,7 +59,7 @@ class Service extends SuperRest
 			$is_assoc	= $this->isAssociativeArray( $params );
 			$result		= $this->batchInsert( $is_assoc  ? array($params) : $params );
 			DBTable::commit();
-			return $this->sendStatus( $e->code )->json( $is_assoc ? $result[0] : $result );
+			return $this->sendStatus( 200 )->json( $is_assoc ? $result[0] : $result );
 		}
 		catch(LoggableException $e)
 		{
@@ -87,7 +87,7 @@ class Service extends SuperRest
 			$is_assoc	= $this->isAssociativeArray( $params );
 			$result		= $this->batchUpdate( $is_assoc  ? array($params) : $params );
 			DBTable::commit();
-			return $this->sendStatus( $e->code )->json( $is_assoc ? $result[0] : $result );
+			return $this->sendStatus( 200 )->json( $is_assoc ? $result[0] : $result );
 		}
 		catch(LoggableException $e)
 		{
@@ -161,6 +161,46 @@ class Service extends SuperRest
 
 		return $results;
 	}
+
+	/*
+	function delete()
+	{
+		try
+		{
+			app::connect();
+			DBTable::autocommit( false );
+
+			if( empty( $_GET['id'] ) )
+			{
+				${{TABLE_NAME}} = new {{TABLE_NAME}}();
+				${{TABLE_NAME}}->id = $_GET['id'];
+
+				if( !${{TABLE_NAME}}->load(true) )
+				{
+					throw new NotFoundException('The element was not found');
+				}
+
+				if( !${{TABLE_NAME}}->deleteDb() )
+				{
+					throw new SystemException('An error occourred, please try again later');
+				}
+
+			}
+			DBTable::commit();
+			return $this->sendStatus( 200 )->json( ${{TABLE_NAME}}->toArray() );
+		}
+		catch(LoggableException $e)
+		{
+			DBTable::rollback();
+			return $this->sendStatus( $e->code )->json(array("error"=>$e->getMessage()));
+		}
+		catch(Exception $e)
+		{
+			DBTable::rollback();
+			return $this->sendStatus( 500 )->json(array("error"=>$e->getMessage()));
+		}
+	}
+	*/
 }
 $l = new Service();
 $l->execute();
