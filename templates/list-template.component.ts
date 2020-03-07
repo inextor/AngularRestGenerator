@@ -11,7 +11,7 @@ import { Title } from '@angular/platform-browser';
 TEMPLATE_MODEL_IMPORTS
 
 @Component({
-	selector: 'app-TABLE_NAME_DASH',
+	selector: 'app-list-TABLE_NAME_DASH',
 	templateUrl: './list-TABLE_NAME_DASH.component.html',
 	styleUrls: ['./list-TABLE_NAME_DASH.component.css']
 })
@@ -24,6 +24,11 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 
 	TABLE_NAME_search:SearchObject<TABLE_NAME_SNAKE_CASE_UPPERCASE> = {
 
+
+	};
+
+	search_extra = {
+
 	};
 
 	constructor( public rest:RestService, public router:Router, public route:ActivatedRoute, public location: Location, public titleService:Title)
@@ -35,7 +40,7 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 	{
 		this.route.queryParams.subscribe( params =>
 		{
-
+			this.company = this.rest.getCompanyFromSession();
 
 			this.TABLE_NAME_search = {
 				eq: {},
@@ -66,8 +71,28 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 					{
 						this.TABLE_NAME_search[ k ][ f ] = params[field] === 'null' ? null : params[ field ];
 					}
+					else
+					{
+						this.TABLE_NAME_search[ k ][ f ] = null;
+					}
 				});
 			});
+
+
+			/*
+			let extra_keys = ['parameter_extra_1','parameter_extra_2'];
+			extra_keys.forEach(i=>
+			{
+				if( params[ 'search_extra.'+i ] )
+				{
+					this.search_extra[ i ] = params['search_extra.'+i ] === 'null' ? null : params[ 'search_extra.'+i ];
+				}
+				else
+				{
+					this.search_extra[ i ] = null;
+				}
+			});
+			*/
 
 			console.log('Search', this.TABLE_NAME_search);
 
@@ -96,6 +121,12 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 					if( this.TABLE_NAME_search[i][j] !== null && this.TABLE_NAME_search[i][j] !== 'null')
 						search[i+'.'+j] = this.TABLE_NAME_search[i][j];
 			}
+		}
+
+		for(let i in this.search_extra )
+		{
+			if( this.search_extra[ i ] !== null && this.search_extra[ i ] !== 'null' )
+				search['search_extra.'+i] =  this.search_extra[ i ];
 		}
 
 		console.log( search );

@@ -102,7 +102,7 @@ function getInputField(field_info,table_name,constraints,tables_info)
 			}
 
 			return `<select name="${name}" [(ngModel)]="${ngmodel}" class="form-control">
-					<option [value]="null">Select</option>
+					<option [ngValue]="null">Select</option>
 					<option *ngFor="let c of ${f.REFERENCED_TABLE_NAME}_list" [value]="c.${f.REFERENCED_COLUMN_NAME}">{{c.${field_name}}}</option>
 				</select>`;
 		}
