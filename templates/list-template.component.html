@@ -21,10 +21,12 @@
 		</div>
 	</div -->
 
-	<div>
+	<div  class="card p-3 mt-3">
 		<!-- div class="row">
 				TEMPLATE_LIST_TABLE_HEADERS
 		</div -->
+		<app-loading [is_loading]="is_loading"></app-loading>
+		<div class="alert alert-light m-3" role="alert" *ngIf="TABLE_NAME_list == null || TABLE_NAME_list.length == 0 && !is_loading">No elements found</div>
 		<div  *ngFor="let TABLE_NAME of TABLE_NAME_list" class="row">
 		TEMPLATE_LIST_TABLE_VALUES
 		</div>
