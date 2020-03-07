@@ -83,6 +83,7 @@ createDirectory('./dist/').then(()=>
 
     let routes				= [];
     let routeImports		= [];
+	let dot_file			= 'digraph G {\n';
 
 	console.log('ng g c pages/base');
 	console.log('ng g c components/loading');
@@ -94,6 +95,9 @@ createDirectory('./dist/').then(()=>
 			continue;
 
 		let tinfo  = template.createTableInfo( i,schema[i], schema );
+
+		console.log("Arrows returned "+tinfo.arrows);
+		dot_file += tinfo.arrows;
 
 		console.log('ng g c pages/list-'+tinfo.dash_table_name );
 		console.log('ng g c pages/save-'+tinfo.dash_table_name );
@@ -164,6 +168,8 @@ createDirectory('./dist/').then(()=>
 		save_html_links	+= tinfo.link_save+'\n';
 	}
 
+	dot_file += '}';
+
 	rest_file_content = responses.rest_service
 				.replace(/TEMPLATE_IMPORT_MODELS_TEMPLATE/g,rest_imports )
 				.replace(/TEMPLATE_OBJ_REST_DECLARATION/g,rest_declarations )
@@ -180,6 +186,7 @@ createDirectory('./dist/').then(()=>
 	filesPromises.push( fs.writeFile('./dist/angular/app-routing.module.ts',app_routing_module_ts_content ) );
 	filesPromises.push( fs.writeFile('./dist/angular/models/RestModels.ts', models_file_string ) );
 	filesPromises.push( fs.writeFile('./dist/angular/components/navigation-menu/navigation-menu.component.html',navigationComponentFile ) );
+	filesPromises.push( fs.writeFile('./dist/schema.dot', dot_file ) );
 
 	return Promise.all( filesPromises );
 })
