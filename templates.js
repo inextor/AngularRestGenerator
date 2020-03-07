@@ -60,20 +60,20 @@ module.exports = class Template
 		{
 			return `if( this.${table.name}.id )
 				{
-				        this.rest.${table.name}.get( this.${table.name}.id ).subscribe((${table.name})=>
-						{
-							this.is_loading = false;
-							this.${table.name}= ${table.name};
-						},(error)=>
-						{
-							this.is_loading = false;
-							this.showError( error );
-						});\n
+					this.is_loading = true;
+				    this.rest.${table.name}.get( this.${table.name}.id ).subscribe((${table.name})=>
+					{
+						this.is_loading = false;
+						this.${table.name}= ${table.name};
+					},(error)=>this.showError( error ));
 				}`;
 		}
 		else if( fork_joins_save.length == 1 )
 		{
 			return `
+
+				this.is_loading = true;
+
 				if( this.${table.name}.id )
 				{
 					forkJoin([
@@ -82,10 +82,11 @@ module.exports = class Template
 					])
 					.subscribe((responses)=>
 					{
-						let fj_index = 0;
 						this.${table.name} = responses[0];
 						this.${fork_joins_save[0]}_list = responses[1].data;
-					});
+
+						this.is_loading = false;
+					},(error)=>this.showError(error));
 				}
 				else
 				{
@@ -93,7 +94,8 @@ module.exports = class Template
 					.subscribe((response)=>
 					{
 						this.${fork_joins_save[0]}_list = response.data;
-					});
+						this.is_loading = false;
+					},(error)=>showError(error));
 				}`;
 		}
 
@@ -110,6 +112,7 @@ module.exports = class Template
 
 
 		return `
+				this.is_loading = true;
 				if( this.${table.name}.id )
 				{
 					forkJoin([
@@ -120,7 +123,8 @@ module.exports = class Template
 					{
 						this.${table.name}= responses[ 0 ];
 						${assignations_1.join('\n\t\t\t\t\t\t')}
-					});
+						this.is_loading = false;
+					},(error)=>this.showError(error));
 				}
 				else
 				{
@@ -130,7 +134,8 @@ module.exports = class Template
 					.subscribe((responses)=>
 					{
 						${assignations_0.join('\n\t\t\t\t\t\t')}
-					});
+						this.is_loading = false;
+					},(error)=>this.showError(error));
 				}`;
 	}
 
@@ -139,12 +144,15 @@ module.exports = class Template
 		if( table.fork_joins_list.length == 0 )
 		{
 			return `
-				this.rest.${table.name}.search(this.${table.name}_search)
+
+				this.is_loading = true;
+				this.rest.${table.name}.search(this.${table.name}_search, this.search_extra)
 				.subscribe((response)=>
 				{
 					this.setPages( this.${table.name}_search.page, response.total );
 					this.${table.name}_list = response.data;
-				});
+					this.is_loading = false;
+				},(error)=>this.showError(error));
 			`;
 		}
 
@@ -156,16 +164,18 @@ module.exports = class Template
 		fork_joins_list.forEach((b,index)=> assignations.push( `this.${b}_list = responses[ ${index+1} ].data;`) );
 
 		return `
+			this.is_loading = true;
 			forkJoin([
-				this.rest.${table.name}.search(this.${table.name}_search)
-				,${observables.join(',')}
+				this.rest.${table.name}.search(this.${table.name}_search,this.search_extra),
+				${observables.join(',')}
 			])
 			.subscribe((responses)=>
 			{
 				this.${table.name}_list = responses[0].data;
 				this.setPages( this.${table.name}_search.page, responses[0].total );
 				${assignations.join('\n\t\t\t\t')}
-			});`;
+				this.is_loading = false;
+			},(error)=>this.showError(error));`;
 	}
 
 	getForkJoinDeclaration(table, fork_join_table_names )
@@ -199,7 +209,7 @@ module.exports = class Template
 
 			let input_field = getInputField(field,table_name+postfix,contraints, schema );
 
-			return a+`\t\t\t<div class="mt-3 mb-3 form-group">
+			return a+`\t\t\t<div class="col-6 col-md-3 form-group">
 				<label class="">${getLabelString( field.Field)}</label>
 				${input_field}
 			</div>\n`
@@ -215,7 +225,7 @@ module.exports = class Template
 
 			let input_field = getInputField(field,table_name,contraints,schema);
 
-			return a+`\t\t\t<div class="col-6">
+			return a+`\t\t\t<div class="col-6 col-md-3">
 				<label class="">${getLabelString( field.Field)}</label>
 				${input_field}
 			</div>\n`
@@ -302,8 +312,13 @@ module.exports = class Template
 
 		table.import_both.push( table.name );
 
+		table.arrows				= '';
+
 		info.contraints.forEach((k,index)=>
 		{
+
+			table.arrows += k.REFERENCED_TABLE_NAME+'->'+table.name+';\n';
+
 			if( table.fork_joins_save.indexOf( k.REFERENCED_TABLE_NAME  ) == -1 )
 				table.fork_joins_save.push( k.REFERENCED_TABLE_NAME );
 
