@@ -96,7 +96,6 @@ createDirectory('./dist/').then(()=>
 
 		let tinfo  = template.createTableInfo( i,schema[i], schema );
 
-		console.log("Arrows returned "+tinfo.arrows);
 		dot_file += tinfo.arrows;
 
 		console.log('ng g c pages/list-'+tinfo.dash_table_name );
