@@ -141,6 +141,7 @@ function getInputField(field_info,table_name,constraints,tables_info)
 		let options = field_info.Type.replace(/enum\((.*)\)/,'$1').split(',');
 
 		let s =`<select name="${name}" [(ngModel)]="${ngmodel}" class="form-control">\n`;
+			s+='\t\t\t\t\t<option [ngValue]="null">Select</option>\n';
 		options.forEach((i)=>
 		{
 			let t = i.replace(/'(.*)'/,'$1');
