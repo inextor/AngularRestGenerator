@@ -64,13 +64,11 @@ class Service extends SuperRest
 		catch(LoggableException $e)
 		{
 			DBTable::rollback();
-			error_log("LOGABBLE");
 			return $this->sendStatus( $e->code )->json(array("error"=>$e->getMessage()));
 		}
 		catch(Exception $e)
 		{
 			DBTable::rollback();
-			error_log("CATCH HERE");
 			return $this->sendStatus( 500 )->json(array("error"=>$e->getMessage()));
 		}
 	}
@@ -92,13 +90,11 @@ class Service extends SuperRest
 		catch(LoggableException $e)
 		{
 			DBTable::rollback();
-			error_log("LOGABBLE");
 			return $this->sendStatus( $e->code )->json(array("error"=>$e->getMessage()));
 		}
 		catch(Exception $e)
 		{
 			DBTable::rollback();
-			error_log("CATCH HERE");
 			return $this->sendStatus( 500 )->json(array("error"=>$e->getMessage()));
 		}
 
