@@ -71,19 +71,18 @@ module.exports = class Template
 		else if( fork_joins_save.length == 1 )
 		{
 			return `
-
 				this.is_loading = true;
 
 				if( this.${table.name}.id )
 				{
-					forkJoin([
-						this.rest.${table.name}.get(  this.${table.name}.id  ),
-						this.rest.${fork_joins_save[0]}.getAll({})
-					])
+					forkJoin({
+						${table.name} : this.rest.${table.name}.get(  this.${table.name}.id  ),
+						${ fork_joins_save[0]} : this.rest.${fork_joins_save[0]}.getAll({})
+					})
 					.subscribe((responses)=>
 					{
 						this.${table.name} = responses[0];
-						this.${fork_joins_save[0]}_list = responses[1].data;
+						this.${fork_joins_save[0]}_list = responses.${fork_joins_save[1]}.data;
 
 						this.is_loading = false;
 					},(error)=>this.showError(error));
@@ -104,10 +103,10 @@ module.exports = class Template
 		let assignations_0	= [];
 		let assignations_1	= [];
 
-		fork_joins_save.forEach((b)=> observables.push( `this.rest.${b}.getAll({})`) );
+		fork_joins_save.forEach((b)=> observables.push( `${b} : this.rest.${b}.getAll({})`) );
 		fork_joins_save.forEach((b,index)=>{
-			assignations_0.push( `this.${b}_list = responses[ ${index} ].data;` )
-			assignations_1.push( `this.${b}_list = responses[ ${index+1} ].data;` )
+			assignations_0.push( `this.${b}_list = responses.${b}.data;` )
+			assignations_1.push( `this.${b}_list = responses.${b}.data;` )
 		});
 
 
@@ -115,13 +114,13 @@ module.exports = class Template
 				this.is_loading = true;
 				if( this.${table.name}.id )
 				{
-					forkJoin([
+					forkJoin({
 						this.rest.${table.name}.get( this.${table.name}.id )
 						,${observables.join('\n\t\t\t\t\t\t,')}
-					])
+					})
 					.subscribe((responses)=>
 					{
-						this.${table.name}= responses[ 0 ];
+						this.${table.name}= responses.${table.name};
 						${assignations_1.join('\n\t\t\t\t\t\t')}
 						this.is_loading = false;
 					},(error)=>this.showError(error));
@@ -160,19 +159,19 @@ module.exports = class Template
 		let observables	 = [];
 		let assignations	= [];
 
-		fork_joins_list.forEach((b)=> observables.push( `\n\t\t\t\tthis.rest.${b}.getAll({})` ) );
-		fork_joins_list.forEach((b,index)=> assignations.push( `this.${b}_list = responses[ ${index+1} ].data;`) );
+		fork_joins_list.forEach((b)=> observables.push( `\n\t\t\t\t${b} : this.rest.${b}.getAll({})` ) );
+		fork_joins_list.forEach((b,index)=> assignations.push( `this.${b}_list = responses.${b}.data;`) );
 
 		return `
 			this.is_loading = true;
-			forkJoin([
-				this.rest.${table.name}.search(this.${table.name}_search,this.search_extra),
+			forkJoin({
+				${table.name} : this.rest.${table.name}.search(this.${table.name}_search,this.search_extra),
 				${observables.join(',')}
-			])
+			})
 			.subscribe((responses)=>
 			{
-				this.${table.name}_list = responses[0].data;
-				this.setPages( this.${table.name}_search.page, responses[0].total );
+				this.${table.name}_list = responses.${table.name}.data;
+				this.setPages( this.${table.name}_search.page, responses.${table.name}.total );
 				${assignations.join('\n\t\t\t\t')}
 				this.is_loading = false;
 			},(error)=>this.showError(error));`;
