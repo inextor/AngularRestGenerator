@@ -3,6 +3,9 @@ import { HttpClient, HttpHeaders,HttpParams,HttpErrorResponse } from '@angular/c
 
 export interface RestResponse<T>{
 	total:number;
+	sum?:number;
+	min?:number;
+	max?:number;
 	data:T[];
 }
 
@@ -51,7 +54,7 @@ export class ObjRest<T>{
 	{
 		if( localStorage.getItem('session_token') == null )
 		{
-			console.log("THer is no session token");
+			//console.log("THer is no session token");
 			return new HttpHeaders();
 		}
 
@@ -70,13 +73,19 @@ export class ObjRest<T>{
 	{
 		let params = new HttpParams();
 
-		for(let i in extraParams )
+		for( let i in extraParams )
 		{
+			if( extraParams[i] == null || extraParams[i] === '' )
+				continue;
+
 			params = params.set(i,''+extraParams[i]);
 		}
 
-		for(let i in search)
+		for( let i in search)
 		{
+			if( search[i] == null )
+				continue;
+
 			if( search[i ] )
 				params = params.set(i,''+search[i]);
 		}
@@ -99,9 +108,9 @@ export interface SearchObject<T>
 	{
 		let params = new HttpParams();
 
-		console.log('eq', searchObj.eq );
+//		console.log('eq', searchObj.eq );
 		for(let i in searchObj.eq )
-			if( searchObj.eq[i] )
+			if( searchObj.eq[i] && searchObj.eq[i] !== null )
 				params = params.set(i,''+searchObj.eq[i] );
 
 		for(let i in searchObj.gt )
