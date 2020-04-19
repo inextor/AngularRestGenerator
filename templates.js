@@ -282,6 +282,27 @@ module.exports = class Template
 		}
 		return '';
 	}
+
+	getInsertUpdateFunction(table_name)
+	{
+		return `
+			function update${table_name}}($old_id,$newParams){
+				$old = ${table_name}::get($old_id);
+				if( $old == null )
+					throw new ValidationException('${table_name} not found');
+
+				$properties = ${table_name}::getAllPropertiesExcept('created','updated','id');
+				$old->assignationFromArray($params,$properties);
+				$old->unsetEmptyValues( DBTable::UNSET_EMPTY );
+
+				if( $old->updateDb( $properties ) )
+				{
+
+				}
+			}
+		`
+	}
+
 	getImportComponent(table)
 	{
 
