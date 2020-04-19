@@ -107,7 +107,12 @@ class Service extends SuperRest
 
 		foreach($array as $params )
 		{
-			${{TABLE_NAME}} = {{TABLE_NAME}}::createFromArray( $params );
+
+			$properties = ${table_name}::getAllPropertiesExcept('created','updated','id');
+
+			${{TABLE_NAME}} = new {{TABLE_NAME}}();
+			${{TABLE_NAME}}->assignFromArray( $params, $properties );
+			${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_EMPTY );
 
 			if( !${{TABLE_NAME}}->insert() )
 			{
@@ -132,7 +137,7 @@ class Service extends SuperRest
 			{
 				${{TABLE_NAME}}->setWhereString( true );
 
-				$properties = {{TABLE_NAME}}::getAllPropertiesExcept('created','updated');
+				$properties = {{TABLE_NAME}}::getAllPropertiesExcept('id','created','updated');
 				${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_ALL );
 
 				if( !${{TABLE_NAME}}->updateDb( $properties ) )
