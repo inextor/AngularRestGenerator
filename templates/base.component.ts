@@ -12,9 +12,9 @@ import { Title } from '@angular/platform-browser';
 
 
 @Component({
-  selector: 'app-base',
-  templateUrl: './base.component.html',
-  styleUrls: ['./base.component.css']
+	selector: 'app-base',
+	templateUrl: './base.component.html',
+	styleUrls: ['./base.component.css']
 })
 
 export class BaseComponent implements OnInit {
@@ -32,7 +32,11 @@ export class BaseComponent implements OnInit {
 
 	constructor(public rest: RestService, public router: Router, public route: ActivatedRoute, public location: Location, public titleService: Title)
 	{
-		//	super( rest,router,route,location,titleService);
+		//super( rest,router,route,location,titleService);
+		this.rest.hideMenu();
+	}
+
+	ngOnInit() {
 	}
 
 	setPages(currentPage:number,totalItems:number)
@@ -41,19 +45,14 @@ export class BaseComponent implements OnInit {
 		this.pages.splice(0,this.pages.length);
 		this.totalItems = totalItems;
 
-		console.log('Calculo con el pie derecho',this.totalPages, this.totalItems,  (this.totalPages % this.totalItems) );
 		if( ( this.totalItems % this.pageSize ) > 0 )
 		{
 			this.totalPages = Math.floor(this.totalItems/this.pageSize)+1;
-			console.log('First');
 		}
 		else
 		{
-			console.log('Second');
 			this.totalPages = this.totalItems/this.pageSize;
 		}
-
-		console.log('TOTAL Pages',this.totalPages,'current',this.currentPage,'total items',this.totalItems );
 
 		for(let i=this.currentPage-5;i<this.currentPage+5;i++)
 		{
@@ -62,48 +61,19 @@ export class BaseComponent implements OnInit {
 				this.pages.push( i );
 			}
 		}
-		console.log( this.pages );
+
+		this.is_loading = false;
+		this.rest.scrollTop();
 	}
 
-	ngOnInit() {
-	}
-
-	showError(error:any) {
-		this.is_loading	= false;
-		let str_error	= this.getErrorMessage( error );
-		this.rest.showError({ message: str_error, type:'alert-danger' });
-	}
-
-	getErrorMessage( error:any )
+	showSuccess(str:string):void
 	{
-		if( error == null || error === undefined)
-			return 'Error desconocido';
+		this.rest.showErrorMessage(new ErrorMessage( str,'alert-success' ));
+	}
 
-
-
-		if( typeof error === "string" )
-			return error;
-
-		if( 'error' in error )
-		{
-			if( typeof( error.error ) === "string" )
-				return error.error;
-
-			console.log('Test ',error.error );
-
-			if( error.error && 'error' in error.error &&  typeof(error.error.error ) === "string" )
-			{
-				 return error.error.error;
-			}
-		}
-		if( error instanceof HttpErrorResponse )
-		{
-			return error.statusText;
-		}
-		else
-		{
-			return 'Error desconocido';
-		}
+	showError(error:any):void {
+		this.is_loading = false;
+		this.rest.showError(error);
 	}
 
 	public setTitle(newTitle: string) {

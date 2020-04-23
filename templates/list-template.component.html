@@ -26,9 +26,22 @@
 				TEMPLATE_LIST_TABLE_HEADERS
 		</div -->
 		<app-loading [is_loading]="is_loading"></app-loading>
-		<div class="alert alert-light m-3" role="alert" *ngIf="TABLE_NAME_list == null || TABLE_NAME_list.length == 0 && !is_loading">No elements found</div>
-		<div  *ngFor="let TABLE_NAME of TABLE_NAME_list" class="row">
-		TEMPLATE_LIST_TABLE_VALUES
+		<div class="table-responsive">
+			<table class="table table-sm table-nowrap mb-0">
+				<thead>
+					<tr>
+TEMPLATE_LIST_HEADERS
+					</tr>
+				</thead>
+				<tbody>
+					<tr *ngFor="let TABLE_NAME of TABLE_NAME_list">
+TEMPLATE_LIST_VALUES
+					</tr>
+					<tr *ngIf="TABLE_NAME_list == null || TABLE_NAME_list.length == 0 && !is_loading" colspan="TEMPLATE_HEADERS_SIZE">
+						<div class="alert alert-light m-3" role="alert">No elements found</div>
+					</tr>
+				</tbody>
+			</table>
 		</div>
 	</div>
 	<app-pagination [path]="'/list-TABLE_NAME_DASH'" [pages]="pages" [totalPages]="totalPages" [currentPage]="currentPage"></app-pagination>

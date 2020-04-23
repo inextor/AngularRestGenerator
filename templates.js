@@ -19,7 +19,7 @@ module.exports = class Template
 	getModel( table, field_str )
 	{
 		let modelFields ={};
-		return `export interface ${table.snake_case_uppercase} {
+		return `export interface ${table.snake_case_uppercase}{
 	${field_str}
 }`;
 	}
@@ -190,7 +190,7 @@ module.exports = class Template
 		let fff = [];
 
 		fields.forEach(f=>{
-			fff.push(f.Field+'?\t:'+getInputType( f.Type )+';');
+			fff.push(f.Field+'?:'+getInputType( f.Type )+';');
 		});
 
 		return fff.join('\n\t');
@@ -208,10 +208,10 @@ module.exports = class Template
 
 			let input_field = getInputField(field,table_name+postfix,contraints, schema );
 
-			return a+`\t\t\t<div class="col-6 col-md-3 form-group">
+			return a+`\t\t\t\t<div class="col-6 col-md-3 form-group">
 				<label class="">${getLabelString( field.Field)}</label>
-				${input_field}
-			</div>\n`
+					${input_field}
+				</div>\n`
 		},'\n');
 
 	}
@@ -245,7 +245,7 @@ module.exports = class Template
 
 		return array.join('\n\t\t\t');
 	}
-	getTableListValues(fields,table_name)
+	getTableListValueOld(fields,table_name)
 	{
 		//return fields.reduce((a,b)=> a+'\t\t\t<td>{{'+table_name+'.'+b.Field+'}}</td>\r','');
 		return fields.reduce((a,b)=>
@@ -256,8 +256,28 @@ module.exports = class Template
 
 			return a+column;
 		},'');
+
 	}
 
+	getTableListHeaders(fields,table_name)
+	{
+		return fields.reduce((a,b)=>
+		{
+			return a+'\t\t\t\t\t\t<th>'+b.Field+'</th>\n';
+		},'');
+	}
+
+	getTableListValues(fields,table_name)
+	{
+		return fields.reduce((a,b)=>
+		{
+			if( b.Field == 'id' )
+				return a+'\t\t\t\t\t\t<td><a [routerLink]="[\'/edit-'+(table_name.replace(/_/g,'-'))+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></td>\n';
+			return a+'\t\t\t\t\t\t<td>{{'+table_name+'.'+b.Field+'}}</td>\n';
+		},'');
+	}
+
+	/*
 	getTableListHeaders(fields)
 	{
 		return fields.reduce
@@ -269,6 +289,7 @@ module.exports = class Template
 			},''
 		);
 	}
+	*/
 	getTemplateIdAssignation(table_name,fields)
 	{
 		let x = fields.find(f => f.Key == 'PRI' );

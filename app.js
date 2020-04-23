@@ -120,8 +120,8 @@ createDirectory('./dist/').then(()=>
 		duplas.push([ /TABLE_NAME_SNAKE_CASE_UPPERCASE/g,tinfo.snake_case_uppercase ]);
 		duplas.push([ /TABLE_NAME_CAMEL_CASE_UPPERCASE/g,tinfo.camel_case_uppercase ]);
 
-		duplas.push([ /TEMPLATE_LIST_TABLE_HEADERS/g, tinfo.table_list_headers ]);
-		duplas.push([ /TEMPLATE_LIST_TABLE_VALUES/g, tinfo.table_list_values ]);
+		duplas.push([ /TEMPLATE_LIST_HEADERS/g, tinfo.table_list_headers ]);
+		duplas.push([ /TEMPLATE_LIST_VALUES/g, tinfo.table_list_values ]);
 		duplas.push([ /TEMPLATE_SEARCH_FIELDS/g, tinfo.search_fields ]);
 		duplas.push([ /TEMPLATE_SEARCH_PARAMS/g, tinfo.search_params ]);
 		duplas.push([ /TEMPLATE_SAVE_INPUTS/g, tinfo.table_save_inputs ]);
@@ -143,7 +143,7 @@ createDirectory('./dist/').then(()=>
 
 
 
-		models_file_string += tinfo.model+'\n\n';
+		models_file_string += tinfo.model+'\n';
 
 		filesPromises.push
 		(

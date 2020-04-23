@@ -112,7 +112,7 @@ class Service extends SuperRest
 
 			${{TABLE_NAME}} = new {{TABLE_NAME}}();
 			${{TABLE_NAME}}->assignFromArray( $params, $properties );
-			${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_EMPTY );
+			${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_BLANKS );
 
 			if( !${{TABLE_NAME}}->insert() )
 			{
@@ -135,10 +135,10 @@ class Service extends SuperRest
 
 			if( !empty( ${{TABLE_NAME}}->id ) )
 			{
-				${{TABLE_NAME}}->setWhereString( true );
+				${{TABLE_NAME}} = ${{TABLE_NAME}}->setWhereString( true );
 
 				$properties = {{TABLE_NAME}}::getAllPropertiesExcept('id','created','updated');
-				${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_ALL );
+				${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_BLANKS );
 
 				if( !${{TABLE_NAME}}->updateDb( $properties ) )
 				{
@@ -151,6 +151,7 @@ class Service extends SuperRest
 			}
 			else
 			{
+				${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_BLANKS );
 				if( !${{TABLE_NAME}}->insert() )
 				{
 					throw new ValidationException('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
