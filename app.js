@@ -6,8 +6,9 @@ let fs = require('fs').promises;
 let fso	= require('fs');
 
 let database_name_uppercase = process.argv[2].toUpperCase();
+let database_name			= process.argv[2];
 
-console.log( database_name_uppercase.toUpperCase() );
+
 
 template = new Template();
 
@@ -43,12 +44,13 @@ createDirectory('./dist/').then(()=>
 	promises.push( fs.readFile('./templates/list-template.component.ts',{ encoding:'utf8'}));
 	promises.push( fs.readFile('./templates/app-routing.module.ts',{ encoding:'utf8'}));
 	promises.push( fs.readFile('./templates/navigation-menu.component.html',{encoding:'utf8'}));
+	promises.push( fs.readFile('./templates/app.php',{ encoding:'utf8'}));
+	promises.push( fs.readFile('./templates/SuperRest.php',{ encoding:'utf8'}));
 
 	promises.push( fs.copyFile('./templates/ObjRest.ts','./dist/angular/services/ObjRest.ts') );
 	promises.push( fs.copyFile('./templates/base.component.ts','./dist/angular/pages/base/base.component.ts'));
 	promises.push( fs.copyFile('./templates/loading.component.ts','./dist/angular/components/loading/loading.component.ts'));
 	promises.push( fs.copyFile('./templates/loading.component.html','./dist/angular/components/loading/loading.component.html'));
-	promises.push( fs.copyFile('./templates/SuperRest.php','./dist/server/SuperRest.php'));
 
 	return Promise.all( promises );
 })
@@ -66,6 +68,8 @@ createDirectory('./dist/').then(()=>
 		,list_template_component_ts		: fileContents[5]
 		,app_routing_module_ts			: fileContents[6]
 		,navigation_menu_template		: fileContents[7]
+		,appphp_content					: fileContents[8]
+		,superRest_content				: fileContents[9]
 	}
 })
 .then((responses)=>
@@ -174,6 +178,17 @@ createDirectory('./dist/').then(()=>
 				.replace(/TEMPLATE_OBJ_REST_DECLARATION/g,rest_declarations )
 				.replace(/TEMPLATE_OBJ_REST_INITIALIZATION/g,rest_initialization );
 
+	//let phpfile = responses.restphp.replace(/{{TABLE_NAME}}/g,tinfo.name).replace(/DATABASE_NAME_UPPERCASE/g,database_name_uppercase);
+	let appphp_content =responses.appphp_content
+		.replace(/DATABASE_NAME_UPPERCASE/g,database_name_uppercase)
+		.replace(/DATABASE_NAME/g,database_name);
+
+	let superRest_content	=responses.superRest_content
+		.replace(/DATABASE_NAME_UPPERCASE/g,database_name_uppercase)
+		.replace(/DATABASE_NAME/g,database_name);
+
+
+
     let app_routing_module_ts_content = responses.app_routing_module_ts.replace(/ROUTE_IMPORT_CLASES/g,routeImports.join('\n'))
 		.replace(/ROUTES_DECLARATION/g,routes.join(','))
 
@@ -181,6 +196,8 @@ createDirectory('./dist/').then(()=>
 		.replace(/TEMPLATE_LIST_LINKS/,list_html_links )
 		.replace(/TEMPLATE_SAVE_LINKS/,save_html_links );
 
+	filesPromises.push( fs.writeFile('./dist/server/app.php',appphp_content) );
+	filesPromises.push( fs.writeFile('./dist/server/SuperRest.php',superRest_content) );
 	filesPromises.push( fs.writeFile('./dist/angular/services/rest.service.ts', rest_file_content ) );
 	filesPromises.push( fs.writeFile('./dist/angular/app-routing.module.ts',app_routing_module_ts_content ) );
 	filesPromises.push( fs.writeFile('./dist/angular/models/RestModels.ts', models_file_string ) );
