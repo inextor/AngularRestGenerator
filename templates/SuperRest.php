@@ -1,5 +1,5 @@
 <?php
-namespace ARCHBEL;
+namespace DATABASE_NAME_UPPERCASE;
 
 include_once( __DIR__.'/app.php' );
 include_once( __DIR__.'/akou/src/ArrayUtils.php');
