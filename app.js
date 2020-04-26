@@ -92,6 +92,13 @@ createDirectory('./dist/').then(()=>
 	console.log('ng g c pages/base');
 	console.log('ng g c components/loading');
 	console.log('ng g c components/navigation-menu');
+	console.log('ng g c components/modal');
+	console.log('ng g c components/pagination');
+	console.log('ng g c components/toast-error');
+	console.log('ng g c components/image-uploader');
+	console.log('ng g c components/attachment-uploader');
+	console.log('ng g c pages/login');
+	console.log('ng g c pages/home');
 
 	for(let i in schema)
 	{
