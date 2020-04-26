@@ -99,6 +99,7 @@ createDirectory('./dist/').then(()=>
 	console.log('ng g c components/attachment-uploader');
 	console.log('ng g c pages/login');
 	console.log('ng g c pages/home');
+	console.log('ng g component components/header');
 
 	for(let i in schema)
 	{
