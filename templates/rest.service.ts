@@ -85,6 +85,34 @@ TEMPLATE_OBJ_REST_INITIALIZATION
 		return headers;
 	}
 
+	getFilePath(file_id:number):string
+	{
+		return this.urlBase+'/attachment.php?id='+file_id;
+	}
+
+	getImagePath(image1_id:number,image2_id:number=null,image3_id:number=null,image4_id:number=null,image5_id:number=null):string
+	{
+		//console.log(image1_id,image2_id,image3_id,image4_id,image5_id);
+
+		if( image1_id )
+			return this.urlBase+'/image.php?id='+image1_id;
+
+		//console.log('dos');
+		if( image2_id )
+			return this.urlBase+'/image.php?id='+image2_id;
+
+		//console.log('tres');
+		if( image3_id )
+			return this.urlBase+'/image.php?id='+image3_id;
+
+		//console.log('cuatro');
+		if( image4_id )
+			return this.urlBase+'/image.php?id='+image4_id;
+
+		//console.log('cinco');
+		return this.urlBase+'/image.php?id='+image5_id;
+	}
+
 
 	/* 2019-04-03 */
 
