@@ -20,7 +20,7 @@ export class SaveTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 	{
 		this.route.paramMap.subscribe( params =>
 		{
-			this.company = this.rest.getCompanyFromSession();
+			//this.company = this.rest.getCompanyFromSession();
 
 			TEMPLATE_ID_ASSIGNATION;
 

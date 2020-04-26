@@ -3,7 +3,7 @@
 		<div class="row align-items-end">
 			<div class="col">
 				<h6 class="header-pretitle">{{TABLE_NAME.id ? 'Update':'Add New'}}</h6>
-				<h1 class="header-title"> {{ 'TABLE_NAME_SPACES' | titlecase }}</h1>
+				<h1 class="header-title"> {{ TABLE_NAME.id ? TABLE_NAME.id :'TABLE_NAME_SPACES' | titlecase }}</h1>
 			</div>
 		</div>
 	</div>

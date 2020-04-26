@@ -7,6 +7,29 @@ import { catchError,flatMap } from 'rxjs/operators';
 
 TEMPLATE_IMPORT_MODELS_TEMPLATE
 
+
+export class ErrorMessage{
+
+	message:string;
+	type:string;
+
+	constructor(message:string,type:string)
+	{
+		this.message = message;
+		this.type = type;
+	}
+}
+
+export interface DateDupla
+{
+	date: Date;
+	value: number;
+}
+
+export interface StringKey{
+	[key:string]:number;
+}
+
 @Injectable({
 	providedIn: 'root'
 })
@@ -55,7 +78,6 @@ TEMPLATE_OBJ_REST_INITIALIZATION
 	{
 		if( localStorage.getItem('session_token') == null )
 		{
-			console.log("THer is no session token");
 			return new HttpHeaders();
 		}
 
@@ -64,9 +86,14 @@ TEMPLATE_OBJ_REST_INITIALIZATION
 	}
 
 
-	getLocalDateFromMysqlString(str:string)
+	/* 2019-04-03 */
+
+	getLocalDateFromMysqlString(str:string):Date
 	{
 		let components = str.split(/-|:|\s/g);
+
+		if( components.length == 3 )
+			components.push('0','0','0');
 		let d = new Date(parseInt( components[0] ), //Year
 				parseInt(components[1])-1, //Month
 				parseInt(components[2]), //Day
@@ -93,14 +120,19 @@ TEMPLATE_OBJ_REST_INITIALIZATION
 		return d;
 	}
 
-	getMysqlStringFromLocaDate(d:Date):string
+	getMysqlStringFromLocalDate(d:Date):string
 	{
+		let zero = (v)=>{
+			if( v > 9 )
+				return ''+v;
+			return '0'+v;
+		};
 		 let event_string = d.getFullYear()
-								+'-'+(d.getMonth()+1)
-								+'-'+d.getDate()
-								+' '+d.getHours()
-								+':'+d.getMinutes()
-								+':'+d.getSeconds();
+								+'-'+zero(d.getMonth()+1)
+								+'-'+zero(d.getDate() )
+								+' '+zero(d.getHours() )
+								+':'+zero(d.getMinutes() )
+								+':'+zero(d.getSeconds() );
 
 		return event_string;
 
@@ -108,33 +140,105 @@ TEMPLATE_OBJ_REST_INITIALIZATION
 
 	getMysqlStringFromDate(d:Date):string
 	{
+		let zero = (v)=>{
+			if( v > 9 )
+				return ''+v;
+			return '0'+v;
+		};
 			let event_string = d.getUTCFullYear()
-								+'-'+(d.getUTCMonth()+1)
-								+'-'+d.getUTCDate()
-								+' '+d.getUTCHours()
-								+':'+d.getUTCMinutes()
-								+':'+d.getUTCSeconds();
+							+'-'+zero(d.getUTCMonth()+1)
+							+'-'+zero(d.getUTCDate())
+							+' '+zero(d.getUTCHours())
+							+':'+zero(d.getUTCMinutes())
+							+':'+zero(d.getUTCSeconds());
 
 		return event_string;
 	}
 
-	getErrorMessage( error ):string
+	getErrorString( error ):string
 	{
 		if( error == null || error === undefined)
 			return 'Error desconocido';
 
-		if( typeof( error.error ) === "string" )
+		if( typeof error === "string" )
+			return error;
+
+		if( 'error' in error )
+		{
+			if( typeof(error.error) == 'string' )
+			{
 			return error.error;
+			}
 
-		console.log( error );
-
-		if( 'error' in error &&  typeof(error.error) !== "string" && 'error' in error.error )
+			if( error.error && 'error' in error.error && error.error.error )
 		{
 			 return error.error.error;
 		}
-		else if( error instanceof HttpErrorResponse )
+		}
+
+		if( error instanceof HttpErrorResponse )
 		{
 			return error.statusText;
 		}
+		else
+		{
+			return 'Error desconocido';
+		}
+
+	}
+
+	showSuccess(msg:string):void
+	{
+		this.showErrorMessage(new ErrorMessage( msg,'alert-success' ));
+	}
+
+	showError(error:any )
+	{
+		console.log('Error to display is',error );
+		if( error instanceof ErrorMessage )
+		{
+			this.showErrorMessage( error );
+			return;
+		}
+
+		let str_error	= this.getErrorString( error );
+		this.showErrorMessage(new ErrorMessage( str_error,'alert-danger' ));
+	}
+
+	showErrorMessage(error:ErrorMessage)
+	{
+		this.errorBehaviorSubject.next( error);
+	}
+	uploadImage(file:File,is_private:boolean=false):Observable<Image>
+	{
+		let fd = new FormData();
+		fd.append('image',file, file.name);
+		fd.append('is_private', is_private?'1':'0' );
+		return this.http.post(`${this.urlBase}/image.php`,fd,{headers:this.getSessionHeaders(),withCredentials:true});
+	}
+
+	uploadAttachment(file:File,is_private:boolean=false):Observable<AttachmentInfo>
+	{
+		let fd = new FormData();
+		fd.append('file',file, file.name);
+		fd.append('is_private', (is_private?'1':'0') );
+		return this.http.post<AttachmentInfo>(`${this.urlBase}/attachment.php`,fd,{headers:this.getSessionHeaders(),withCredentials:true});
+	}
+
+	public hideMenu():void
+	{
+		document.body.classList.remove('menu_open');
+	}
+
+	toggleMenu():void
+	{
+		document.body.classList.toggle('menu_open');
+	}
+
+	scrollTop()
+	{
+		let x = document.querySelector('.page_content>.custom_scrollbar');
+		if( x )
+			x.scrollTo(0,0);
 	}
 }

@@ -69,7 +69,7 @@ export class ObjRest<T>{
 		return this.http.get<T>(`${this.urlBase}`,{params,headers:this.getSessionHeaders(),withCredentials:true});
 	}
 
-	getAll(search:T,extraParams:any={}):Observable<RestResponse<T>>
+	search(searchObj:SearchObject<U>,extraParams:Object={}):Observable<RestResponse<T>>
 	{
 		let params = new HttpParams();
 

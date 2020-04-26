@@ -77,24 +77,24 @@ module.exports = class Template
 				{
 					forkJoin({
 						${table.name} : this.rest.${table.name}.get(  this.${table.name}.id  ),
-						${ fork_joins_save[0]} : this.rest.${fork_joins_save[0]}.getAll({})
+						${ fork_joins_save[0]} : this.rest.${fork_joins_save[0]}.search({})
 					})
 					.subscribe((responses)=>
 					{
 						this.${table.name} = responses[0];
-						this.${fork_joins_save[0]}_list = responses.${fork_joins_save[1]}.data;
+						this.${fork_joins_save[0]}_list = responses.${fork_joins_save[0]}.data;
 
 						this.is_loading = false;
 					},(error)=>this.showError(error));
 				}
 				else
 				{
-					this.rest.${fork_joins_save[0]}.getAll({})
+					this.rest.${fork_joins_save[0]}.search({})
 					.subscribe((response)=>
 					{
 						this.${fork_joins_save[0]}_list = response.data;
 						this.is_loading = false;
-					},(error)=>showError(error));
+					},(error)=>this.showError(error));
 				}`;
 		}
 
@@ -103,7 +103,7 @@ module.exports = class Template
 		let assignations_0	= [];
 		let assignations_1	= [];
 
-		fork_joins_save.forEach((b)=> observables.push( `${b} : this.rest.${b}.getAll({})`) );
+		fork_joins_save.forEach((b)=> observables.push( `${b} : this.rest.${b}.search({})`) );
 		fork_joins_save.forEach((b,index)=>{
 			assignations_0.push( `this.${b}_list = responses.${b}.data;` )
 			assignations_1.push( `this.${b}_list = responses.${b}.data;` )
@@ -115,8 +115,8 @@ module.exports = class Template
 				if( this.${table.name}.id )
 				{
 					forkJoin({
-						this.rest.${table.name}.get( this.${table.name}.id )
-						,${observables.join('\n\t\t\t\t\t\t,')}
+						${table.name} : this.rest.${table.name}.get( this.${table.name}.id ),
+						${observables.join(',\n\t\t\t\t\t\t')}
 					})
 					.subscribe((responses)=>
 					{
@@ -127,9 +127,9 @@ module.exports = class Template
 				}
 				else
 				{
-					forkJoin([
-						${observables.join('\n\t\t\t\t\t\t,')}
-					])
+					forkJoin({
+						${observables.join(',\n\t\t\t\t\t\t')}
+					})
 					.subscribe((responses)=>
 					{
 						${assignations_0.join('\n\t\t\t\t\t\t')}
@@ -159,14 +159,13 @@ module.exports = class Template
 		let observables	 = [];
 		let assignations	= [];
 
-		fork_joins_list.forEach((b)=> observables.push( `\n\t\t\t\t${b} : this.rest.${b}.getAll({})` ) );
+		fork_joins_list.forEach((b)=> observables.push( `\n\t\t\t\t${b} : this.rest.${b}.search({})` ) );
 		fork_joins_list.forEach((b,index)=> assignations.push( `this.${b}_list = responses.${b}.data;`) );
 
 		return `
 			this.is_loading = true;
 			forkJoin({
-				${table.name} : this.rest.${table.name}.search(this.${table.name}_search,this.search_extra),
-				${observables.join(',')}
+				${table.name} : this.rest.${table.name}.search(this.${table.name}_search,this.search_extra),${observables.join(',')}
 			})
 			.subscribe((responses)=>
 			{
@@ -209,9 +208,9 @@ module.exports = class Template
 			let input_field = getInputField(field,table_name+postfix,contraints, schema );
 
 			return a+`\t\t\t\t<div class="col-6 col-md-3 form-group">
-				<label class="">${getLabelString( field.Field)}</label>
-					${input_field}
-				</div>\n`
+					<label class="">${getLabelString( field.Field)}</label>
+						${input_field}
+					</div>\n`
 		},'\n');
 
 	}
@@ -224,10 +223,10 @@ module.exports = class Template
 
 			let input_field = getInputField(field,table_name,contraints,schema);
 
-			return a+`\t\t\t<div class="col-6 col-md-3">
-				<label class="">${getLabelString( field.Field)}</label>
-				${input_field}
-			</div>\n`
+			return a+`\t\t\t\t<div class="col-6 col-md-4">
+					<label class="">${getLabelString( field.Field)}</label>
+					${input_field}
+				</div>\n`
 		},'\n');
 	}
 	getSearchParams(table_name,fields )
@@ -312,7 +311,7 @@ module.exports = class Template
 				if( $old == null )
 					throw new ValidationException('${table_name} not found');
 
-				$properties = ${table_name}::getAllPropertiesExcept('created','updated','id');
+				$properties = ${table_name}::searchPropertiesExcept('created','updated','id');
 				$old->assignationFromArray($params,$properties);
 				$old->unsetEmptyValues( DBTable::UNSET_EMPTY );
 

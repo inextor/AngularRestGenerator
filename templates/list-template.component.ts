@@ -40,8 +40,6 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 	{
 		this.route.queryParams.subscribe( params =>
 		{
-			this.company = this.rest.getCompanyFromSession();
-
 			this.TABLE_NAME_search = {
 				eq: {},
 				gt: {},

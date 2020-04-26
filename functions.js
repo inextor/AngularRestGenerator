@@ -79,6 +79,10 @@ function getInputField(field_info,table_name,constraints,tables_info)
 	{
 		return `<app-image-uploader [(image)]="${table_name}.${name}"></app-image-uploader>`;
 	}
+	else if( name.endsWith('attachment_id') )
+	{
+		return `<app-attachment-uploader [default_message]="'${table_name}.${name}'" [(attachment_id)]="${table_name}.${name}"></app-attachment-uploader>`;
+	}
 
 	if( constraints)
 	{
