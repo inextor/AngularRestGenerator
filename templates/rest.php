@@ -56,6 +56,10 @@ class Service extends SuperRest
 
 		try
 		{
+			$user = app::getUserFromSession();
+			if( $user == null )
+				trhow new ValidationException('Please login');
+
 			$is_assoc	= $this->isAssociativeArray( $params );
 			$result		= $this->batchInsert( $is_assoc  ? array($params) : $params );
 			DBTable::commit();
@@ -82,6 +86,10 @@ class Service extends SuperRest
 
 		try
 		{
+			$user = app::getUserFromSession();
+			if( $user == null )
+				trhow new ValidationException('Please login');
+
 			$is_assoc	= $this->isAssociativeArray( $params );
 			$result		= $this->batchUpdate( $is_assoc  ? array($params) : $params );
 			DBTable::commit();
@@ -107,8 +115,7 @@ class Service extends SuperRest
 
 		foreach($array as $params )
 		{
-
-			$properties = ${table_name}::getAllPropertiesExcept('created','updated','id');
+			$properties = {{TABLE_NAME}}::getAllPropertiesExcept('created','updated','id');
 
 			${{TABLE_NAME}} = new {{TABLE_NAME}}();
 			${{TABLE_NAME}}->assignFromArray( $params, $properties );
@@ -171,6 +178,10 @@ class Service extends SuperRest
 		{
 			app::connect();
 			DBTable::autocommit( false );
+
+			$user = app::getUserFromSession();
+			if( $user == null )
+				trhow new ValidationException('Please login');
 
 			if( empty( $_GET['id'] ) )
 			{
