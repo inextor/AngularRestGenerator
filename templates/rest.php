@@ -58,7 +58,7 @@ class Service extends SuperRest
 		{
 			$user = app::getUserFromSession();
 			if( $user == null )
-				trhow new ValidationException('Please login');
+				throw new ValidationException('Please login');
 
 			$is_assoc	= $this->isAssociativeArray( $params );
 			$result		= $this->batchInsert( $is_assoc  ? array($params) : $params );
@@ -88,7 +88,7 @@ class Service extends SuperRest
 		{
 			$user = app::getUserFromSession();
 			if( $user == null )
-				trhow new ValidationException('Please login');
+				throw new ValidationException('Please login');
 
 			$is_assoc	= $this->isAssociativeArray( $params );
 			$result		= $this->batchUpdate( $is_assoc  ? array($params) : $params );
@@ -135,36 +135,65 @@ class Service extends SuperRest
 	function batchUpdate($array)
 	{
 		$results = array();
+		$insert_with_ids = false;
 
-		foreach($array as $params )
+		foreach($array as $index=>$params )
 		{
+			$properties = {{TABLE_NAME}}::getAllPropertiesExcept('created','updated');
+
 			${{TABLE_NAME}} = {{TABLE_NAME}}::createFromArray( $params );
 
-			if( !empty( ${{TABLE_NAME}}->id ) )
+			if( $insert_with_ids )
 			{
-				${{TABLE_NAME}} = ${{TABLE_NAME}}->setWhereString( true );
-
-				$properties = {{TABLE_NAME}}::getAllPropertiesExcept('id','created','updated');
-				${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_BLANKS );
-
-				if( !${{TABLE_NAME}}->updateDb( $properties ) )
+				if( !empty( ${{TABLE_NAME}}->id ) )
 				{
-					throw new ValidationException('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
+					if( ${{TABLE_NAME}}->load(true) )
+					{
+						${{TABLE_NAME}}->assignFromArray( $params, $properties );
+						${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_BLANKS );
+
+						if( !${{TABLE_NAME}}->update($properties) )
+						{
+							throw new ValidationException('It fails to update element #'.${{TABLE_NAME}}->id);
+						}
+					}
+					else
+					{
+						if( !${{TABLE_NAME}}->insertDb() )
+						{
+							throw new ValidationException('It fails to update element at index #'.$index);
+						}
+					}
 				}
-
-				${{TABLE_NAME}}->load(true);
-
-				$results [] = ${{TABLE_NAME}}->toArray();
 			}
 			else
 			{
-				${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_BLANKS );
-				if( !${{TABLE_NAME}}->insert() )
+				if( !empty( ${{TABLE_NAME}}->id ) )
 				{
-					throw new ValidationException('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
-				}
+					${{TABLE_NAME}} = ${{TABLE_NAME}}->setWhereString( true );
 
-				$results [] = ${{TABLE_NAME}}->toArray();
+					$properties = {{TABLE_NAME}}::getAllPropertiesExcept('id','created','updated');
+					${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_BLANKS );
+
+					if( !${{TABLE_NAME}}->updateDb( $properties ) )
+					{
+						throw new ValidationException('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
+					}
+
+					${{TABLE_NAME}}->load(true);
+
+					$results [] = ${{TABLE_NAME}}->toArray();
+				}
+				else
+				{
+					${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_BLANKS );
+					if( !${{TABLE_NAME}}->insert() )
+					{
+						throw new ValidationException('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
+					}
+
+					$results [] = ${{TABLE_NAME}}->toArray();
+				}
 			}
 		}
 
@@ -181,7 +210,7 @@ class Service extends SuperRest
 
 			$user = app::getUserFromSession();
 			if( $user == null )
-				trhow new ValidationException('Please login');
+				throw new ValidationException('Please login');
 
 			if( empty( $_GET['id'] ) )
 			{
