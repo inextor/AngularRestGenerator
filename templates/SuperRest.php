@@ -77,10 +77,8 @@ class SuperRest extends \akou\RestController
 	{
 		$constraints = [];
 
-		//error_log( 'KEYS'.join(',',array_keys( $_GET )) );
 		foreach( $array as $index )
 		{
-			//error_log('Index'.$index.'>~ = '.$_GET[$index.'>~'] );
 			if( isset( $_GET[$index.'>~'] ) && $_GET[$index.'>~'] !== '' )
 			{
 				$constraints[] = ($table_name?$table_name.'.':'').$index.' >= "'.DBTable::escape( $_GET[ $index.'>~' ]).'"';
@@ -94,10 +92,8 @@ class SuperRest extends \akou\RestController
 	{
 		$constraints = [];
 
-		//error_log( 'KEYS'.join(',',array_keys( $_GET )) );
 		foreach( $array as $index )
 		{
-			//error_log('Index'.$index.'>~ = '.$_GET[$index.'>~'] );
 			if( isset( $_GET[$index.'>'] ) && $_GET[$index.'>'] !== '' )
 			{
 				$constraints[] = ($table_name?$table_name.'.':'').$index.' > "'.DBTable::escape( $_GET[ $index.'>' ]).'"';
@@ -111,8 +107,18 @@ class SuperRest extends \akou\RestController
 		$constraints = [];
 		foreach( $array as $index )
 		{
+			if( isset( $_GET[$index.'<'] ) && $_GET[$index.'<'] !== '' )
+				$constraints[] = ($table_name?$table_name.'.':'').$index.' < "'.DBTable::escape( $_GET[ $index.'<' ]).'"';
+		}
+		return $constraints;
+	}
+	function getSmallestOrEqualThanConstraints($array,$table_name='')
+	{
+		$constraints = [];
+		foreach( $array as $index )
+		{
 			if( isset( $_GET[$index.'<~'] ) && $_GET[$index.'<~'] !== '' )
-				$constraints[] = ($table_name?$table_name.'.':'').$index.' < "'.DBTable::escape( $_GET[ $index.'<~' ]).'"';
+				$constraints[] = ($table_name?$table_name.'.':'').$index.' <= "'.DBTable::escape( $_GET[ $index.'<~' ]).'"';
 		}
 		return $constraints;
 	}
@@ -135,9 +141,10 @@ class SuperRest extends \akou\RestController
 		$bigger_than_constraints = $this->getBiggerThanConstraints( $key_constraints, $table_name );
 		$ge_constraints = $this->getBiggerOrEqualThanConstraints( $key_constraints, $table_name );
 		$smallest_than_constraints = $this->getSmallestThanConstraints( $key_constraints, $table_name );
+		$le_than_constraints = $this->getSmallestOrEqualThanConstraints( $key_constraints, $table_name );
 		$csv_constraints	= $this->getCsvConstraints( $key_constraints, $table_name );
 		$start_constraints			= $this->getStartLikeConstraints( $key_constraints, $table_name );
-		return array_merge( $like_constraints, $equal_constrints, $ge_constraints, $smallest_than_constraints, $csv_constraints,$start_constraints );
+		return array_merge( $like_constraints, $equal_constrints, $ge_constraints, $smallest_than_constraints,$le_than_constraints,$csv_constraints,$start_constraints );
 	}
 
 	function getSessionErrors($usuario,$roles = NULL )
@@ -153,8 +160,14 @@ class SuperRest extends \akou\RestController
 		}
 		return NULL;
 	}
+
 	function isAssociativeArray(array $array)
 	{
   		return count(array_filter(array_keys($array), 'is_string')) > 0;
+	}
+
+	function debugArray($label, $array )
+	{
+		error_log( $label.' '.print_r( $array, true ) );
 	}
 }
