@@ -17,6 +17,8 @@ TEMPLATE_MODEL_IMPORTS
 })
 
 export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent implements OnInit {
+	file:File = null;
+	show_import:boolean = false;
 
 	TABLE_NAME_list:TABLE_NAME_SNAKE_CASE_UPPERCASE[] = [];
 
@@ -30,11 +32,6 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 	search_extra = {
 
 	};
-
-	constructor( public rest:RestService, public router:Router, public route:ActivatedRoute, public location: Location, public titleService:Title)
-	{
-		super( rest,router,route,location,titleService);
-	}
 
 	ngOnInit()
 	{
@@ -130,4 +127,46 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 		console.log( search );
 		this.router.navigate(['/list-TABLE_NAME_DASH'],{queryParams: search});
 	}
+
+	onFileChanged(event)
+	{
+		if (event.target.files.length)
+		{
+			this.file = event.target.files[0];
+		}
+	}
+
+	uploadFile()
+	{
+		this.is_loading = true;
+		this.rest.xlsx2json( this.file,[TEMPLATE_FIELDS_NAMES]).then((json)=>
+		{
+			//Filter json then upload
+			this.rest.TABLE_NAME.batchUpdate(json).subscribe((result)=>
+			{
+				if( this.TABLE_NAME_list.length == 0 )
+				{
+					this.setPages( 0, result.length );
+					this.TABLE_NAME_list = result.slice(0,this.pageSize);
+				}
+				this.is_loading =  false;
+                this.show_import = false;
+                this.showSuccess('Imported succesfully '+result.length+' items');
+
+			},(error)=>this.showError(error));
+		});
+	}
+
+	exportFile()
+	{
+		this.is_loading = true;
+		this.rest.TABLE_NAME.search({limit:100000}).subscribe((response)=>
+		{
+			this.rest.array2xlsx(response.data,'TABLE_NAME.xlsx',[TEMPLATE_FIELDS_NAMES])
+			this.is_loading = false;
+		},(error)=>this.showError(error));
+	}
+
+
+
 }
