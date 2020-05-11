@@ -7,7 +7,9 @@
 				<h1 class="header-title"> {{ 'TABLE_NAME_SPACES' | titlecase }}</h1>
 			</div>
 			<div class="col-auto">
-				<a  [routerLink]="['/add-TABLE_NAME_DASH']" class="btn btn-primary lift"> Add TABLE_NAME_SPACES</a>
+				<button type="button" class="mr-2 btn btn-secondary lift" (click)="show_import=true">Importar</button>
+				<button type="button" class="mr-2 btn btn-secondary lift" (click)="exportFile()">Exportar</button>
+				<button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-TABLE_NAME_DASH']"> Add TABLE_NAME_SPACES</button>
 			</div>
 		</div>
 	</div>
@@ -46,3 +48,21 @@ TEMPLATE_LIST_VALUES
 	</div>
 	<app-pagination [path]="'/list-TABLE_NAME_DASH'" [pages]="pages" [totalPages]="totalPages" [currentPage]="currentPage"></app-pagination>
 </div>
+<app-modal [(show)]="show_import">
+    <div class="card p-3">
+        <h2>Import excel</h2>
+        <div class="from-group mb-3">
+            <label>Excel data</label>
+            <input name="file" type="file" (change)="onFileChanged($event)" accept="*/*" class="form-control">
+        </div>
+        <div class="row mt-3">
+            <div class="col-6">
+                <button type="button" class="btn btn-secondary w-100" (click)="show_import=false">Cancel</button>
+            </div>
+            <div class="col-6">
+                <button type="button" class="btn btn-primary w-100" (click)="uploadFile()" [disabled]="file==null">Upload</button>
+            </div>
+        </div>
+    </div>
+</app-modal>
+
