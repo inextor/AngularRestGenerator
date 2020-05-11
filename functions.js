@@ -106,9 +106,9 @@ function getInputField(field_info,table_name,constraints,tables_info)
 			}
 
 			return `<select name="${name}" [(ngModel)]="${ngmodel}" class="form-control">
-					<option [ngValue]="null">Select</option>
-					<option *ngFor="let c of ${f.REFERENCED_TABLE_NAME}_list" [value]="c.${f.REFERENCED_COLUMN_NAME}">{{c.${field_name}}}</option>
-				</select>`;
+						<option [ngValue]="null">Select</option>
+						<option *ngFor="let c of ${f.REFERENCED_TABLE_NAME}_list" [value]="c.${f.REFERENCED_COLUMN_NAME}">{{c.${field_name}}}</option>
+					</select>`;
 		}
 	}
 
@@ -145,13 +145,13 @@ function getInputField(field_info,table_name,constraints,tables_info)
 		let options = field_info.Type.replace(/enum\((.*)\)/,'$1').split(',');
 
 		let s =`<select name="${name}" [(ngModel)]="${ngmodel}" class="form-control">\n`;
-			s+='\t\t\t\t\t<option [ngValue]="null">Select</option>\n';
+			s+='\t\t\t\t\t\t<option [ngValue]="null">Select</option>\n';
 		options.forEach((i)=>
 		{
 			let t = i.replace(/'(.*)'/,'$1');
-			s+='\t\t\t\t\t<option value="'+t+'">'+(t.replace(/_/g,' '))+'</option>\n';
+			s+='\t\t\t\t\t\t<option value="'+t+'">'+(t.replace(/_/g,' '))+'</option>\n';
 		});
-		s+='\t\t\t\t</select>';
+		s+='\t\t\t\t\t</select>';
 		return s;
 	}
 	//else console.log( field_info.Type );
