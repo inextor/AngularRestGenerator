@@ -81,7 +81,7 @@ module.exports = class Template
 					})
 					.subscribe((responses)=>
 					{
-						this.${table.name} = responses[0];
+						this.${table.name} = responses.${table.name};
 						this.${fork_joins_save[0]}_list = responses.${fork_joins_save[0]}.data;
 
 						this.is_loading = false;
@@ -294,11 +294,9 @@ module.exports = class Template
 		let x = fields.find(f => f.Key == 'PRI' );
 		if( x )
 		{
-			let dataType = getInputType( x.Type );
-			if( dataType == 'string' )
-				return 'this.'+table_name+'.'+x.Field+' = params.get(\''+x.Field+'\')';
+			//let dataType = getInputType( x.Type );
 
-			return 'this.'+table_name+'.'+x.Field+' = params.get(\''+x.Field+'\') ==null ? null : parseInt(params.get(\''+x.Field+'\') );';
+			return 'this.'+table_name+'.'+x.Field+' = params.get(\''+x.Field+'\') );';
 		}
 		return '';
 	}
@@ -357,7 +355,14 @@ module.exports = class Template
 		info.contraints.forEach((k,index)=>
 		{
 
+
+
 			table.arrows += k.REFERENCED_TABLE_NAME+'->'+table.name+';\n';
+
+			if( k.REFERENCED_TABLE_NAME == 'image' || k.REFERENCED_TABLE_NAME == 'attachment' )
+			{
+				return;
+			}
 
 			if( table.fork_joins_save.indexOf( k.REFERENCED_TABLE_NAME  ) == -1 )
 				table.fork_joins_save.push( k.REFERENCED_TABLE_NAME );
@@ -396,8 +401,10 @@ module.exports = class Template
 		table.obj_rest_declaration		= `\tpublic ${table.snake_case}:ObjRest<${table.snake_case_uppercase}>;\n`;
 
 		table.obj_rest_initialization	= '\t\tthis.'+table.snake_case+'\t= new ObjRest<'+table.snake_case_uppercase+'>(`${this.urlBase}/'+table.name+'.php`,http);\n';
-		table.link_list	= '<li class="nav-item"> <a class="nav-link"  routerLink="/list-'+table.dash_table_name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
-		table.link_save = '<li class="nav-item"> <a class="nav-link"  routerLink="/add-'+table.dash_table_name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
+		table.link_list = `<a [routerLink]="['/list-${table.dash_table_name}']" routerlinkactive="active"><i class="fas fa-tools" aria-hidden="true"></i>${table.name.replace(/-/g,' ')}</a>`;
+		//table.link_list	= '<li class="nav-item"> <a class="nav-link"  routerLink="/list-'+table.dash_table_name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
+		//table.link_save = '<li class="nav-item"> <a class="nav-link"  routerLink="/add-'+table.dash_table_name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
+		table.link_save = `<a [routerLink]="['/add-${table.dash_table_name}']" routerlinkactive="active"><i class="fas fa-plus" aria-hidden="true"></i>${table.name.replace(/-/g,' ')}</a>`;
 
 
 		return table;
