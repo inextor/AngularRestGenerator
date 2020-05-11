@@ -103,12 +103,17 @@ createDirectory('./dist/').then(()=>
 
 	for(let i in schema)
 	{
-		if( i == 'configuracion' || i=='factura' )
-			continue;
 
 		let tinfo  = template.createTableInfo( i,schema[i], schema );
 
+
 		dot_file += tinfo.arrows;
+
+		models_file_string += tinfo.model+'\n';
+
+		if( i=='image' || i=='attachment')
+			continue;
+
 
 		console.log('ng g c pages/list-'+tinfo.dash_table_name );
 		console.log('ng g c pages/save-'+tinfo.dash_table_name );
@@ -143,9 +148,9 @@ createDirectory('./dist/').then(()=>
 		duplas.push([ /FORK_JOINS_DECLARATION_LIST/g, tinfo.fork_join_declaration_list ]);
 		duplas.push([ /TEMPLATE_MODEL_IMPORTS/g, tinfo.import_models ]);
 		duplas.push([ /TABLE_NAME/g,  tinfo.name ]);
-		duplas.push([ /TEMPLATE_ID_ASSIGNATION/, tinfo.template_id_assignation ]);
-		duplas.push([ /TEMPLATE_FIELDS_NAMES/,tinfo.template_field_names ]);
-		duplas.push([ /DATABASE_NAME_UPPERCASE/,database_name_uppercase ]);
+		duplas.push([ /TEMPLATE_ID_ASSIGNATION/g, tinfo.template_id_assignation ]);
+		duplas.push([ /TEMPLATE_FIELDS_NAMES/g,tinfo.template_field_names ]);
+		duplas.push([ /DATABASE_NAME_UPPERCASE/g,database_name_uppercase ]);
 
 
 		let list_template_component_html	= replace_template( responses.list_template_component_html, duplas );
@@ -155,7 +160,6 @@ createDirectory('./dist/').then(()=>
 
 
 
-		models_file_string += tinfo.model+'\n';
 
 		filesPromises.push
 		(
