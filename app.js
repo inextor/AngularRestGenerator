@@ -80,7 +80,7 @@ createDirectory('./dist/').then(()=>
 	let rest_imports		= '';
 	let rest_declarations	= '';
 	let rest_initialization	= '';
-	let models_file_string	= '';
+	let models_file_string	= '/* GENERATED AUTOMATICALLY PLEASE DO NOT EDIT */\n';
 
 	let save_html_links		= '';
 	let list_html_links		= '';
