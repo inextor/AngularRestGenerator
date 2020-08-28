@@ -218,7 +218,7 @@ module.exports = class Template
 	{
 		return fields.reduce((a,field)=>
 		{
-			if( field.Field == 'id' || field.Field == 'created' || field.Field == 'updated' )
+			if( field.Field == 'id' || field.Field == 'created' || field.Field == 'updated' || field.Field == 'tiempo_actualizacion' || field.Field == 'tiempo_creacion' )
 				return a;
 
 			let input_field = getInputField(field,table_name,contraints,schema);
@@ -262,7 +262,10 @@ module.exports = class Template
 	{
 		return fields.reduce((a,b)=>
 		{
-			return a+'\t\t\t\t\t\t<th>'+b.Field+'</th>\n';
+			if( b.Field == 'tiempo_creacion' || b.Field == 'tiempo_actualizacion')
+				return a;
+
+			return a+'\t\t\t\t\t\t<th>'+getLabelString( b.Field )+'</th>\n';
 		},'');
 	}
 
@@ -270,6 +273,9 @@ module.exports = class Template
 	{
 		return fields.reduce((a,b)=>
 		{
+			if( b.Field == 'tiempo_creacion' || b.Field == 'tiempo_actualizacion')
+				return a;
+
 			if( b.Field == 'id' )
 				return a+'\t\t\t\t\t\t<td><a [routerLink]="[\'/edit-'+(table_name.replace(/_/g,'-'))+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></td>\n';
 			return a+'\t\t\t\t\t\t<td>{{'+table_name+'.'+b.Field+'}}</td>\n';
@@ -296,7 +302,7 @@ module.exports = class Template
 		{
 			//let dataType = getInputType( x.Type );
 
-			return 'this.'+table_name+'.'+x.Field+' = params.get(\''+x.Field+'\') );';
+			return 'this.'+table_name+'.'+x.Field+' = params.get(\''+x.Field+'\');';
 		}
 		return '';
 	}
@@ -309,7 +315,7 @@ module.exports = class Template
 				if( $old == null )
 					throw new ValidationException('${table_name} not found');
 
-				$properties = ${table_name}::searchPropertiesExcept('created','updated','id');
+				$properties = ${table_name}::searchPropertiesExcept('created','updated','id','tiempo_actualizacion','tiempo_creacion');
 				$old->assignationFromArray($params,$properties);
 				$old->unsetEmptyValues( DBTable::UNSET_EMPTY );
 
