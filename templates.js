@@ -58,10 +58,10 @@ module.exports = class Template
 	{
 		if( fork_joins_save.length == 0 )
 		{
-			return `if( this.${table.name}.id )
+			return `if( params.has('id') )
 				{
 					this.is_loading = true;
-				    this.rest.${table.name}.get( this.${table.name}.id ).subscribe((${table.name})=>
+				    this.rest.${table.name}.get( params.get('id') ).subscribe((${table.name})=>
 					{
 						this.is_loading = false;
 						this.${table.name}= ${table.name};
@@ -73,10 +73,10 @@ module.exports = class Template
 			return `
 				this.is_loading = true;
 
-				if( this.${table.name}.id )
+				if( params.has('id') )
 				{
 					forkJoin({
-						${table.name} : this.rest.${table.name}.get(  this.${table.name}.id  ),
+						${table.name} : this.rest.${table.name}.get(  params.get('id')  ),
 						${ fork_joins_save[0]} : this.rest.${fork_joins_save[0]}.search({})
 					})
 					.subscribe((responses)=>
@@ -112,10 +112,10 @@ module.exports = class Template
 
 		return `
 				this.is_loading = true;
-				if( this.${table.name}.id )
+				if( params.has('id') )
 				{
 					forkJoin({
-						${table.name} : this.rest.${table.name}.get( this.${table.name}.id ),
+						${table.name} : this.rest.${table.name}.get( params.get('id') ),
 						${observables.join(',\n\t\t\t\t\t\t')}
 					})
 					.subscribe((responses)=>
@@ -209,8 +209,8 @@ module.exports = class Template
 
 			return a+`\t\t\t\t<div class="col-6 col-md-3 form-group">
 					<label class="">${getLabelString( field.Field)}</label>
-						${input_field}
-					</div>\n`
+					${input_field}
+				</div>\n`
 		},'\n');
 
 	}
@@ -297,13 +297,13 @@ module.exports = class Template
 	*/
 	getTemplateIdAssignation(table_name,fields)
 	{
-		let x = fields.find(f => f.Key == 'PRI' );
-		if( x )
-		{
-			//let dataType = getInputType( x.Type );
+		//let x = fields.find(f => f.Key == 'PRI' );
+		//if( x )
+		//{
+		//	let dataType = getInputType( x.Type );
 
-			return 'this.'+table_name+'.'+x.Field+' = params.get(\''+x.Field+'\');';
-		}
+		//	return 'this.'+table_name+'.'+x.Field+' = params.get(\''+x.Field+'\');';
+		//}
 		return '';
 	}
 

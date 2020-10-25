@@ -115,7 +115,7 @@ class Service extends SuperRest
 
 		foreach($array as $params )
 		{
-			$properties = {{TABLE_NAME}}::getAllPropertiesExcept('created','updated','id');
+			$properties = {{TABLE_NAME}}::getAllPropertiesExcept('created','updated','id','tiempo_actualizacion','tiempo_creacion');
 
 			${{TABLE_NAME}} = new {{TABLE_NAME}}();
 			${{TABLE_NAME}}->assignFromArray( $params, $properties );
@@ -139,7 +139,7 @@ class Service extends SuperRest
 
 		foreach($array as $index=>$params )
 		{
-			$properties = {{TABLE_NAME}}::getAllPropertiesExcept('created','updated');
+			$properties = {{TABLE_NAME}}::getAllPropertiesExcept('created','updated','tiempo_actualizacion','tiempo_creacion');
 
 			${{TABLE_NAME}} = {{TABLE_NAME}}::createFromArray( $params );
 
@@ -170,9 +170,9 @@ class Service extends SuperRest
 			{
 				if( !empty( ${{TABLE_NAME}}->id ) )
 				{
-					${{TABLE_NAME}} = ${{TABLE_NAME}}->setWhereString( true );
+					${{TABLE_NAME}}->setWhereString( true );
 
-					$properties = {{TABLE_NAME}}::getAllPropertiesExcept('id','created','updated');
+					$properties = {{TABLE_NAME}}::getAllPropertiesExcept('id','created','updated','tiempo_creacion','tiempo_actualizacion');
 					${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_BLANKS );
 
 					if( !${{TABLE_NAME}}->updateDb( $properties ) )
