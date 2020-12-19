@@ -1,9 +1,8 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders,HttpParams,HttpErrorResponse } from '@angular/common/http';
 import { Observable, BehaviorSubject,forkJoin, fromEvent,of} from 'rxjs';
-import { map } from 'rxjs/operators';
-import { ObjRest,RestResponse } from './ObjRest';
-import { catchError,flatMap } from 'rxjs/operators';
+import { map,flatMap,catchError } from 'rxjs/operators';
+import {Rest} from './Rest';
 
 TEMPLATE_IMPORT_MODELS_TEMPLATE
 
@@ -19,28 +18,18 @@ export class ErrorMessage{
 		this.type = type;
 	}
 }
-
-export interface DateDupla
-{
-	date: Date;
-	value: number;
-}
-
-export interface StringKey{
-	[key:string]:number;
-}
-
 @Injectable({
 	providedIn: 'root'
 })
 
 export class RestService {
-
-	urlBase:string = '';
+	/* Core variables */
 	public keyUpObserver:Observable<KeyboardEvent>;
 	public errorBehaviorSubject: BehaviorSubject<ErrorMessage>;
 	public errorObservable:Observable<ErrorMessage>;
+	urlBase:string = this.getUrlBase();
 
+	/* Rest variable declarations */
 
 TEMPLATE_OBJ_REST_DECLARATION
 
@@ -48,31 +37,23 @@ TEMPLATE_OBJ_REST_DECLARATION
 	constructor(private http: HttpClient)
 	{
 		//Produccion por cambiarx`x
-		this.urlBase = 'http://';
 		this.keyUpObserver = fromEvent<KeyboardEvent>( window.document.body, 'keyup' );
-
 		this.errorBehaviorSubject = new BehaviorSubject<ErrorMessage>(null);
 		this.errorObservable = this.errorBehaviorSubject.asObservable();
-
-		if( window.location.hostname.indexOf('127.0.0.1' ) == 0 )
-			this.urlBase = 'http://127.0.0.1/rest_test';
+	}
+     getUrlBase()
+     {
+		if( window.location.hostname.indexOf('127.0.' ) == 0 || window.location.hostname.indexOf('192.168') == 0 )
+			return window.location.protocol+'//'+window.location.hostname+'/PointOfSale';
 
 		if( window.location.hostname.indexOf('localhost') == 0 )
-			this.urlBase = 'http://127.0.0.1/rest_test';
-
-
-
-
-TEMPLATE_OBJ_REST_INITIALIZATION
+			return  window.location.protocol+'//127.0.0.1/PointOfSale';
 	}
 
-	//uploadImage(file:File,es_privada:boolean=false):Observable<Image>
-	//{
-	//	let fd = new FormData();
-	//	fd.append('image',file, file.name);
-	//	fd.append('is_privada', es_privada?'1':'0' );
-	//	return this.http.post(`${this.urlBase}/imagen.php`,fd,{headers:this.getSessionHeaders(),withCredentials:true});
-	//}
+	public initRest<T,U>(path:string)
+	{
+		return new Rest<T,U>(`${this.urlBase}/${path}.php`,this.http);
+	}
 
 	getSessionHeaders()
 	{
@@ -113,15 +94,44 @@ TEMPLATE_OBJ_REST_INITIALIZATION
 		return this.urlBase+'/image.php?id='+image5_id;
 	}
 
+	getAttachmentPath(id:number)
+	{
+		return this.urlBase+'/attachment.php?id='+id;
+	}
 
 	/* 2019-04-03 */
+	getPreferencesFromSession():Preferences
+	{
+		let preferences = localStorage.getItem('preferences');
 
+		if( preferences )
+			return JSON.parse( preferences );
+
+		return null;
+
+	}
+
+	getPreferencesInfo():Promise<Preferences>
+	{
+		return this.http.get<Preferences>(`${this.urlBase}/preferences.php?domain=${window.location.hostname}`)
+		.pipe
+		(
+			map(response=>{
+				localStorage.setItem("preferences", JSON.stringify( response ) );
+				return response;
+			})
+		).toPromise();
+	}
 	getLocalDateFromMysqlString(str:string):Date
 	{
+		if( str == null )
+			return null;
+
 		let components = str.split(/-|:|\s/g);
 
 		if( components.length == 3 )
 			components.push('0','0','0');
+
 		let d = new Date(parseInt( components[0] ), //Year
 				parseInt(components[1])-1, //Month
 				parseInt(components[2]), //Day
@@ -150,7 +160,7 @@ TEMPLATE_OBJ_REST_INITIALIZATION
 
 	getMysqlStringFromLocalDate(d:Date):string
 	{
-		let zero = (v)=>{
+		let zero = (v:number)=>{
 			if( v > 9 )
 				return ''+v;
 			return '0'+v;
@@ -163,12 +173,11 @@ TEMPLATE_OBJ_REST_INITIALIZATION
 								+':'+zero(d.getSeconds() );
 
 		return event_string;
-
 	}
 
 	getMysqlStringFromDate(d:Date):string
 	{
-		let zero = (v)=>{
+		let zero = (v:number)=>{
 			if( v > 9 )
 				return ''+v;
 			return '0'+v;
@@ -183,7 +192,7 @@ TEMPLATE_OBJ_REST_INITIALIZATION
 		return event_string;
 	}
 
-	getErrorString( error ):string
+	getErrorString( error:any ):string
 	{
 		if( error == null || error === undefined)
 			return 'Error desconocido';
@@ -237,6 +246,7 @@ TEMPLATE_OBJ_REST_INITIALIZATION
 	{
 		this.errorBehaviorSubject.next( error);
 	}
+
 	uploadImage(file:File,is_private:boolean=false):Observable<Image>
 	{
 		let fd = new FormData();
@@ -308,4 +318,15 @@ TEMPLATE_OBJ_REST_INITIALIZATION
             let x = XLSX.writeFile( wb, filename );
             console.log( x );
     }
+	post(url:string,payload:Object):Observable<Object>
+	{
+		try{
+		console.log('Sending');
+		let postUrl= `${this.urlBase}/${url}`;
+		console.log('Url to post',postUrl);
+		return this.http.post(postUrl,JSON.stringify( payload ),{headers:this.getSessionHeaders(),withCredentials:true});
+		}catch(e){
+			console.log('Error here',e);
+		}
+	}
 }
