@@ -1,12 +1,13 @@
 import { Component, OnInit } from '@angular/core';
 import { RestService } from '../../services/rest.service';
-import { SearchObject } from '../../services/ObjRest';
+import { SearchObject } from '../../services/Rest';
 import { Router,ActivatedRoute } from "@angular/router"
 import { BaseComponent } from '../base/base.component';
 import { Location } from	'@angular/common';
 import { forkJoin } from 'rxjs';
 import { of } from 'rxjs';
 import { Title } from '@angular/platform-browser';
+import { StringDictionary } from '../../models/models';
 
 TEMPLATE_MODEL_IMPORTS
 
@@ -19,113 +20,36 @@ TEMPLATE_MODEL_IMPORTS
 export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent implements OnInit {
 	file:File = null;
 	show_import:boolean = false;
-
+	TABLE_NAME_search:SearchObject<TABLE_NAME_SNAKE_CASE_UPPERCASE> = { };
+	search_extra:StringDictionary<string> = { };
 	TABLE_NAME_list:TABLE_NAME_SNAKE_CASE_UPPERCASE[] = [];
 
 	FORK_JOINS_DECLARATION_LIST
 
-	TABLE_NAME_search:SearchObject<TABLE_NAME_SNAKE_CASE_UPPERCASE> = {
 
-
-	};
-
-	search_extra = {
-
-	};
 
 	ngOnInit()
 	{
+		this.path = '/list-TABLE_NAME_DASH';
 		this.route.queryParams.subscribe( params =>
 		{
-			this.TABLE_NAME_search = {
-				eq: {},
-				gt: {},
-				ge: {},
-				le: {},
-				lt: {},
-				lk: {},
-				csv: {},
-				start: {}
-			};
-
-
-			this.TABLE_NAME_search.limit = this.pageSize;
+			let fields = [ TEMPLATE_FIELDS_NAMES ];
+			this.TABLE_NAME_search = this.getSearchField(params, fields );
+			let extra_keys:Array<string> = []; //['search_param1','project_id','some_id'];
+            this.search_extra = this.getSearchExtra(params, extra_keys);
 
 			this.titleService.setTitle('TABLE_NAME');
-
-			let keys = ['eq','le','lt','ge','gt','csv','lk'];
-			let fields = [ TEMPLATE_FIELDS_NAMES ]
-
-			keys.forEach((k)=>
-			{
-				fields.forEach((f)=>
-				{
-					let field = k+"."+f;
-
-					if( params[field ] )
-					{
-						this.TABLE_NAME_search[ k ][ f ] = params[field] === 'null' ? null : params[ field ];
-					}
-					else
-					{
-						this.TABLE_NAME_search[ k ][ f ] = null;
-					}
-				});
-			});
-
-
-			/*
-			let extra_keys = ['parameter_extra_1','parameter_extra_2'];
-			extra_keys.forEach(i=>
-			{
-				if( params[ 'search_extra.'+i ] )
-				{
-					this.search_extra[ i ] = params['search_extra.'+i ] === 'null' ? null : params[ 'search_extra.'+i ];
-				}
-				else
-				{
-					this.search_extra[ i ] = null;
-				}
-			});
-			*/
 
 			console.log('Search', this.TABLE_NAME_search);
 
 			this.is_loading = true;
 			this.TABLE_NAME_search.page =	'page' in params ? parseInt( params.page ) : 0;
+			this.TABLE_NAME_search.limit = this.pageSize;
 			this.currentPage = this.TABLE_NAME_search.page;
 
 			FORK_JOINS_LIST
 
 		});
-	}
-
-	search()
-	{
-		this.is_loading = true;
-		this.TABLE_NAME_search.page = 0;
-
-		let search = {};
-		let array = ['eq','le','lt','ge','gt','csv','lk'];
-		for(let i in this.TABLE_NAME_search )
-		{
-			console.log( 'i',i,array.indexOf( i ) );
-			if(array.indexOf( i ) > -1 )
-			{
-				for(let j in this.TABLE_NAME_search[i])
-					if( this.TABLE_NAME_search[i][j] !== null && this.TABLE_NAME_search[i][j] !== 'null')
-						search[i+'.'+j] = this.TABLE_NAME_search[i][j];
-			}
-		}
-
-		for(let i in this.search_extra )
-		{
-			if( this.search_extra[ i ] !== null && this.search_extra[ i ] !== 'null' )
-				search['search_extra.'+i] =  this.search_extra[ i ];
-		}
-
-		console.log( search );
-		this.router.navigate(['/list-TABLE_NAME_DASH'],{queryParams: search});
 	}
 
 	onFileChanged(event)
@@ -166,7 +90,4 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 			this.is_loading = false;
 		},(error)=>this.showError(error));
 	}
-
-
-
 }
