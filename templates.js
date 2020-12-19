@@ -26,13 +26,15 @@ module.exports = class Template
 	getImportRoutes( table )
 	{
 		return 'import {Save'+toCamelCaseUpperCase( table.name )+ 'Component} from \'./pages/save-'+table.dash_table_name+'/save-'+ table.dash_table_name+'.component\';\n'+
-				'import {List'+toCamelCaseUpperCase( table.name )+ 'Component} from \'./pages/list-'+ table.dash_table_name+'/list-'+table.dash_table_name+'.component\';\n'
+				'import {List'+toCamelCaseUpperCase( table.name )+ 'Component} from \'./pages/list-'+ table.dash_table_name+'/list-'+table.dash_table_name+'.component\';\n'+
+				'import {View'+toCamelCaseUpperCase( table.name )+ 'Component} from \'./pages/view-'+ table.dash_table_name+'/view-'+table.dash_table_name+'.component\';\n'
 	}
 	getRoutes( table )
 	{
 		return '{ path:\'list-'+table.dash_table_name+'\' , component: List'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\',canActivate:[AuthGuard] }\n'+
 				',{ path:\'add-'+table.dash_table_name+'\' , component: Save'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\',canActivate:[AuthGuard] }\n'+
-				',{ path:\'edit-'+table.dash_table_name+'/:id\' , component: Save'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\',canActivate:[AuthGuard] }\n'
+				',{ path:\'edit-'+table.dash_table_name+'/:id\' , component: Save'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\',canActivate:[AuthGuard] }\n'+
+				',{ path:\'view-'+table.dash_table_name+'/:id\' , component: View'+toCamelCaseUpperCase(table.name)+'Component, pathMatch: \'full\',canActivate:[AuthGuard] }\n'
 	}
 
 	getImportModels(models)
@@ -46,13 +48,12 @@ module.exports = class Template
 	}
 	getObjRestDeclaration(table)
 	{
-		return `\tpublic ${table.snake_case}:ObjRest<${table.snake_case_uppercase}>;\n`;
+		return `\tpublic ${table.snake_case}:Rest<${table.snake_case_uppercase},${table.snake_case_uppercase}> = this.initRest('${table.snake_case}');\n`;
 	}
 	getRestInitialization( table )
 	{
-		return '\t\tthis.'+table.name+'\t= new ObjRest<'+table.snake_case_uppercase+'>(`${this.urlBase}/'+table.name+'.php`,http);\n';
+		return '\t\tthis.'+table.name+'\t= this.initRest(\''+table.name+'\');\n';
 	}
-
 
 	getForkJoinsSave(table, fork_joins_save )
 	{
@@ -251,7 +252,12 @@ module.exports = class Template
 		{
 			let column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+'}}</div>\n';
 			if( b.Field == 'id' )
+			{
 				column = '\t\t\t<div class="col"><a [routerLink]="[\'/edit-'+(table_name.replace(/_/g,'-'))+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></div>\n';
+			} else if( b.Field == "created"  || b.Field == "updated" || b.Field == 'tiempo_creacion' || b.Field=='tiempo_actualizacion' )
+			{
+				column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+' | date: \'short\' }}</div>\n';
+			}
 
 			return a+column;
 		},'');
@@ -277,7 +283,13 @@ module.exports = class Template
 				return a;
 
 			if( b.Field == 'id' )
+			{
 				return a+'\t\t\t\t\t\t<td><a [routerLink]="[\'/edit-'+(table_name.replace(/_/g,'-'))+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></td>\n';
+			}
+			else if( b.Field == "created"  || b.Field == "updated" || b.Field == 'tiempo_creacion' || b.Field=='tiempo_actualizacion' )
+			{
+				return a+'\t\t\t\t\t\t<td>{{'+table_name+'.'+b.Field+' | date: \'short\' }}</td>\n';
+			}
 			return a+'\t\t\t\t\t\t<td>{{'+table_name+'.'+b.Field+'}}</td>\n';
 		},'');
 	}
@@ -404,9 +416,9 @@ module.exports = class Template
 		table.fork_join_declaration_save	= this.getForkJoinDeclaration( table,table.fork_joins_save );
 
 		table.obj_rest_import			= `import {${table.snake_case_uppercase}} from '../models/RestModels';\n`;
-		table.obj_rest_declaration		= `\tpublic ${table.snake_case}:ObjRest<${table.snake_case_uppercase}>;\n`;
+		table.obj_rest_declaration		= this.getObjRestDeclaration( table );
 
-		table.obj_rest_initialization	= '\t\tthis.'+table.snake_case+'\t= new ObjRest<'+table.snake_case_uppercase+'>(`${this.urlBase}/'+table.name+'.php`,http);\n';
+		table.obj_rest_initialization	= '\t\tthis.'+table.snake_case+'\t= new Rest<'+table.snake_case_uppercase+','+table.snake_case_uppercase+'>(`${this.urlBase}/'+table.name+'.php`,http);\n';
 		table.link_list = `<a [routerLink]="['/list-${table.dash_table_name}']" routerlinkactive="active"><i class="fas fa-tools" aria-hidden="true"></i>${table.name.replace(/-/g,' ')}</a>`;
 		//table.link_list	= '<li class="nav-item"> <a class="nav-link"  routerLink="/list-'+table.dash_table_name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
 		//table.link_save = '<li class="nav-item"> <a class="nav-link"  routerLink="/add-'+table.dash_table_name+'" href="#" routerLinkActive="active"> <span data-feather="shopping-cart"></span> - '+(table.name.replace(/-/,' '))+'</a></li>';
