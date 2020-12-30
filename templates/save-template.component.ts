@@ -34,15 +34,17 @@ export class SaveTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 
 		if( this.TABLE_NAME.id	)
 		{
-			this.rest.TABLE_NAME.update( this.TABLE_NAME ).subscribe((TABLE_NAME)=>{
+			this.subs.sink	= this.rest.TABLE_NAME.update( this.TABLE_NAME ).subscribe((TABLE_NAME)=>{
 				this.is_loading = false;
 				this.router.navigate(['/list-TABLE_NAME_DASH']);
+				this.showSuccess('TABLE_NAME_SPACES se actualizo exitosamente');
 			},(error)=>this.showError(error));
 		}
 		else
 		{
-			this.rest.TABLE_NAME.create( this.TABLE_NAME ).subscribe((TABLE_NAME)=>{
+			this.subs.sink	= this.rest.TABLE_NAME.create( this.TABLE_NAME ).subscribe((TABLE_NAME)=>{
 				this.is_loading = false;
+				this.showSuccess('TABLE_NAME_SPACES se guardo exitosamente');
 				this.router.navigate(['/list-TABLE_NAME_DASH']);
 			},(error)=>this.showError(error));
 		}
