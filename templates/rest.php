@@ -1,5 +1,5 @@
 <?php
-namespace DATABASE_NAME_UPPERCASE;
+namespace APP;
 
 include_once( __DIR__.'/app.php' );
 include_once( __DIR__.'/akou/src/ArrayUtils.php');
@@ -21,32 +21,9 @@ class Service extends SuperRest
 		App::connect();
 		$this->setAllowHeader();
 
-		if( isset( $_GET['id'] ) && !empty( $_GET['id'] ) )
-		{
-			${{TABLE_NAME}} = {{TABLE_NAME}}::get( $_GET['id']  );
-
-			if( ${{TABLE_NAME}} )
-			{
-				return $this->sendStatus( 200 )->json( ${{TABLE_NAME}}->toArray() );
-			}
-			return $this->sendStatus( 404 )->json(array('error'=>'The element wasn\'t found'));
-		}
-
-
-		$constraints = $this->getAllConstraints( {{TABLE_NAME}}::getAllProperties() );
-
-		$constraints_str = count( $constraints ) > 0 ? join(' AND ',$constraints ) : '1';
-		$pagination	= $this->getPagination();
-
-		$sql_{{TABLE_NAME}}s	= 'SELECT SQL_CALC_FOUND_ROWS {{TABLE_NAME}}.*
-			FROM `{{TABLE_NAME}}`
-			WHERE '.$constraints_str.'
-			LIMIT '.$pagination->limit.'
-			OFFSET '.$pagination->offset;
-		$info	= DBTable::getArrayFromQuery( $sql_{{TABLE_NAME}}s );
-		$total	= DBTable::getTotalRows();
-		return $this->sendStatus( 200 )->json(array("total"=>$total,"data"=>$info));
+		return $this->genericGet("{{TABLE_NAME}}");
 	}
+
 	function post()
 	{
 		$this->setAllowHeader();
@@ -108,96 +85,15 @@ class Service extends SuperRest
 
 	}
 
-
 	function batchInsert($array)
 	{
-		$results = array();
-
-		foreach($array as $params )
-		{
-			$properties = {{TABLE_NAME}}::getAllPropertiesExcept('created','updated','id','tiempo_actualizacion','tiempo_creacion');
-
-			${{TABLE_NAME}} = new {{TABLE_NAME}}();
-			${{TABLE_NAME}}->assignFromArray( $params, $properties );
-			${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_BLANKS );
-
-			if( !${{TABLE_NAME}}->insert() )
-			{
-					throw new ValidationException('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
-			}
-
-			$results [] = ${{TABLE_NAME}}->toArray();
-		}
-
-		return $results;
+		return $this->genericInsert($array,"{{TABLE_NAME}}");
 	}
 
 	function batchUpdate($array)
 	{
-		$results = array();
 		$insert_with_ids = false;
-
-		foreach($array as $index=>$params )
-		{
-			$properties = {{TABLE_NAME}}::getAllPropertiesExcept('created','updated','tiempo_actualizacion','tiempo_creacion');
-
-			${{TABLE_NAME}} = {{TABLE_NAME}}::createFromArray( $params );
-
-			if( $insert_with_ids )
-			{
-				if( !empty( ${{TABLE_NAME}}->id ) )
-				{
-					if( ${{TABLE_NAME}}->load(true) )
-					{
-						${{TABLE_NAME}}->assignFromArray( $params, $properties );
-						${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_BLANKS );
-
-						if( !${{TABLE_NAME}}->update($properties) )
-						{
-							throw new ValidationException('It fails to update element #'.${{TABLE_NAME}}->id);
-						}
-					}
-					else
-					{
-						if( !${{TABLE_NAME}}->insertDb() )
-						{
-							throw new ValidationException('It fails to update element at index #'.$index);
-						}
-					}
-				}
-			}
-			else
-			{
-				if( !empty( ${{TABLE_NAME}}->id ) )
-				{
-					${{TABLE_NAME}}->setWhereString( true );
-
-					$properties = {{TABLE_NAME}}::getAllPropertiesExcept('id','created','updated','tiempo_creacion','tiempo_actualizacion');
-					${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_BLANKS );
-
-					if( !${{TABLE_NAME}}->updateDb( $properties ) )
-					{
-						throw new ValidationException('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
-					}
-
-					${{TABLE_NAME}}->load(true);
-
-					$results [] = ${{TABLE_NAME}}->toArray();
-				}
-				else
-				{
-					${{TABLE_NAME}}->unsetEmptyValues( DBTable::UNSET_BLANKS );
-					if( !${{TABLE_NAME}}->insert() )
-					{
-						throw new ValidationException('An error Ocurred please try again later',${{TABLE_NAME}}->_conn->error );
-					}
-
-					$results [] = ${{TABLE_NAME}}->toArray();
-				}
-			}
-		}
-
-		return $results;
+		return $this->genericUpdate($array, "{{TABLE_NAME}}", $insert_with_ids );
 	}
 
 	/*
@@ -205,31 +101,7 @@ class Service extends SuperRest
 	{
 		try
 		{
-			app::connect();
-			DBTable::autocommit( false );
-
-			$user = app::getUserFromSession();
-			if( $user == null )
-				throw new ValidationException('Please login');
-
-			if( empty( $_GET['id'] ) )
-			{
-				${{TABLE_NAME}} = new {{TABLE_NAME}}();
-				${{TABLE_NAME}}->id = $_GET['id'];
-
-				if( !${{TABLE_NAME}}->load(true) )
-				{
-					throw new NotFoundException('The element was not found');
-				}
-
-				if( !${{TABLE_NAME}}->deleteDb() )
-				{
-					throw new SystemException('An error occourred, please try again later');
-				}
-
-			}
-			DBTable::commit();
-			return $this->sendStatus( 200 )->json( ${{TABLE_NAME}}->toArray() );
+			return $this->genericDelete("{{TABLE_NAME}}");
 		}
 		catch(LoggableException $e)
 		{
