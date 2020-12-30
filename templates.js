@@ -62,7 +62,7 @@ module.exports = class Template
 			return `if( params.has('id') )
 				{
 					this.is_loading = true;
-				    this.rest.${table.name}.get( params.get('id') ).subscribe((${table.name})=>
+				    this.subs.sink	= this.rest.${table.name}.get( params.get('id') ).subscribe((${table.name})=>
 					{
 						this.is_loading = false;
 						this.${table.name}= ${table.name};
@@ -76,7 +76,7 @@ module.exports = class Template
 
 				if( params.has('id') )
 				{
-					forkJoin({
+					this.subs.sink = forkJoin({
 						${table.name} : this.rest.${table.name}.get(  params.get('id')  ),
 						${ fork_joins_save[0]} : this.rest.${fork_joins_save[0]}.search({})
 					})
@@ -90,7 +90,7 @@ module.exports = class Template
 				}
 				else
 				{
-					this.rest.${fork_joins_save[0]}.search({})
+					this.subs.sink = this.rest.${fork_joins_save[0]}.search({})
 					.subscribe((response)=>
 					{
 						this.${fork_joins_save[0]}_list = response.data;
@@ -115,7 +115,7 @@ module.exports = class Template
 				this.is_loading = true;
 				if( params.has('id') )
 				{
-					forkJoin({
+					this.subs.sink = forkJoin({
 						${table.name} : this.rest.${table.name}.get( params.get('id') ),
 						${observables.join(',\n\t\t\t\t\t\t')}
 					})
@@ -128,7 +128,7 @@ module.exports = class Template
 				}
 				else
 				{
-					forkJoin({
+					this.subs.sink	= forkJoin({
 						${observables.join(',\n\t\t\t\t\t\t')}
 					})
 					.subscribe((responses)=>
@@ -146,7 +146,7 @@ module.exports = class Template
 			return `
 
 				this.is_loading = true;
-				this.rest.${table.name}.search(this.${table.name}_search, this.search_extra)
+				this.subs.sink = this.rest.${table.name}.search(this.${table.name}_search, this.search_extra)
 				.subscribe((response)=>
 				{
 					this.setPages( this.${table.name}_search.page, response.total );
@@ -165,7 +165,7 @@ module.exports = class Template
 
 		return `
 			this.is_loading = true;
-			forkJoin({
+			this.subs.sink = forkJoin({
 				${table.name} : this.rest.${table.name}.search(this.${table.name}_search,this.search_extra),${observables.join(',')}
 			})
 			.subscribe((responses)=>
