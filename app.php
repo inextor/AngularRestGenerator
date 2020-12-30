@@ -1,6 +1,6 @@
 <?php
 
-namespace AngularRestGenerator;
+namespace APP;
 
 include_once( __DIR__.'/akou/src/LoggableException.php' );
 include_once( __DIR__.'/akou/src/Utils.php' );
