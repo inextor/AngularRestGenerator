@@ -219,7 +219,17 @@ module.exports = class Template
 	{
 		return fields.reduce((a,field)=>
 		{
-			if( field.Field == 'id' || field.Field == 'created' || field.Field == 'updated' || field.Field == 'tiempo_actualizacion' || field.Field == 'tiempo_creacion' )
+			let banned_fields =
+			[
+				'id',
+				'created',
+				'updated',
+				'tiempo_actualizacion',
+				'tiempo_creacion',
+				'created_by_user_id',
+				'updated_by_user_id'
+			];
+			if( banned_fields.indexOf( field.Field  ) !== -1 )
 				return a;
 
 			let input_field = getInputField(field,table_name,contraints,schema);
@@ -250,6 +260,30 @@ module.exports = class Template
 		//return fields.reduce((a,b)=> a+'\t\t\t<td>{{'+table_name+'.'+b.Field+'}}</td>\r','');
 		return fields.reduce((a,b)=>
 		{
+			if( b.Field == 'created_by_user_id' || b.Field == 'updated_by_user_id' )
+				return a;
+
+			let column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+'}}</div>\n';
+			if( b.Field == 'id' )
+			{
+				column = '\t\t\t<div class="col"><a [routerLink]="[\'/edit-'+(table_name.replace(/_/g,'-'))+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></div>\n';
+			} else if( b.Field == "created"  || b.Field == "updated" || b.Field == 'tiempo_creacion' || b.Field=='tiempo_actualizacion' )
+			{
+				column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+' | date: \'short\' }}</div>\n';
+			}
+
+			return a+column;
+		},'');
+
+	}
+
+	getTableListHeaders(fields,table_name)
+	{
+		return fields.reduce((a,b)=>
+		{
+			if( b.Field == 'created_by_user_id' || b.Field == 'updated_by_user_id' )
+				return a;
+
 			let column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+'}}</div>\n';
 			if( b.Field == 'id' )
 			{
@@ -271,6 +305,9 @@ module.exports = class Template
 			if( b.Field == 'tiempo_creacion' || b.Field == 'tiempo_actualizacion')
 				return a;
 
+			if( b.Field == 'created_by_user_id' || b.Field == 'updated_by_user_id' )
+				return a;
+
 			return a+'\t\t\t\t\t\t<th>'+getLabelString( b.Field )+'</th>\n';
 		},'');
 	}
@@ -279,6 +316,9 @@ module.exports = class Template
 	{
 		return fields.reduce((a,b)=>
 		{
+			if( b.Field == 'created_by_user_id' || b.Field == 'updated_by_user_id' )
+				return a;
+
 			if( b.Field == 'tiempo_creacion' || b.Field == 'tiempo_actualizacion')
 				return a;
 
