@@ -31,7 +31,7 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 	ngOnInit()
 	{
 		this.path = '/list-TABLE_NAME_DASH';
-		this.route.queryParams.subscribe( params =>
+		this.subs.sink = this.route.queryParams.subscribe( params =>
 		{
 			let fields = [ TEMPLATE_FIELDS_NAMES ];
 			this.TABLE_NAME_search = this.getSearchField(params, fields );
@@ -48,7 +48,6 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 			this.currentPage = this.TABLE_NAME_search.page;
 
 			FORK_JOINS_LIST
-
 		});
 	}
 
@@ -66,7 +65,7 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 		this.rest.xlsx2json( this.file,[TEMPLATE_FIELDS_NAMES]).then((json)=>
 		{
 			//Filter json then upload
-			this.rest.TABLE_NAME.batchUpdate(json).subscribe((result)=>
+			this.subs.sink	= this.rest.TABLE_NAME.batchUpdate(json).subscribe((result)=>
 			{
 				if( this.TABLE_NAME_list.length == 0 )
 				{
@@ -84,7 +83,7 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 	exportFile()
 	{
 		this.is_loading = true;
-		this.rest.TABLE_NAME.search({limit:100000}).subscribe((response)=>
+		this.subs.sink	= this.rest.TABLE_NAME.search({limit:100000}).subscribe((response)=>
 		{
 			this.rest.array2xlsx(response.data,'TABLE_NAME.xlsx',[TEMPLATE_FIELDS_NAMES])
 			this.is_loading = false;
