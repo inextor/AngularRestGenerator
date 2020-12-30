@@ -1,16 +1,13 @@
-<div class="container">
+<div class="container-fluid">
 
-	<div class="header-body mb-3">
-		<div class="row align-items-end">
-			<div class="col">
-				<h6 class="header-pretitle"> Overview </h6>
-				<h1 class="header-title"> {{ 'TABLE_NAME_SPACES' | titlecase }}</h1>
-			</div>
-			<div class="col-auto">
-				<button type="button" class="mr-2 btn btn-secondary lift" (click)="show_import=true">Importar</button>
-				<button type="button" class="mr-2 btn btn-secondary lift" (click)="exportFile()">Exportar</button>
-				<button type="button" class="ml-2 btn btn-secondary lift" [routerLink]="['/add-TABLE_NAME_DASH']"> Add TABLE_NAME_SPACES</button>
-			</div>
+	<div class="row align-items-end mx-0">
+		<div class="col">
+			<h4 class="text-capitalize">TABLE_NAME_SPACES</h4>
+		</div>
+		<div class="col-auto">
+			<button type="button" class="mr-2 btn btn-light lift" (click)="show_import=true">Importar</button>
+			<button type="button" class="mr-2 btn btn-light lift" (click)="exportFile()">Exportar</button>
+			<button type="button" class="ml-2 btn btn-light lift" [routerLink]="['/add-TABLE_NAME_DASH']"> Add TABLE_NAME_SPACES</button>
 		</div>
 	</div>
 
@@ -30,7 +27,7 @@
 		<app-loading [is_loading]="is_loading"></app-loading>
 		<div class="table-responsive">
 			<table class="table table-sm table-nowrap mb-0">
-				<thead>
+				<thead class="thead-light">
 					<tr>
 TEMPLATE_LIST_HEADERS
 					</tr>
@@ -49,20 +46,20 @@ TEMPLATE_LIST_VALUES
 	<app-pagination [path]="'/list-TABLE_NAME_DASH'" [pages]="pages" [totalPages]="totalPages" [currentPage]="currentPage"></app-pagination>
 </div>
 <app-modal [(show)]="show_import">
-    <div class="card p-3">
-        <h2>Import excel</h2>
-        <div class="from-group mb-3">
-            <label>Excel data</label>
-            <input name="file" type="file" (change)="onFileChanged($event)" accept="*/*" class="form-control">
-        </div>
-        <div class="row mt-3">
-            <div class="col-6">
-                <button type="button" class="btn btn-secondary w-100" (click)="show_import=false">Cancel</button>
-            </div>
-            <div class="col-6">
-                <button type="button" class="btn btn-primary w-100" (click)="uploadFile()" [disabled]="file==null">Upload</button>
-            </div>
-        </div>
-    </div>
+	<div class="card p-3">
+		<h2>Import excel</h2>
+		<div class="from-group mb-3">
+			<label>Excel data</label>
+			<input name="file" type="file" (change)="onFileChanged($event)" accept="*/*" class="form-control">
+		</div>
+		<div class="row mt-3">
+			<div class="col-6">
+				<button type="button" class="btn btn-secondary w-100" (click)="show_import=false">Cancel</button>
+			</div>
+			<div class="col-6">
+				<button type="button" class="btn btn-primary w-100" (click)="uploadFile()" [disabled]="file==null">Upload</button>
+			</div>
+		</div>
+	</div>
 </app-modal>
 
