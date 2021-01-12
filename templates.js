@@ -78,7 +78,7 @@ module.exports = class Template
 				{
 					this.subs.sink = forkJoin({
 						${table.name} : this.rest.${table.name}.get(  params.get('id')  ),
-						${ fork_joins_save[0]} : this.rest.${fork_joins_save[0]}.search({})
+						${ fork_joins_save[0]} : this.rest.${fork_joins_save[0]}.search({limit:9999})
 					})
 					.subscribe((responses)=>
 					{
@@ -90,7 +90,7 @@ module.exports = class Template
 				}
 				else
 				{
-					this.subs.sink = this.rest.${fork_joins_save[0]}.search({})
+					this.subs.sink = this.rest.${fork_joins_save[0]}.search({limit:9999})
 					.subscribe((response)=>
 					{
 						this.${fork_joins_save[0]}_list = response.data;
@@ -104,7 +104,7 @@ module.exports = class Template
 		let assignations_0	= [];
 		let assignations_1	= [];
 
-		fork_joins_save.forEach((b)=> observables.push( `${b} : this.rest.${b}.search({})`) );
+		fork_joins_save.forEach((b)=> observables.push( `${b} : this.rest.${b}.search({limit:9999})`) );
 		fork_joins_save.forEach((b,index)=>{
 			assignations_0.push( `this.${b}_list = responses.${b}.data;` )
 			assignations_1.push( `this.${b}_list = responses.${b}.data;` )
@@ -160,7 +160,7 @@ module.exports = class Template
 		let observables	 = [];
 		let assignations	= [];
 
-		fork_joins_list.forEach((b)=> observables.push( `\n\t\t\t\t${b} : this.rest.${b}.search({})` ) );
+		fork_joins_list.forEach((b)=> observables.push( `\n\t\t\t\t${b} : this.rest.${b}.search({limit:9999})` ) );
 		fork_joins_list.forEach((b,index)=> assignations.push( `this.${b}_list = responses.${b}.data;`) );
 
 		return `
@@ -267,9 +267,13 @@ module.exports = class Template
 			if( b.Field == 'id' )
 			{
 				column = '\t\t\t<div class="col"><a [routerLink]="[\'/edit-'+(table_name.replace(/_/g,'-'))+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></div>\n';
-			} else if( b.Field == "created"  || b.Field == "updated" || b.Field == 'tiempo_creacion' || b.Field=='tiempo_actualizacion' )
+			} else if( b.Field == "created"  || b.Field == 'tiempo_creacion')
 			{
-				column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+' | date: \'short\' }}</div>\n';
+				column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+' | date: \'MMM d, y\' }}</div>\n';
+			}
+			else if( b.Field == "updated" || b.Field=='tiempo_actualizacion' )
+			{
+				column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+' | date: \'MMM d, y,  h:mm a\' }}</div>\n';
 			}
 
 			return a+column;
@@ -288,9 +292,13 @@ module.exports = class Template
 			if( b.Field == 'id' )
 			{
 				column = '\t\t\t<div class="col"><a [routerLink]="[\'/edit-'+(table_name.replace(/_/g,'-'))+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></div>\n';
-			} else if( b.Field == "created"  || b.Field == "updated" || b.Field == 'tiempo_creacion' || b.Field=='tiempo_actualizacion' )
+			} else if( b.Field == "created"  || b.Field == 'tiempo_creacion' )
 			{
-				column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+' | date: \'short\' }}</div>\n';
+				column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+' | date: \'MMM d, y\' }}</div>\n';
+			}
+			else if( b.Field == "updated" || b.Field=='tiempo_actualizacion' )
+			{
+				column = '\t\t\t<div class="col">{{'+table_name+'.'+b.Field+' | date: \'MMM d, y,  h:mm a\' }}</div>\n';
 			}
 
 			return a+column;
@@ -326,9 +334,13 @@ module.exports = class Template
 			{
 				return a+'\t\t\t\t\t\t<td><a [routerLink]="[\'/edit-'+(table_name.replace(/_/g,'-'))+'\','+table_name+'.id]">{{'+table_name+'.'+b.Field+'}}</a></td>\n';
 			}
-			else if( b.Field == "created"  || b.Field == "updated" || b.Field == 'tiempo_creacion' || b.Field=='tiempo_actualizacion' )
+			else if( b.Field == "created"  ||  b.Field == 'tiempo_creacion' )
 			{
-				return a+'\t\t\t\t\t\t<td>{{'+table_name+'.'+b.Field+' | date: \'short\' }}</td>\n';
+				return a+'\t\t\t\t\t\t<td>{{'+table_name+'.'+b.Field+' | date: \'MMM d, y\' }}</td>\n';
+			}
+			else if( b.Field == "updated" || b.Field=='tiempo_actualizacion' )
+			{
+				return a+'\t\t\t\t\t\t<td>{{'+table_name+'.'+b.Field+' | date: \'MMM d, y,  h:mm a\' }}</td>\n';
 			}
 			return a+'\t\t\t\t\t\t<td>{{'+table_name+'.'+b.Field+'}}</td>\n';
 		},'');
