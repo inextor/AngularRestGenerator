@@ -5,6 +5,7 @@ import { Router,ActivatedRoute } from "@angular/router"
 import { BaseComponent } from '../base/base.component';
 import { Location } from	'@angular/common';
 import { forkJoin } from 'rxjs';
+import { withLatestFrom} from 'rxjs/operators';
 import { of } from 'rxjs';
 import { Title } from '@angular/platform-browser';
 import { StringDictionary } from '../../models/models';
@@ -31,7 +32,11 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 	ngOnInit()
 	{
 		this.path = '/list-TABLE_NAME_DASH';
-		this.subs.sink = this.route.queryParams.subscribe( params =>
+
+		this.subs.sink = this.route.url.pipe
+        (
+            withLatestFrom(this.route.paramMap, this.route.queryParamMap)
+        ).subscribe(([url, paramMap, queryParamMap]) =>
 		{
 			let fields = [ TEMPLATE_FIELDS_NAMES ];
 			this.TABLE_NAME_search = this.getSearchField(params, fields );
