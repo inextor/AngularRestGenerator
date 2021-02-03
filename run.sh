@@ -1,5 +1,11 @@
 #!/bin/bash
 
+
+if [[ ! -d "./akou" ]]
+then
+	git clone git@github.com:inextor/akou.git
+fi
+
 if [[ -d "./dist" ]]
 then
 	rm -rf ./dist
