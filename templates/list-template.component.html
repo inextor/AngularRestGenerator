@@ -7,7 +7,7 @@
 		<div class="col-auto">
 			<button type="button" class="mr-2 btn btn-light lift" (click)="show_import=true">Importar</button>
 			<button type="button" class="mr-2 btn btn-light lift" (click)="exportFile()">Exportar</button>
-			<button type="button" class="ml-2 btn btn-light lift" [routerLink]="['/add-TABLE_NAME_DASH']"> Add TABLE_NAME_SPACES</button>
+			<button type="button" class="ml-2 btn btn-light lift" [routerLink]="['/add-TABLE_NAME_DASH']"> Agregar TABLE_NAME_SPACES</button>
 		</div>
 	</div>
 
@@ -37,7 +37,7 @@ TEMPLATE_LIST_HEADERS
 TEMPLATE_LIST_VALUES
 					</tr>
 					<tr *ngIf="TABLE_NAME_list == null || TABLE_NAME_list.length == 0 && !is_loading" colspan="TEMPLATE_HEADERS_SIZE">
-						<div class="alert alert-light m-3" role="alert">No elements found</div>
+						<div class="alert alert-light m-3" role="alert">No se encontraron elementos</div>
 					</tr>
 				</tbody>
 			</table>
