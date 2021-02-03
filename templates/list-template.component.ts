@@ -35,20 +35,20 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 
 		this.subs.sink = this.route.url.pipe
         (
-            withLatestFrom(this.route.paramMap, this.route.queryParamMap)
-        ).subscribe(([url, paramMap, queryParamMap]) =>
+			withLatestFrom(this.route.params, this.route.queryParams)
+        ).subscribe(([url, params, queryParams ]) =>
 		{
 			let fields = [ TEMPLATE_FIELDS_NAMES ];
-			this.TABLE_NAME_search = this.getSearchField(params, fields );
+			this.TABLE_NAME_search = this.getSearchField(queryParams, fields );
 			let extra_keys:Array<string> = []; //['search_param1','project_id','some_id'];
-            this.search_extra = this.getSearchExtra(params, extra_keys);
+            this.search_extra = this.getSearchExtra(queryParams, extra_keys);
 
 			this.titleService.setTitle('TABLE_NAME');
 
 			console.log('Search', this.TABLE_NAME_search);
 
 			this.is_loading = true;
-			this.TABLE_NAME_search.page =	'page' in params ? parseInt( params.page ) : 0;
+			this.TABLE_NAME_search.page =	'page' in queryParams? parseInt( queryParams.page ) : 0;
 			this.TABLE_NAME_search.limit = this.pageSize;
 			this.currentPage = this.TABLE_NAME_search.page;
 
