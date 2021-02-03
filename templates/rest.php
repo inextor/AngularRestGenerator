@@ -11,6 +11,8 @@ use \akou\RestController;
 use \akou\ArrayUtils;
 use \akou\ValidationException;
 use \akou\LoggableException;
+use \akou\SystemException;
+use \akou\SessionException;
 
 
 class Service extends SuperRest
