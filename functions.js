@@ -120,7 +120,7 @@ function getInputField(field_info,table_name,constraints,tables_info)
 	{
 		return `<input type="number" name="${name}" [(ngModel)]="${ngmodel}" class="form-control">`;
 	}
-	else if( /^varchar/.test( field_info.Type ) )
+	else if( /^varchar/.test( field_info.Type ) || /^text/.test( field_info.Type ) )
 	{
 		return `<input type="text" name="${name}" [(ngModel)]="${ngmodel}" class="form-control">`;
 	}
@@ -136,7 +136,7 @@ function getInputField(field_info,table_name,constraints,tables_info)
 	{
 		return `<input type="time" name="${name}" [(ngModel)]="${ngmodel}" class="form-control">`;
 	}
-	else if( /^text/.test( field_info.Type ) || /^mediumtext/.test( field_info.Type ) )
+	else if(  /^mediumtext/.test( field_info.Type ) || /^longtext/.test( field_info.Type ))
 	{
 		return `<textarea class="form-control" name="${name}" [(ngModel)]="${ngmodel}"></textarea>`;
 	}
