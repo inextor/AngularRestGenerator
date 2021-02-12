@@ -49,7 +49,7 @@ class Service extends SuperRest
 			DBTable::rollback();
 			return $this->sendStatus( $e->code )->json(array("error"=>$e->getMessage()));
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			DBTable::rollback();
 			return $this->sendStatus( 500 )->json(array("error"=>$e->getMessage()));
@@ -79,7 +79,7 @@ class Service extends SuperRest
 			DBTable::rollback();
 			return $this->sendStatus( $e->code )->json(array("error"=>$e->getMessage()));
 		}
-		catch(Exception $e)
+		catch(\Exception $e)
 		{
 			DBTable::rollback();
 			return $this->sendStatus( 500 )->json(array("error"=>$e->getMessage()));
