@@ -23,7 +23,11 @@ class Service extends SuperRest
 		App::connect();
 		$this->setAllowHeader();
 
-		return $this->genericGet("{{TABLE_NAME}}");
+		$extra_constraints=array();
+		$extra_joins = '';
+		$extra_sort = array();
+		$this->is_debug = true;
+		return $this->genericGet("{{TABLE_NAME}}",$extra_constraints,$extra_joins,$extra_sort);
 	}
 
 	function post()
