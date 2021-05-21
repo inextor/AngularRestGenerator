@@ -33,7 +33,7 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 	{
 		this.path = '/list-TABLE_NAME_DASH';
 
-		this.route.queryParamMap.subscribe((queryParamMap) =>
+		this.subs.sink = this.route.queryParamMap.subscribe((queryParamMap) =>
 		{
 			let fields = [ TEMPLATE_FIELDS_NAMES ];
 			this.TABLE_NAME_search = this.getSearch(queryParamMap, fields );
@@ -59,7 +59,7 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 	uploadFile()
 	{
 		this.is_loading = true;
-		this.rest.xlsx2json( this.file,[TEMPLATE_FIELDS_NAMES]).then((json)=>
+		Utils.xlsx2json( this.file,[TEMPLATE_FIELDS_NAMES]).then((json)=>
 		{
 			//Filter json then upload
 			this.subs.sink	= this.rest.TABLE_NAME.batchUpdate(json).subscribe((result)=>
@@ -82,7 +82,7 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 		this.is_loading = true;
 		this.subs.sink	= this.rest.TABLE_NAME.search({limit:100000}).subscribe((response)=>
 		{
-			this.rest.array2xlsx(response.data,'TABLE_NAME.xlsx',[TEMPLATE_FIELDS_NAMES])
+			Utils.array2xlsx(response.data,'TABLE_NAME.xlsx',[TEMPLATE_FIELDS_NAMES])
 			this.is_loading = false;
 		},(error)=>this.showError(error));
 	}
