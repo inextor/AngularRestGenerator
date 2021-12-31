@@ -1,14 +1,8 @@
 import { Component, OnInit } from '@angular/core';
-import { RestService } from '../../services/rest.service';
 import { SearchObject } from '../../services/Rest';
-import { Router,ActivatedRoute } from "@angular/router"
 import { BaseComponent } from '../base/base.component';
-import { Location } from	'@angular/common';
 import { forkJoin } from 'rxjs';
-import { withLatestFrom} from 'rxjs/operators';
 import { of } from 'rxjs';
-import { Title } from '@angular/platform-browser';
-import { StringDictionary } from '../../models/models';
 
 TEMPLATE_MODEL_IMPORTS
 
@@ -21,8 +15,7 @@ TEMPLATE_MODEL_IMPORTS
 export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent implements OnInit {
 	file:File = null;
 	show_import:boolean = false;
-	TABLE_NAME_search:SearchObject<TABLE_NAME_SNAKE_CASE_UPPERCASE> = { };
-	search_extra:StringDictionary<string> = { };
+	TABLE_NAME_search:SearchObject<TABLE_NAME_SNAKE_CASE_UPPERCASE> = this.getEmptySearch();
 	TABLE_NAME_list:TABLE_NAME_SNAKE_CASE_UPPERCASE[] = [];
 
 	FORK_JOINS_DECLARATION_LIST
@@ -36,10 +29,8 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 		this.subs.sink = this.route.queryParamMap.subscribe((queryParamMap) =>
 		{
 			let fields = [ TEMPLATE_FIELDS_NAMES ];
-			this.TABLE_NAME_search = this.getSearch(queryParamMap, fields );
 			let extra_keys:Array<string> = []; //['search_param1','project_id','some_id'];
-            this.search_extra = this.getSearchExtra(queryParamMap, extra_keys);
-
+			this.TABLE_NAME_search = this.getSearch(queryParamMap, fields, extra_keys );
 			this.titleService.setTitle('TABLE_NAME');
 			this.is_loading = true;
 			this.currentPage = this.TABLE_NAME_search.page;
@@ -48,6 +39,7 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 		});
 	}
 
+	/*
 	onFileChanged(event)
 	{
 		if (event.target.files.length)
@@ -86,4 +78,5 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 			this.is_loading = false;
 		},(error)=>this.showError(error));
 	}
+	*/
 }

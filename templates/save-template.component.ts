@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { RestService } from '../../services/rest.service';
-import { Router, ActivatedRoute } from "@angular/router";
 import { BaseComponent } from '../base/base.component';
 import { forkJoin } from 'rxjs';
 TEMPLATE_MODEL_IMPORTS
@@ -12,7 +11,7 @@ TEMPLATE_MODEL_IMPORTS
 })
 export class SaveTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent implements OnInit {
 
-	TABLE_NAME:TABLE_NAME_SNAKE_CASE_UPPERCASE	= {};
+	TABLE_NAME:Partial<TABLE_NAME_SNAKE_CASE_UPPERCASE>	= {};
 
 	FORK_JOINS_DECLARATION_SAVE
 
@@ -36,8 +35,8 @@ export class SaveTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 		{
 			this.subs.sink	= this.rest.TABLE_NAME.update( this.TABLE_NAME ).subscribe((TABLE_NAME)=>{
 				this.is_loading = false;
-				this.router.navigate(['/list-TABLE_NAME_DASH']);
 				this.showSuccess('TABLE_NAME_SPACES se actualizo exitosamente');
+				this.location.back();
 			},(error)=>this.showError(error));
 		}
 		else
@@ -45,7 +44,7 @@ export class SaveTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 			this.subs.sink	= this.rest.TABLE_NAME.create( this.TABLE_NAME ).subscribe((TABLE_NAME)=>{
 				this.is_loading = false;
 				this.showSuccess('TABLE_NAME_SPACES se guardo exitosamente');
-				this.router.navigate(['/list-TABLE_NAME_DASH']);
+				this.location.back();
 			},(error)=>this.showError(error));
 		}
 	}
