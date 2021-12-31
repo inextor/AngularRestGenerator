@@ -5,8 +5,8 @@
 			<h4 class="text-capitalize">TABLE_NAME_SPACES</h4>
 		</div>
 		<div class="col-auto">
-			<button type="button" class="mr-2 btn btn-light lift" (click)="show_import=true">Importar</button>
-			<button type="button" class="mr-2 btn btn-light lift" (click)="exportFile()">Exportar</button>
+			<!--button type="button" class="mr-2 btn btn-light lift" (click)="show_import=true">Importar</button>
+			<button type="button" class="mr-2 btn btn-light lift" (click)="exportFile()">Exportar</button-->
 			<button type="button" class="ml-2 btn btn-light lift" [routerLink]="['/add-TABLE_NAME_DASH']"> Agregar TABLE_NAME_SPACES</button>
 		</div>
 	</div>
@@ -45,7 +45,7 @@ TEMPLATE_LIST_VALUES
 	</div>
 	<app-pagination [path]="'/list-TABLE_NAME_DASH'" [pages]="pages" [totalPages]="totalPages" [currentPage]="currentPage"></app-pagination>
 </div>
-<app-modal [(show)]="show_import">
+<!--app-modal [(show)]="show_import">
 	<div class="card p-3">
 		<h2>Import excel</h2>
 		<div class="from-group mb-3">
@@ -61,5 +61,4 @@ TEMPLATE_LIST_VALUES
 			</div>
 		</div>
 	</div>
-</app-modal>
-
+</app-modal-->

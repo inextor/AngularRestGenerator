@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { RestService } from '../../services/rest.service';
 import { BaseComponent } from '../base/base.component';
 import { forkJoin } from 'rxjs';
 TEMPLATE_MODEL_IMPORTS

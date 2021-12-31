@@ -13,7 +13,7 @@ TEMPLATE_MODEL_IMPORTS
 })
 
 export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent implements OnInit {
-	file:File = null;
+	file:File | null = null;
 	show_import:boolean = false;
 	TABLE_NAME_search:SearchObject<TABLE_NAME_SNAKE_CASE_UPPERCASE> = this.getEmptySearch();
 	TABLE_NAME_list:TABLE_NAME_SNAKE_CASE_UPPERCASE[] = [];
@@ -33,7 +33,6 @@ export class ListTABLE_NAME_CAMEL_CASE_UPPERCASEComponent extends BaseComponent 
 			this.TABLE_NAME_search = this.getSearch(queryParamMap, fields, extra_keys );
 			this.titleService.setTitle('TABLE_NAME');
 			this.is_loading = true;
-			this.currentPage = this.TABLE_NAME_search.page;
 
 			FORK_JOINS_LIST
 		});
