@@ -146,7 +146,7 @@ module.exports = class Template
 			return `
 
 				this.is_loading = true;
-				this.subs.sink = this.rest.${table.name}.search(this.${table.name}_search, this.search_extra)
+				this.subs.sink = this.rest.${table.name}.search(this.${table.name}_search)
 				.subscribe((response)=>
 				{
 					this.setPages( this.${table.name}_search.page, response.total );
@@ -166,7 +166,7 @@ module.exports = class Template
 		return `
 			this.is_loading = true;
 			this.subs.sink = forkJoin({
-				${table.name} : this.rest.${table.name}.search(this.${table.name}_search,this.search_extra),${observables.join(',')}
+				${table.name} : this.rest.${table.name}.search(this.${table.name}_search),${observables.join(',')}
 			})
 			.subscribe((responses)=>
 			{
